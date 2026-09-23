@@ -1,14 +1,14 @@
-PURE20 KENNISBANK - NEDERLANDSE VERSIE
+PURE20 HOTFIX
 
-Vervang in de root van je huidige GitHub-repo alleen:
-1. knowledge.html
-2. knowledge.js
+Vervang alleen deze 2 bestanden in de root van GitHub:
+- language.js
+- supabase-config.js
 
-Laat alle 41 bestaande peptide HTML-pagina's gewoon staan.
-Die pagina's laden allemaal knowledge.js, waardoor ze automatisch Nederlandstalige navigatie, samenvattingen, secties en veiligheidscontext krijgen.
+Wat dit oplost:
+1. Op mobiel komt NL | EN naast het PURE20-logo in plaats van onder het menu.
+2. De taalkeuze overlapt de rode database-melding niet meer.
+3. De openbare shop gebruikt een aparte anonieme Supabase-client voor productdata.
+   Daardoor kan een opgeslagen adminsessie niet meer tijdens token-refresh een 401 veroorzaken.
+4. De database-foutmelding is ook vertaald wanneer Nederlands actief is.
 
-De bestaande referentielijsten blijven behouden.
-Titels van wetenschappelijke publicaties blijven bewust in de oorspronkelijke taal.
-
-knowledge.css hoeft niet gewijzigd te worden.
-De bestaande links en bestandsnamen blijven hetzelfde.
+Geen andere bestanden aanpassen.
