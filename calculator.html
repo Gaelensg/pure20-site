@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f2f1ec">
+  <meta name="description" content="PURE20 research calculator for concentration, syringe-unit and blend conversions.">
+  <title>PURE20. — Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .calc-hero{padding-bottom:48px}
+    .calc-kicker{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);padding:8px 10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-top:22px}
+    .calc-kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+    .calc-zone{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .calc-shell{padding-top:34px;padding-bottom:70px}
+    .calc-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);overflow:auto}
+    .calc-tab{border:0;background:transparent;padding:14px 16px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-bottom:3px solid transparent;white-space:nowrap}
+    .calc-tab.active{border-bottom-color:var(--ink);font-weight:800}
+    .calc-view{display:none;padding-top:28px}
+    .calc-view.active{display:block}
+    .calc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,.78fr);gap:34px;align-items:start}
+    .calc-panel{border-top:2px solid var(--ink);padding-top:18px}
+    .calc-panel h2{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}
+    .calc-panel>p{color:var(--muted);font-size:13px;line-height:1.65;margin:0 0 24px;max-width:700px}
+    .calc-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .calc-field{display:block;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+    .calc-field.wide{grid-column:1/-1}
+    .calc-input-row{display:grid;grid-template-columns:1fr 100px;gap:8px;margin-top:7px}
+    .calc-field input,.calc-field select{width:100%;min-height:48px;border:1px solid #bdbbb3;background:transparent;padding:12px 13px;outline:none;font-size:16px;text-transform:none;letter-spacing:0}
+    .calc-field input:focus,.calc-field select:focus{border-color:var(--ink)}
+    .calc-help{font-size:11px;color:var(--muted);line-height:1.55;margin:8px 0 0}
+    .result-card{background:#111;color:#fff;padding:24px;position:sticky;top:96px}
+    .result-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#aaa;margin-bottom:24px}
+    .result-primary{padding-bottom:20px;border-bottom:1px solid #444}
+    .result-primary span{display:block;color:#aaa;font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+    .result-primary strong{font-size:46px;line-height:1;letter-spacing:-.045em;overflow-wrap:anywhere}
+    .result-list{margin-top:12px}
+    .result-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid #333;font-size:12px}
+    .result-row span{color:#aaa}
+    .result-row strong{text-align:right}
+    .calc-help{font-size:11px;color:var(--muted);line-height:1.55;margin:8px 0 0}
+    .calc-alert{margin-top:14px;border:1px solid #777;padding:11px 12px;font-size:11px;line-height:1.5;color:#ddd}
+    .calc-alert:empty{display:none}
+    .formula-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:42px}
+    .formula-strip article{background:var(--bg);padding:20px}
+    .formula-strip small{display:block;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}
+    .formula-strip strong{display:block;margin-top:12px;font-size:15px;line-height:1.45}
+    .calc-disclaimer{display:grid;grid-template-columns:16px 1fr;gap:14px;padding-top:30px;padding-bottom:70px;color:var(--muted);font-size:12px;line-height:1.65}
+    .calc-disclaimer .square{margin-top:4px}
+    .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:850px){
+      .calc-layout{grid-template-columns:1fr}
+      .result-card{position:static}
+      .formula-strip{grid-template-columns:1fr}
+    }
+    @media(max-width:600px){
+      .calc-hero{padding-top:46px}
+      .calc-form,.blend-names{grid-template-columns:1fr}
+      .calc-field.wide{grid-column:auto}
+      .result-primary strong{font-size:38px}
+      .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/" aria-label="PURE20 home">PURE20.</a>
+      <nav class="header-nav" aria-label="Page navigation">
+        <a href="/">Shop</a>
+        <a href="knowledge.html">Knowledge</a>
+        <a href="calculator.html" aria-current="page">Calculator</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell calc-hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">PURE20 / RESEARCH CALCULATOR</p>
+          <h1>Calculate.<br>Don't guess.</h1>
+          <p class="lede">Convert vial concentration, liquid volume and U-100 syringe units with transparent formulas. Built for arithmetic only, not dosing advice.</p>
+          <div class="calc-kicker"><span class="dot"></span> U-100 standard: 100 units = 1.00 mL</div>
+        </div>
+        <div class="hero-aside">
+          <div class="hero-mark">100<span>.</span></div>
+          <p>Units.<br>One mL.<br>Clear math.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="calc-zone">
+      <div class="shell calc-shell">
+        <div class="calc-tabs" role="tablist" aria-label="Calculator modes">
+          <button class="calc-tab active" type="button" role="tab" aria-selected="true" data-view="dose">Dose → units</button>
+          <button class="calc-tab" type="button" role="tab" aria-selected="false" data-view="units">Units → amount</button>
+          <button class="calc-tab" type="button" role="tab" aria-selected="false" data-view="blend">Blend</button>
+        </div>
+
+        <section id="view-dose" class="calc-view active" role="tabpanel">
+          <div class="calc-layout">
+            <div class="calc-panel">
+              <h2>Dose → syringe units</h2>
+              <p>Enter the amount in the vial, the total liquid volume after mixing, and the amount you want to convert. The calculator returns the theoretical U-100 syringe marking.</p>
+              <div class="calc-form">
+                <label class="calc-field">Amount in vial
+                  <div class="calc-input-row"><input id="doseVial" inputmode="decimal" placeholder="e.g. 10"><select id="doseVialUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
+                </label>
+                <label class="calc-field">Total liquid volume
+                  <div class="calc-input-row"><input id="doseWater" inputmode="decimal" placeholder="e.g. 2"><select disabled><option>mL</option></select></div>
+                </label>
+                <label class="calc-field wide">Amount to convert
+                  <div class="calc-input-row"><input id="doseTarget" inputmode="decimal" placeholder="Enter amount"><select id="doseTargetUnit"><option value="mcg">mcg</option><option value="mg">mg</option></select></div>
+                </label>
+              </div>
+              <p class="calc-help">Theoretical calculation only. It does not account for syringe dead space, transfer loss, measurement error or product-specific instructions.</p>
+            </div>
+            <aside class="result-card" aria-live="polite">
+              <div class="result-eyebrow">CALCULATED RESULT</div>
+              <div class="result-primary"><span>U-100 syringe</span><strong id="doseUnits">— units</strong></div>
+              <div class="result-list">
+                <div class="result-row"><span>Volume</span><strong id="doseMl">—</strong></div>
+                <div class="result-row"><span>Concentration</span><strong id="doseConc">—</strong></div>
+                <div class="result-row"><span>Amount per 1 unit</span><strong id="dosePerUnit">—</strong></div>
+                <div class="result-row"><span>Theoretical portions / vial</span><strong id="doseCount">—</strong></div>
+              </div>
+              <div id="doseAlert" class="calc-alert"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="view-units" class="calc-view" role="tabpanel">
+          <div class="calc-layout">
+            <div class="calc-panel">
+              <h2>Syringe units → amount</h2>
+              <p>Use this mode when you know the vial concentration and syringe marking and want to calculate how much material that volume contains.</p>
+              <div class="calc-form">
+                <label class="calc-field">Amount in vial
+                  <div class="calc-input-row"><input id="unitsVial" inputmode="decimal" placeholder="e.g. 10"><select id="unitsVialUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
+                </label>
+                <label class="calc-field">Total liquid volume
+                  <div class="calc-input-row"><input id="unitsWater" inputmode="decimal" placeholder="e.g. 2"><select disabled><option>mL</option></select></div>
+                </label>
+                <label class="calc-field wide">Syringe marking
+                  <div class="calc-input-row"><input id="unitsMark" inputmode="decimal" placeholder="Enter units"><select disabled><option>units</option></select></div>
+                </label>
+              </div>
+              <p class="calc-help">This page assumes a U-100 syringe scale. A marking of 10 units corresponds to 0.10 mL.</p>
+            </div>
+            <aside class="result-card" aria-live="polite">
+              <div class="result-eyebrow">CALCULATED RESULT</div>
+              <div class="result-primary"><span>Contained amount</span><strong id="unitsAmount">—</strong></div>
+              <div class="result-list">
+                <div class="result-row"><span>Same amount</span><strong id="unitsAmountAlt">—</strong></div>
+                <div class="result-row"><span>Volume</span><strong id="unitsMl">—</strong></div>
+                <div class="result-row"><span>Concentration</span><strong id="unitsConc">—</strong></div>
+                <div class="result-row"><span>Amount per 1 unit</span><strong id="unitsPerUnit">—</strong></div>
+              </div>
+              <div id="unitsAlert" class="calc-alert"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="view-blend" class="calc-view" role="tabpanel">
+          <div class="calc-layout">
+            <div class="calc-panel">
+              <h2>Two-component blend</h2>
+              <p>Calculate a shared syringe volume when two components are present in the same vial. Choose which component you want to use as the basis; the calculator shows the simultaneous amount of the other component.</p>
+              <div class="blend-names">
+                <label class="calc-field">Component A name<input id="blendNameA" value="Component A"></label>
+                <label class="calc-field">Component B name<input id="blendNameB" value="Component B"></label>
+              </div>
+              <div class="calc-form" style="margin-top:14px">
+                <label class="calc-field">Component A in vial
+                  <div class="calc-input-row"><input id="blendA" inputmode="decimal" placeholder="Amount"><select id="blendAUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
+                </label>
+                <label class="calc-field">Component B in vial
+                  <div class="calc-input-row"><input id="blendB" inputmode="decimal" placeholder="Amount"><select id="blendBUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
+                </label>
+                <label class="calc-field">Total liquid volume
+                  <div class="calc-input-row"><input id="blendWater" inputmode="decimal" placeholder="e.g. 2"><select disabled><option>mL</option></select></div>
+                </label>
+                <label class="calc-field">Calculate from
+                  <select id="blendBasis" style="margin-top:7px"><option value="a">Component A</option><option value="b">Component B</option></select>
+                </label>
+                <label class="calc-field wide">Amount to convert
+                  <div class="calc-input-row"><input id="blendTarget" inputmode="decimal" placeholder="Enter amount"><select id="blendTargetUnit"><option value="mcg">mcg</option><option value="mg">mg</option></select></div>
+                </label>
+              </div>
+              <p class="calc-help">The ratio between both components stays fixed because both occupy the same solution volume.</p>
+            </div>
+            <aside class="result-card" aria-live="polite">
+              <div class="result-eyebrow">BLEND RESULT</div>
+              <div class="result-primary"><span>U-100 syringe</span><strong id="blendUnits">— units</strong></div>
+              <div class="result-list">
+                <div class="result-row"><span>Volume</span><strong id="blendMl">—</strong></div>
+                <div class="result-row"><span id="blendLabelA">Component A</span><strong id="blendOutA">—</strong></div>
+                <div class="result-row"><span id="blendLabelB">Component B</span><strong id="blendOutB">—</strong></div>
+                <div class="result-row"><span>Blend ratio</span><strong id="blendRatio">—</strong></div>
+              </div>
+              <div id="blendAlert" class="calc-alert"></div>
+            </aside>
+          </div>
+        </section>
+
+        <div class="formula-strip" aria-label="Calculation formulas">
+          <article><small>01 / Concentration</small><strong>Amount in vial ÷ total liquid volume</strong></article>
+          <article><small>02 / U-100 volume</small><strong>Syringe units ÷ 100 = mL</strong></article>
+          <article><small>03 / Unit conversion</small><strong>1 mg = 1,000 mcg</strong></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell calc-disclaimer">
+      <span class="square"></span>
+      <p><strong>Important:</strong> this calculator performs mathematical conversions only. It does not recommend a dose, injection route, frequency, treatment, product, or medical use. Always verify the vial label, final solution volume and syringe calibration. For prescribed or approved medicines, follow the instructions supplied by a licensed healthcare professional or pharmacist.</p>
+    </section>
+  </main>
+
+  <script src="calculator.js"></script>
+</body>
+</html>
