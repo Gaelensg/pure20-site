@@ -44,21 +44,21 @@
   function buildSyringeMarks(shell) {
     const marks = shell.querySelector('.syringe-marks');
     if (!marks || marks.dataset.ready) return;
-    const values = [0,10,20,30,40,50,60,70,80,90,100];
-    values.forEach((value, index) => {
+
+    // Needle is on the right. On a real insulin syringe, 0 is nearest
+    // the needle and the scale increases toward the plunger.
+    const values = [100,90,80,70,60,50,40,30,20,10,0];
+
+    values.forEach((value) => {
       const mark = document.createElement('div');
-      mark.className = 'syringe-mark' + ((value % 20) ? ' mid' : '');
-      if (value < 100) {
-        const label = document.createElement('small');
-        label.textContent = value;
-        mark.appendChild(label);
-      } else {
-        const label = document.createElement('small');
-        label.textContent = '100';
-        mark.appendChild(label);
-      }
+      mark.className = 'syringe-mark' + (value % 20 === 0 ? ' major' : '');
+
+      const label = document.createElement('small');
+      label.textContent = String(value);
+      mark.appendChild(label);
       marks.appendChild(mark);
     });
+
     marks.dataset.ready = 'true';
   }
 
@@ -67,21 +67,25 @@
     const shell = $(`${prefix}Syringe`);
     const readout = $(`${prefix}SyringeReadout`);
     if (!shell) return;
+
     buildSyringeMarks(shell);
 
     const fill = shell.querySelector('.syringe-fill');
-    const plunger = shell.querySelector('.syringe-plunger');
-    const percent = safeUnits;
-    if (fill) fill.style.width = `${percent}%`;
+    const stopper = shell.querySelector('.syringe-plunger');
+    const body = shell.querySelector('.syringe-body');
 
-    if (plunger) {
-      const body = shell.querySelector('.syringe-body');
-      if (body) {
-        const bodyWidth = body.clientWidth;
-        const leftBase = body.offsetLeft;
-        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - 1.5;
-        plunger.style.left = `${x}px`;
-      }
+    if (fill) {
+      fill.style.width = `${safeUnits}%`;
+    }
+
+    if (stopper && body) {
+      const bodyWidth = body.clientWidth;
+      const leftBase = body.offsetLeft;
+
+      // 0 U = stopper at needle end (right).
+      // 100 U = stopper at plunger end (left).
+      const x = leftBase + bodyWidth * (1 - safeUnits / 100) - 1.5;
+      stopper.style.left = `${x}px`;
     }
 
     if (readout) readout.textContent = `${fmt(safeUnits, 2)} U`;

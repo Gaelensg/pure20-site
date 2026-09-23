@@ -44,66 +44,197 @@
     .calc-disclaimer .square{margin-top:4px}
     .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .syringe-wrap{margin-top:22px}
-    .syringe-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa}
+    .syringe-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:12px;
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#aaa
+    }
     .syringe-top strong{color:#fff;font-size:12px}
-    .syringe-shell{position:relative;padding:8px 14px 8px 0}
-    .syringe-track{position:relative;height:94px}
+
+    /* Nipro / Peptide-Koning inspired insulin-syringe visual */
+    .syringe-shell{
+      --barrel-left:86px;
+      --barrel-right:54px;
+      position:relative;
+      padding:4px 0 2px;
+    }
+    .syringe-track{position:relative;height:116px}
+
     .syringe-body{
-      position:absolute;left:40px;right:56px;top:19px;height:56px;
-      border:2px solid #fff;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+      position:absolute;
+      left:var(--barrel-left);
+      right:var(--barrel-right);
+      top:29px;
+      height:46px;
+      border:2px solid rgba(255,255,255,.92);
+      background:rgba(255,255,255,.025);
       overflow:hidden;
     }
+
+    /* Fluid sits between the stopper and the needle end */
     .syringe-fill{
-      position:absolute;left:0;top:0;bottom:0;width:0%;
-      background:linear-gradient(90deg,#f4f4f0 0%,#ddd9cf 100%);
-      transition:width .25s ease;
+      position:absolute;
+      right:0;
+      top:0;
+      bottom:0;
+      width:0%;
+      background:rgba(242,241,236,.18);
+      transition:width .22s ease;
     }
+
+    /* Thin stopper edge at the exact drawn-up mark */
     .syringe-plunger{
-      position:absolute;top:10px;width:3px;height:74px;background:#fff;
-      transition:left .25s ease;
+      position:absolute;
+      top:24px;
+      width:3px;
+      height:56px;
+      background:#fff;
+      border:0;
+      transition:left .22s ease;
+      z-index:5;
     }
-    .syringe-plunger:before{
-      content:"";position:absolute;left:-10px;top:28px;width:10px;height:14px;border:2px solid #fff;border-right:0;background:#111
+    .syringe-plunger:before,
+    .syringe-plunger:after{content:none}
+
+    /* Plunger assembly left of the barrel */
+    .syringe-thumb{
+      position:absolute;
+      left:17px;
+      top:37px;
+      width:22px;
+      height:30px;
+      border-left:2px solid rgba(255,255,255,.92);
+      border-top:2px solid rgba(255,255,255,.92);
+      border-bottom:2px solid rgba(255,255,255,.92);
+    }
+    .syringe-thumb:before{
+      content:"";
+      position:absolute;
+      left:-10px;
+      top:-9px;
+      width:9px;
+      height:44px;
+      border-left:2px solid rgba(255,255,255,.92);
+      border-top:2px solid rgba(255,255,255,.92);
+      border-bottom:2px solid rgba(255,255,255,.92);
+    }
+    .syringe-rod{
+      position:absolute;
+      left:39px;
+      width:47px;
+      top:43px;
+      height:18px;
+      border-top:2px solid rgba(255,255,255,.92);
+      border-bottom:2px solid rgba(255,255,255,.92);
+    }
+    .syringe-flange{
+      position:absolute;
+      left:78px;
+      top:22px;
+      width:8px;
+      height:60px;
+      border-left:2px solid rgba(255,255,255,.92);
+      border-top:2px solid rgba(255,255,255,.92);
+      border-bottom:2px solid rgba(255,255,255,.92);
+    }
+
+    /* Small hub + short needle. It no longer looks like the needle begins inside the barrel. */
+    .syringe-hub{
+      position:absolute;
+      right:38px;
+      top:43px;
+      width:16px;
+      height:18px;
+      border:2px solid rgba(255,255,255,.92);
+      border-left:0;
+      background:#111;
     }
     .syringe-needle{
-      position:absolute;right:16px;top:46px;width:28px;height:2px;background:#fff;
+      position:absolute;
+      right:12px;
+      top:51px;
+      width:26px;
+      height:2px;
+      background:rgba(255,255,255,.92);
     }
     .syringe-needle:after{
-      content:"";position:absolute;right:-7px;top:-2px;width:9px;height:6px;border-radius:0 3px 3px 0;background:#fff
+      content:"";
+      position:absolute;
+      right:-7px;
+      top:-2px;
+      width:8px;
+      height:6px;
+      background:#fff;
+      clip-path:polygon(0 20%,100% 50%,0 80%);
     }
+
+    /* Realistic orientation: 0 is at the needle, 100 at the plunger */
     .syringe-marks{
-      position:absolute;left:40px;right:56px;top:12px;height:70px;pointer-events:none;
-      display:flex;justify-content:space-between;
+      position:absolute;
+      left:var(--barrel-left);
+      right:var(--barrel-right);
+      top:20px;
+      height:76px;
+      pointer-events:none;
+      display:flex;
+      justify-content:space-between;
     }
     .syringe-mark{position:relative;width:1px;background:transparent}
     .syringe-mark:before{
-      content:"";position:absolute;left:0;top:0;width:1px;height:18px;background:#fff;opacity:.95
-    }
-    .syringe-mark.mid:before{height:12px;opacity:.65}
-    .syringe-mark small{
-      position:absolute;top:24px;left:50%;transform:translateX(-50%);
-      color:#aaa;font-size:9px;letter-spacing:.08em
-    }
-    .syringe-mark:first-child small{
+      content:"";
+      position:absolute;
       left:0;
+      top:0;
+      width:1px;
+      height:12px;
+      background:rgba(255,255,255,.62);
+    }
+    .syringe-mark.major:before{
+      height:18px;
+      background:#fff;
+    }
+    .syringe-mark small{
+      position:absolute;
+      top:61px;
+      left:50%;
+      transform:translateX(-50%);
+      color:#aaa;
+      font-size:9px;
+      letter-spacing:.05em;
+      white-space:nowrap;
+    }
+    .syringe-mark.major small{color:#ddd}
+    .syringe-mark:first-child small{
+      left:2px;
       transform:none;
     }
     .syringe-mark:last-child small{
       left:auto;
-      right:0;
+      right:2px;
       transform:none;
     }
-    .syringe-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
-    .syringe-bottom p{margin:0;color:#aaa;font-size:11px;line-height:1.5}
-    .syringe-range{width:100%;appearance:none;background:transparent;margin-top:12px}
+
+    .syringe-range{width:100%;appearance:none;background:transparent;margin-top:10px}
     .syringe-range::-webkit-slider-runnable-track{height:2px;background:#555}
-    .syringe-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-8px;border:0}
+    .syringe-range::-webkit-slider-thumb{
+      appearance:none;width:18px;height:18px;border-radius:50%;
+      background:#fff;margin-top:-8px;border:0
+    }
     .syringe-range::-moz-range-track{height:2px;background:#555}
-    .syringe-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0}
-    .range-row{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .syringe-range::-moz-range-thumb{
+      width:18px;height:18px;border-radius:50%;background:#fff;border:0
+    }
+    .range-row{display:flex;gap:10px;align-items:center;margin-top:8px}
     .range-row label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
     .range-row output{min-width:52px;text-align:right;font-size:12px;color:#fff}
     .tap-note{font-size:10px;color:#aaa;margin-top:8px}
+
     @media(max-width:850px){
       .calc-layout{grid-template-columns:1fr}
       .result-card{position:static}
@@ -116,8 +247,14 @@
       .calc-field.wide{grid-column:auto}
       .result-primary strong{font-size:38px}
       .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
-      .syringe-body{left:28px;right:50px}
-      .syringe-marks{left:28px;right:50px}
+      .syringe-shell{--barrel-left:72px;--barrel-right:45px}
+      .syringe-thumb{left:11px}
+      .syringe-rod{left:33px;width:39px}
+      .syringe-flange{left:64px}
+      .syringe-hub{right:31px;width:14px}
+      .syringe-needle{right:9px;width:22px}
+      .syringe-mark small{font-size:8px}
+
     }
   </style>
 </head>
@@ -183,9 +320,13 @@
                 <div class="syringe-top"><span>Visual syringe</span><strong id="doseSyringeReadout">0 U</strong></div>
                 <div id="doseSyringe" class="syringe-shell" data-units="0">
                   <div class="syringe-track">
+                    <div class="syringe-thumb"></div>
+                    <div class="syringe-rod"></div>
+                    <div class="syringe-flange"></div>
                     <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
+                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
@@ -229,9 +370,13 @@
                 <div class="syringe-top"><span>Adjust syringe</span><strong id="unitsSyringeReadout">0 U</strong></div>
                 <div id="unitsSyringe" class="syringe-shell" data-units="0">
                   <div class="syringe-track">
+                    <div class="syringe-thumb"></div>
+                    <div class="syringe-rod"></div>
+                    <div class="syringe-flange"></div>
                     <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
+                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
@@ -290,9 +435,13 @@
                 <div class="syringe-top"><span>Visual syringe</span><strong id="blendSyringeReadout">0 U</strong></div>
                 <div id="blendSyringe" class="syringe-shell" data-units="0">
                   <div class="syringe-track">
+                    <div class="syringe-thumb"></div>
+                    <div class="syringe-rod"></div>
+                    <div class="syringe-flange"></div>
                     <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
+                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
