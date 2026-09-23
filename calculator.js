@@ -41,57 +41,74 @@
     return '';
   }
 
-  function buildSyringeMarks(shell) {
-    const marks = shell.querySelector('.syringe-marks');
-    if (!marks || marks.dataset.ready) return;
+  function buildSyringeMarks(svg) {
+    const group = svg.querySelector('[data-part="ticks"]');
+    if (!group || group.dataset.ready) return;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const barrelX = 105;
+    const barrelWidth = 300;
 
     for (let value = 0; value <= 100; value += 5) {
-      const mark = document.createElement('div');
+      const x = barrelX + (value / 100) * barrelWidth;
       const isMajor = value % 20 === 0;
       const isMedium = !isMajor && value % 10 === 0;
 
-      mark.className =
-        'syringe-mark' +
-        (isMajor ? ' major' : isMedium ? ' medium' : ' minor');
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('x1', x);
+      line.setAttribute('x2', x);
+
+      const top = 38;
+      const len = isMajor ? 13 : isMedium ? 9 : 5;
+      line.setAttribute('y1', top);
+      line.setAttribute('y2', top + len);
+      line.setAttribute('class', `tick${isMajor ? ' major' : isMedium ? ' medium' : ''}`);
+      group.appendChild(line);
 
       if (isMajor) {
-        const label = document.createElement('small');
+        const label = document.createElementNS(NS, 'text');
+        label.setAttribute('x', x);
+        label.setAttribute('y', 94);
+        label.setAttribute('class', 'tick-label');
         label.textContent = String(value);
-        mark.appendChild(label);
+        group.appendChild(label);
       }
-
-      marks.appendChild(mark);
     }
 
-    marks.dataset.ready = 'true';
+    group.dataset.ready = 'true';
   }
 
   function setSyringeUnits(prefix, units) {
     const safeUnits = Number.isFinite(units) ? Math.max(0, Math.min(100, units)) : 0;
-    const shell = $(`${prefix}Syringe`);
+    const svg = $(`${prefix}Syringe`);
     const readout = $(`${prefix}SyringeReadout`);
-    if (!shell) return;
-    buildSyringeMarks(shell);
+    if (!svg) return;
 
-    const fill = shell.querySelector('.syringe-fill');
-    const plunger = shell.querySelector('.syringe-plunger');
-    const percent = safeUnits;
+    buildSyringeMarks(svg);
 
-    if (fill) fill.style.width = `${percent}%`;
+    const liquid = svg.querySelector('[data-part="liquid"]');
+    const stopper = svg.querySelector('[data-part="stopper"]');
 
-    if (plunger) {
-      const body = shell.querySelector('.syringe-body');
-      if (body) {
-        const bodyWidth = body.clientWidth;
-        const leftBase = body.offsetLeft;
-        const plungerWidth = plunger.offsetWidth || 3;
-        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - (plungerWidth / 2);
-        plunger.style.left = `${x}px`;
-      }
+    const barrelX = 105;
+    const barrelWidth = 300;
+
+    // A drawn-up syringe contains fluid at the needle side.
+    const liquidWidth = barrelWidth * (safeUnits / 100);
+    const liquidX = barrelX + barrelWidth - liquidWidth;
+    const stopperX = liquidX;
+
+    if (liquid) {
+      liquid.setAttribute('x', liquidX);
+      liquid.setAttribute('width', liquidWidth);
+    }
+
+    if (stopper) {
+      stopper.setAttribute('x1', stopperX);
+      stopper.setAttribute('x2', stopperX);
     }
 
     if (readout) readout.textContent = `${fmt(safeUnits, 2)} U`;
-    shell.dataset.units = safeUnits;
+    svg.dataset.units = safeUnits;
   }
 
   function calculateDose() {

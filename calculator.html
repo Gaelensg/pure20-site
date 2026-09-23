@@ -45,193 +45,134 @@
     .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .syringe-wrap{margin-top:22px}
     .syringe-top{
-      display:flex;justify-content:space-between;gap:10px;align-items:center;
-      margin-bottom:12px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#929292
-    }
-    .syringe-top strong{color:#fff;font-size:12px;letter-spacing:.08em}
-
-    /* PURE20 ultra-clean U-100 syringe */
-    .syringe-shell{
-      --barrel-left:48px;
-      --barrel-right:86px;
-      position:relative;
-      padding:4px 0 0;
-    }
-    .syringe-track{position:relative;height:112px}
-
-    .syringe-body{
-      position:absolute;
-      left:var(--barrel-left);
-      right:var(--barrel-right);
-      top:28px;
-      height:46px;
-      border:1px solid rgba(255,255,255,.78);
-      background:rgba(255,255,255,.018);
-      overflow:hidden;
-    }
-
-    /* Liquid is intentionally pale so the scale remains readable */
-    .syringe-fill{
-      position:absolute;
-      left:0;top:0;bottom:0;
-      width:0%;
-      background:rgba(242,241,236,.14);
-      border-right:0;
-      transition:width .22s ease;
-    }
-
-    /* One fine endpoint line, no block or bulky plunger */
-    .syringe-plunger{
-      position:absolute;
-      top:23px;
-      width:1.5px;
-      height:56px;
-      background:#fff;
-      border:0;
-      opacity:.95;
-      transition:left .22s ease;
-      box-shadow:none;
-    }
-    .syringe-plunger:before{
-      content:"";
-      position:absolute;
-      top:-3px;
-      left:-2.25px;
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background:#fff;
-    }
-    .syringe-plunger:after{content:none}
-
-    /* Minimal thumb rest, clearly outside the barrel */
-    .syringe-handle{
-      position:absolute;
-      left:18px;
-      top:32px;
-      width:24px;
-      height:38px;
-      border-left:1px solid rgba(255,255,255,.76);
-      border-top:1px solid rgba(255,255,255,.76);
-      border-bottom:1px solid rgba(255,255,255,.76);
-      background:transparent;
-    }
-    .syringe-handle:before{
-      content:"";
-      position:absolute;
-      left:-10px;
-      top:-7px;
-      width:9px;
-      height:52px;
-      border-left:1px solid rgba(255,255,255,.76);
-      border-top:1px solid rgba(255,255,255,.76);
-      border-bottom:1px solid rgba(255,255,255,.76);
-    }
-
-    /* A small hub creates a clear visual gap before the needle */
-    .syringe-hub{
-      position:absolute;
-      right:61px;
-      top:44px;
-      width:18px;
-      height:12px;
-      border:1px solid rgba(255,255,255,.78);
-      background:#111;
-    }
-    .syringe-hub:after{
-      content:"";
-      position:absolute;
-      right:-8px;
-      top:3px;
-      width:7px;
-      height:4px;
-      background:rgba(255,255,255,.78);
-    }
-
-    .syringe-needle{
-      position:absolute;
-      right:12px;
-      top:49px;
-      width:40px;
-      height:1px;
-      background:rgba(255,255,255,.88);
-    }
-    .syringe-needle:after{
-      content:"";
-      position:absolute;
-      right:-10px;
-      top:-2px;
-      width:11px;
-      height:5px;
-      background:rgba(255,255,255,.9);
-      clip-path:polygon(0 35%,100% 50%,0 65%);
-    }
-
-    /* 5-unit ticks; only 20-unit values are labelled */
-    .syringe-marks{
-      position:absolute;
-      left:var(--barrel-left);
-      right:var(--barrel-right);
-      top:20px;
-      height:72px;
-      pointer-events:none;
       display:flex;
       justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#9b9b9b;
     }
-    .syringe-mark{
-      position:relative;
-      width:1px;
-      flex:0 0 1px;
+    .syringe-top strong{
+      color:#fff;
+      font-size:12px;
+      letter-spacing:.08em;
     }
-    .syringe-mark:before{
-      content:"";
-      position:absolute;
-      left:0;
-      top:0;
-      width:1px;
-      height:8px;
-      background:rgba(255,255,255,.30);
+
+    .syringe-svg{
+      display:block;
+      width:100%;
+      height:auto;
+      max-height:150px;
+      overflow:visible;
     }
-    .syringe-mark.medium:before{
-      height:12px;
-      background:rgba(255,255,255,.52);
+    .syringe-svg .barrel{
+      fill:rgba(255,255,255,.018);
+      stroke:rgba(255,255,255,.82);
+      stroke-width:1.4;
     }
-    .syringe-mark.major:before{
-      height:17px;
-      background:rgba(255,255,255,.82);
+    .syringe-svg .liquid{
+      fill:rgba(242,241,236,.22);
+      transition:x .22s ease,width .22s ease;
     }
-    .syringe-mark small{
-      position:absolute;
-      top:58px;
-      left:50%;
-      transform:translateX(-50%);
-      color:#969696;
+    .syringe-svg .flange,
+    .syringe-svg .rod,
+    .syringe-svg .hub,
+    .syringe-svg .needle{
+      fill:none;
+      stroke:rgba(255,255,255,.82);
+      stroke-width:1.4;
+      vector-effect:non-scaling-stroke;
+    }
+    .syringe-svg .needle{
+      stroke-width:1;
+    }
+    .syringe-svg .tip{
+      fill:rgba(255,255,255,.9);
+    }
+    .syringe-svg .stopper-line{
+      stroke:#fff;
+      stroke-width:1.5;
+      vector-effect:non-scaling-stroke;
+      transition:x1 .22s ease,x2 .22s ease;
+    }
+    .syringe-svg .tick{
+      stroke:rgba(255,255,255,.35);
+      stroke-width:1;
+      vector-effect:non-scaling-stroke;
+    }
+    .syringe-svg .tick.major{
+      stroke:rgba(255,255,255,.78);
+    }
+    .syringe-svg .tick.medium{
+      stroke:rgba(255,255,255,.52);
+    }
+    .syringe-svg .tick-label{
+      fill:#bcbcbc;
+      font-size:9px;
+      font-family:Arial,Helvetica,sans-serif;
+      letter-spacing:.03em;
+      text-anchor:middle;
+    }
+    .syringe-svg .unit-label{
+      fill:#8f8f8f;
       font-size:8px;
-      line-height:1;
-      letter-spacing:.04em;
-      white-space:nowrap;
+      font-family:Arial,Helvetica,sans-serif;
+      letter-spacing:.12em;
     }
-    .syringe-mark.major small{color:#c8c8c8}
+    .syringe-svg .barrel-label{
+      fill:#777;
+      font-size:7px;
+      font-family:Arial,Helvetica,sans-serif;
+      letter-spacing:.18em;
+    }
 
     .syringe-range{
       width:100%;
       appearance:none;
       background:transparent;
-      margin-top:8px
+      margin-top:8px;
     }
     .syringe-range::-webkit-slider-runnable-track{height:1px;background:#4d4d4d}
     .syringe-range::-webkit-slider-thumb{
-      appearance:none;width:16px;height:16px;border-radius:50%;
-      background:#f2f1ec;margin-top:-7.5px;border:0
+      appearance:none;
+      width:16px;height:16px;border-radius:50%;
+      background:#f2f1ec;
+      margin-top:-7.5px;
+      border:0;
     }
     .syringe-range::-moz-range-track{height:1px;background:#4d4d4d}
     .syringe-range::-moz-range-thumb{
-      width:16px;height:16px;border-radius:50%;background:#f2f1ec;border:0
+      width:16px;height:16px;border-radius:50%;
+      background:#f2f1ec;border:0;
     }
-    .range-row{display:flex;gap:10px;align-items:center;margin-top:6px}
-    .range-row label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#888;white-space:nowrap}
-    .range-row output{min-width:48px;text-align:right;font-size:11px;color:#fff}
-    .tap-note{font-size:9px;color:#777;margin-top:8px;letter-spacing:.02em}
+    .range-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:6px;
+    }
+    .range-row label{
+      font-size:9px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#888;
+      white-space:nowrap;
+    }
+    .range-row output{
+      min-width:48px;
+      text-align:right;
+      font-size:11px;
+      color:#fff;
+    }
+    .tap-note{
+      font-size:9px;
+      color:#777;
+      margin-top:8px;
+      letter-spacing:.02em;
+    }
 
     /* Mobile header cleanup */
     @media(max-width:640px){
@@ -273,12 +214,6 @@
       .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
       .header-nav{gap:8px 12px;font-size:11px}
       .brand{font-size:28px}
-      .syringe-shell{--barrel-left:38px;--barrel-right:72px}
-      .syringe-handle{left:12px;width:20px}
-      .syringe-handle:before{left:-8px}
-      .syringe-hub{right:51px;width:14px}
-      .syringe-needle{right:7px;width:34px}
-      .syringe-mark small{font-size:7px}
     }
   </style>
 </head>
@@ -342,10 +277,33 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Visual syringe</span><strong id="doseSyringeReadout">0 U</strong></div>
-                <div id="doseSyringe" class="syringe-shell" data-units="0">
-                  <div class="syringe-track">
-                    <div class="syringe-handle"></div>
-                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                <svg id="doseSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
+                    <defs>
+                      <clipPath id="doseBarrelClip">
+                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
+                      </clipPath>
+                    </defs>
+
+                    <!-- thumb rest + plunger rod -->
+                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
+                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
+
+                    <!-- barrel -->
+                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
+                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#doseBarrelClip)"></rect>
+                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
+
+                    <!-- scale is injected by JS -->
+                    <g data-part="ticks"></g>
+
+                    <text class="barrel-label" x="250" y="63">U-100</text>
+                    <text class="unit-label" x="105" y="105">UNITS</text>
+
+                    <!-- hub and needle -->
+                    <path class="hub" d="M405 49 H425 V65 H405"></path>
+                    <path class="needle" d="M425 57 H490"></path>
+                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
+                  </svg>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
                     <div class="syringe-hub"></div>
@@ -390,10 +348,33 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Adjust syringe</span><strong id="unitsSyringeReadout">0 U</strong></div>
-                <div id="unitsSyringe" class="syringe-shell" data-units="0">
-                  <div class="syringe-track">
-                    <div class="syringe-handle"></div>
-                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                <svg id="unitsSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
+                    <defs>
+                      <clipPath id="unitsBarrelClip">
+                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
+                      </clipPath>
+                    </defs>
+
+                    <!-- thumb rest + plunger rod -->
+                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
+                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
+
+                    <!-- barrel -->
+                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
+                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#unitsBarrelClip)"></rect>
+                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
+
+                    <!-- scale is injected by JS -->
+                    <g data-part="ticks"></g>
+
+                    <text class="barrel-label" x="250" y="63">U-100</text>
+                    <text class="unit-label" x="105" y="105">UNITS</text>
+
+                    <!-- hub and needle -->
+                    <path class="hub" d="M405 49 H425 V65 H405"></path>
+                    <path class="needle" d="M425 57 H490"></path>
+                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
+                  </svg>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
                     <div class="syringe-hub"></div>
@@ -453,10 +434,33 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Visual syringe</span><strong id="blendSyringeReadout">0 U</strong></div>
-                <div id="blendSyringe" class="syringe-shell" data-units="0">
-                  <div class="syringe-track">
-                    <div class="syringe-handle"></div>
-                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                <svg id="blendSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
+                    <defs>
+                      <clipPath id="blendBarrelClip">
+                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
+                      </clipPath>
+                    </defs>
+
+                    <!-- thumb rest + plunger rod -->
+                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
+                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
+
+                    <!-- barrel -->
+                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
+                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#blendBarrelClip)"></rect>
+                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
+
+                    <!-- scale is injected by JS -->
+                    <g data-part="ticks"></g>
+
+                    <text class="barrel-label" x="250" y="63">U-100</text>
+                    <text class="unit-label" x="105" y="105">UNITS</text>
+
+                    <!-- hub and needle -->
+                    <path class="hub" d="M405 49 H425 V65 H405"></path>
+                    <path class="needle" d="M425 57 H490"></path>
+                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
+                  </svg>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
                     <div class="syringe-hub"></div>

@@ -1,18 +1,16 @@
-PURE20 ultra-clean syringe update
+PURE20 SVG syringe redesign
 
 Replace:
 - calculator.html
 - calculator.js
 
-Optional:
-- index.html is included unchanged from the previous mobile-header package,
-  so you can upload all three files together if that is easier.
+Why this version is different:
+- the syringe is now drawn as SVG instead of layered CSS blocks
+- fluid sits on the needle side, like a real drawn-up syringe
+- the plunger is represented by one fine stopper line
+- no black block
+- clean flange, barrel, hub and needle proportions
+- scale labels only at 0 / 20 / 40 / 60 / 80 / 100
+- interactive units slider still works
 
-Visual changes:
-- subtle 5-unit tick marks
-- labels only at 0 / 20 / 40 / 60 / 80 / 100
-- pale liquid fill so markings stay readable
-- very thin endpoint marker
-- smaller, cleaner hub and needle
-- no black block inside the syringe
-- mobile spacing preserved
+index.html is included unchanged from the previous mobile-header update.
