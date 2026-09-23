@@ -1,2 +1,13 @@
-Replace your current calculator.html and calculator.js with these files.
-Change made: syringe plunger/bar is now much thinner and less visually intrusive.
+Replace these files in your repo:
+- index.html
+- calculator.html
+- calculator.js
+
+Changes included:
+1) Syringe cleaned up:
+   - black block removed
+   - plunger marker made thinner
+   - needle separated from barrel with a cleaner hub
+2) Mobile header improved on Shop and Calculator:
+   - brand and nav stack cleanly on small screens
+   - links no longer collide with the order/cart button

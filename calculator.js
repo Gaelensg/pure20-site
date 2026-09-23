@@ -74,7 +74,7 @@
       if (body) {
         const bodyWidth = body.clientWidth;
         const leftBase = body.offsetLeft;
-        const plungerWidth = plunger.offsetWidth || 4;
+        const plungerWidth = plunger.offsetWidth || 3;
         const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - (plungerWidth / 2);
         plunger.style.left = `${x}px`;
       }

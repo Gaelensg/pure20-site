@@ -17,11 +17,48 @@
       min-height:44px;
       align-items:center;
     }
-    @media(max-width:380px){
-      .header-nav{gap:10px}
-      .header-nav > .knowledge-link,
-      .header-nav > .calculator-link{font-size:10px}
+
+    /* Mobile header cleanup */
+    @media(max-width:640px){
+      .header-inner{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:12px;
+        align-items:start;
+      }
+      .brand{
+        font-size:32px;
+        line-height:1;
+      }
+      .header-nav{
+        width:100%;
+        display:flex;
+        flex-wrap:wrap;
+        align-items:center;
+        gap:10px 14px;
+      }
+      .header-nav > a{
+        display:inline-flex !important;
+        min-height:40px;
+        align-items:center;
+        font-size:12px;
+        letter-spacing:.08em;
+      }
+      .header-cart{
+        margin-left:auto;
+        min-height:40px;
+        padding:10px 12px;
+        font-size:12px;
+        white-space:nowrap;
+      }
     }
+    @media(max-width:420px){
+      .brand{font-size:28px}
+      .header-nav{gap:8px 12px}
+      .header-nav > a{font-size:11px}
+      .header-cart{font-size:11px;padding:9px 10px}
+    }
+
     /* Search field override */
     .search-wrap input{
       font-size:17px;
@@ -49,11 +86,6 @@
     </div>
   </header>
 
-  <!--
-    app.js still expects these two IDs.
-    They stay hidden so the "Live catalogue / synced with database" bar
-    does not appear, while the catalogue JavaScript keeps working.
-  -->
   <div class="cloud-status-hidden" aria-hidden="true">
     <span id="cloudDot" class="cloud-dot"></span>
     <span id="cloudStatus" class="cloud-copy"></span>
