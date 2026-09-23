@@ -1,5 +1,6 @@
-This version goes back to the FIRST syringe design and only refines two things:
-1) shorter needle
-2) cleaner/thinner quantity marker line
+Fixes for first syringe version:
+- 0 label aligned to the left edge
+- 100 label aligned to the right edge
+- other labels remain centered
 
-Replace your calculator.html and calculator.js with these files.
+Replace calculator.html and calculator.js with these files.
