@@ -1,0 +1,19 @@
+KNOWLEDGE.HTML CHANGE
+=====================
+
+In knowledge.html, find:
+
+<nav aria-label="Main navigation"><a href="/">Shop</a><a href="knowledge.html" aria-current="page">Knowledge</a></nav>
+
+Replace it with:
+
+<nav aria-label="Main navigation"><a href="/">Shop</a><a href="knowledge.html" aria-current="page">Knowledge</a><a href="calculator.html">Calculator</a></nav>
+
+That is the ONLY change required to knowledge.html.
+
+SHOP / INDEX.HTML
+=================
+The included index.html already contains:
+Catalogue | Knowledge | Calculator | Order
+
+Calculator remains visible on small screens as well.
