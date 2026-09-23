@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <title>PURE20. — Command Center</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    body{
+      background:#ecebe6;
+    }
+
+    .portal-login{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      background:#111;
+      color:#fff;
+    }
+
+    .portal-login-card{
+      width:min(460px,100%);
+      border:1px solid #444;
+      background:#151515;
+      padding:28px;
+    }
+
+    .portal-login-card h1{
+      margin:8px 0 10px;
+      font-size:42px;
+      line-height:1;
+      letter-spacing:-.045em;
+    }
+
+    .portal-login-card p{
+      color:#aaa;
+      line-height:1.55;
+    }
+
+    .portal-login-card input{
+      width:100%;
+      padding:13px;
+      margin-top:10px;
+      border:1px solid #555;
+      background:#111;
+      color:#fff;
+      font-size:16px;
+    }
+
+    .portal-login-card button{
+      width:100%;
+      padding:13px;
+      margin-top:10px;
+      border:1px solid #fff;
+      background:#fff;
+      color:#111;
+      font-weight:700;
+    }
+
+    .portal-error{
+      min-height:18px;
+      margin-top:10px;
+      color:#ef9696;
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .portal-wrap{
+      width:min(1180px,calc(100% - 36px));
+      margin:0 auto;
+      padding:42px 0 90px;
+    }
+
+    .portal-head{
+      display:grid;
+      grid-template-columns:1fr 320px;
+      gap:40px;
+      align-items:end;
+      margin-bottom:34px;
+    }
+
+    .portal-head h1{
+      margin:0;
+      font-size:clamp(50px,8vw,94px);
+      line-height:.9;
+      letter-spacing:-.055em;
+    }
+
+    .portal-head p{
+      margin:0;
+      color:#666;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .portal-kicker{
+      margin:0 0 15px!important;
+      color:#777!important;
+      font-size:10px!important;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+    }
+
+    .portal-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+
+    .portal-card{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      min-height:220px;
+      padding:22px;
+      border:1px solid #cfcdc6;
+      background:#fff;
+      color:#111;
+      text-decoration:none;
+      transition:transform .16s ease,border-color .16s ease;
+    }
+
+    .portal-card:hover{
+      transform:translateY(-2px);
+      border-color:#111;
+    }
+
+    .portal-card.dark{
+      background:#111;
+      color:#fff;
+      border-color:#111;
+    }
+
+    .portal-card-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .portal-num{
+      font-size:10px;
+      letter-spacing:.12em;
+      color:#888;
+    }
+
+    .portal-card.dark .portal-num{
+      color:#888;
+    }
+
+    .portal-tag{
+      display:inline-block;
+      padding:5px 7px;
+      border:1px solid #aaa;
+      font-size:8px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+
+    .portal-card.dark .portal-tag{
+      border-color:#555;
+      color:#ccc;
+    }
+
+    .portal-card h2{
+      margin:44px 0 8px;
+      font-size:30px;
+      letter-spacing:-.035em;
+    }
+
+    .portal-card p{
+      margin:0;
+      color:#6b6a66;
+      font-size:13px;
+      line-height:1.55;
+      max-width:420px;
+    }
+
+    .portal-card.dark p{
+      color:#aaa;
+    }
+
+    .portal-arrow{
+      margin-top:auto;
+      padding-top:28px;
+      font-size:28px;
+      line-height:1;
+    }
+
+    .portal-footer{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:center;
+      margin-top:20px;
+      padding-top:18px;
+      border-top:1px solid #ccc;
+      font-size:11px;
+      color:#777;
+    }
+
+    .portal-footer button{
+      border:1px solid #111;
+      background:transparent;
+      padding:9px 11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:9px;
+    }
+
+    @media(max-width:760px){
+      .portal-wrap{
+        width:min(100% - 20px,1180px);
+        padding-top:26px;
+      }
+
+      .portal-head{
+        grid-template-columns:1fr;
+        gap:18px;
+        margin-bottom:24px;
+      }
+
+      .portal-head h1{
+        font-size:56px;
+      }
+
+      .portal-grid{
+        grid-template-columns:1fr;
+      }
+
+      .portal-card{
+        min-height:180px;
+        padding:18px;
+      }
+
+      .portal-card h2{
+        margin-top:30px;
+        font-size:27px;
+      }
+
+      .portal-footer{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .portal-footer button{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loginGate" class="portal-login">
+    <div class="portal-login-card">
+      <div class="admin-brand">PURE20.</div>
+      <p class="portal-kicker" style="margin-top:22px!important;color:#888!important">PRIVATE COMMAND CENTER</p>
+      <h1>One door. Everything.</h1>
+      <p>Sign in with your existing PURE20 administrator account.</p>
+
+      <input id="loginEmail" type="email" autocomplete="username" placeholder="Admin email">
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+      <button id="loginButton" type="button">Sign in</button>
+
+      <div id="loginError" class="portal-error"></div>
+    </div>
+  </div>
+
+  <main class="portal-wrap">
+    <section class="portal-head">
+      <div>
+        <p class="portal-kicker">PURE20 / COMMAND CENTER</p>
+        <h1>Everything.<br>One place.</h1>
+      </div>
+      <p>
+        Open your retail shop, wholesale environment and management dashboards
+        from one private start page.
+      </p>
+    </section>
+
+    <section class="portal-grid">
+      <a class="portal-card" href="/" target="_blank">
+        <div class="portal-card-top">
+          <span class="portal-num">01</span>
+          <span class="portal-tag">Public</span>
+        </div>
+        <h2>Retail Shop</h2>
+        <p>Open the public PURE20 catalogue and retail order builder.</p>
+        <div class="portal-arrow">↗</div>
+      </a>
+
+      <a class="portal-card" href="/wholesale" target="_blank">
+        <div class="portal-card-top">
+          <span class="portal-num">02</span>
+          <span class="portal-tag">Private</span>
+        </div>
+        <h2>Wholesale Shop</h2>
+        <p>Open the private wholesale catalogue for approved customers.</p>
+        <div class="portal-arrow">↗</div>
+      </a>
+
+      <a class="portal-card dark" href="/admin">
+        <div class="portal-card-top">
+          <span class="portal-num">03</span>
+          <span class="portal-tag">Admin</span>
+        </div>
+        <h2>Retail Admin</h2>
+        <p>Edit retail products, prices, stock, coupons and shop settings.</p>
+        <div class="portal-arrow">→</div>
+      </a>
+
+      <a class="portal-card dark" href="/wholesale-admin">
+        <div class="portal-card-top">
+          <span class="portal-num">04</span>
+          <span class="portal-tag">Admin</span>
+        </div>
+        <h2>Wholesale Admin</h2>
+        <p>Manage wholesale pricing, pack sizes and approved customer access.</p>
+        <div class="portal-arrow">→</div>
+      </a>
+
+      <a class="portal-card dark" href="/dashboard">
+        <div class="portal-card-top">
+          <span class="portal-num">05</span>
+          <span class="portal-tag">Dashboard</span>
+        </div>
+        <h2>Business Dashboard</h2>
+        <p>View orders, customers, order value, popular products and statuses.</p>
+        <div class="portal-arrow">→</div>
+      </a>
+    </section>
+
+    <footer class="portal-footer">
+      <span id="signedInAs">Signed in as admin</span>
+      <button id="signOut" type="button">Sign out</button>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <script>
+    (async()=>{
+      const cfg=window.PURE20_SUPABASE_CONFIG||{};
+      const client=window.supabase.createClient(cfg.url,cfg.key,{
+        auth:{persistSession:true,autoRefreshToken:true}
+      });
+
+      const $=id=>document.getElementById(id);
+      const gate=$('loginGate');
+      const email=$('loginEmail');
+      const password=$('loginPassword');
+      const login=$('loginButton');
+      const error=$('loginError');
+      const signed=$('signedInAs');
+      const signOut=$('signOut');
+
+      async function verifyAdmin(){
+        const {data,error:rpcError}=await client.rpc('is_pure20_admin');
+        if(rpcError) throw rpcError;
+        if(data!==true) throw new Error('This account is not a PURE20 administrator.');
+      }
+
+      async function enter(session){
+        await verifyAdmin();
+        gate.style.display='none';
+        signed.textContent='Signed in as ' + (session?.user?.email || 'admin');
+      }
+
+      login.addEventListener('click',async()=>{
+        error.textContent='';
+        login.disabled=true;
+        login.textContent='Signing in…';
+
+        try{
+          const {data, error:signInError}=await client.auth.signInWithPassword({
+            email:email.value.trim(),
+            password:password.value
+          });
+
+          if(signInError) throw signInError;
+
+          await enter(data.session);
+        }catch(err){
+          error.textContent=err.message || 'Sign in failed.';
+        }finally{
+          login.disabled=false;
+          login.textContent='Sign in';
+        }
+      });
+
+      password.addEventListener('keydown',e=>{
+        if(e.key==='Enter') login.click();
+      });
+
+      signOut.addEventListener('click',async()=>{
+        await client.auth.signOut();
+        location.reload();
+      });
+
+      const {data:{session}}=await client.auth.getSession();
+
+      if(session){
+        try{
+          await enter(session);
+        }catch(err){
+          await client.auth.signOut();
+          error.textContent=err.message || 'Session not authorised.';
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
