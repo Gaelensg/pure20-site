@@ -1,0 +1,32 @@
+PURE20 — Knowledge Library
+
+UPLOAD
+1. Pak PURE20-knowledge.zip uit.
+2. Open GitHub: Gaelensg/pure20-site.
+3. Upload de inhoud van de map PURE20-knowledge naar de hoofdmap van de bestaande repository. Behoud de map peptides met alle 41 HTML-bestanden. Upload dus niet alleen het ZIP-bestand of een extra bovenliggende map.
+4. Vervang index.html en portal.html door de meegeleverde versies.
+5. Commit de wijzigingen; de bestaande Vercel-koppeling verzorgt de publicatie.
+6. Open https://pure20-site.vercel.app/knowledge.
+
+BESTANDEN
+Nieuw: knowledge.html, knowledge.css, knowledge.js en peptides/*.html.
+Gewijzigd: index.html (zichtbare Knowledge-link, ook op mobiel) en portal.html (zesde kaart naar het openbare kennisgedeelte).
+Laat alle andere bestaande bestanden staan. styles.css, vercel.json en de bestaande scripts zijn al aanwezig in de repository en worden niet vervangen.
+Er is geen installatie, build command, extra database of login voor het kennisgedeelte nodig. De bestaande cleanUrls-instelling ondersteunt de .html-links en verwijst naar schone URLs.
+
+INHOUD
+41 Engelstalige fiches uit de door de gebruiker aangeleverde Prime Peptides-bron, https://prime-peptides-2-0.vercel.app/app/.
+Gebaseerd op de opgeslagen data waarmee op 22 september 2026 de volledige PDF werd gemaakt.
+Per fiche: uitleg, werking, menselijk en preklinisch onderzoek, veiligheid/beperkingen, productkwaliteit en de bronreferenties. Deze geselecteerde bronsecties zijn inhoudelijk overgenomen, niet onafhankelijk wetenschappelijk herbeoordeeld.
+Doseringstabellen, bereidingsinstructies, gebruiksprotocollen, combinatieschema's en afzonderlijke veranderlijke regelgevings-/WADA-secties behoren niet tot deze kennisuitbreiding.
+De bibliotheek volgt de bron, niet de actuele winkelvoorraad. De bron bevat ook verwante stoffen die geen peptide zijn. Melanotan I ontbreekt in de bron en heeft daarom geen fiche.
+Bronvermelding staat op het portaal en op iedere detailpagina. De onderzoeksinhoud blijft expliciet herkenbaar als afkomstig uit de aangeleverde bron.
+
+CONTROLES
+Geslaagd: 41 fiches en alle geselecteerde bronteksten aanwezig; alle interne bibliotheeklinks en ankers; unieke HTML-IDs; JavaScript-syntaxis; zoeken, normalisatie, filters, lege resultaten en reset; behoud van alle bestaande shop-IDs en scripts; ongewijzigde authenticatiecode van het Command Center.
+De layout bevat mobiele regels, tekstterugloop, grote aanraakdoelen, zichtbare toetsenbordfocus, skip-link, reduced-motion en printregels. Alle artikelen en links werken zonder JavaScript; zoeken/filters worden alleen getoond wanneer JavaScript actief is.
+Niet bevestigd: visuele browser-/iPhone-controle en live Vercel-routecontrole. De lokale server werd door de uitvoeromgeving geblokkeerd en de browserbeveiliging weigerde lokale file-URLs. Er is niets online gepubliceerd of in de database gewijzigd.
+Na upload controleren: /knowledge openen, zoeken naar GHK-Cu, een filter kiezen, een detailpagina openen en teruggaan; op telefoon de navigatie en lange titels bekijken. Controleer ook het bestaande ordermandje en de admin-login.
+
+HERSTELLEN
+Draai de uploadcommit terug via GitHub om de vorige navigatie en bestanden te herstellen.
