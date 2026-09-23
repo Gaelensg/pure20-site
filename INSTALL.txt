@@ -1,16 +1,5 @@
-PURE20 SVG syringe redesign
+This version goes back to the FIRST syringe design and only refines two things:
+1) shorter needle
+2) cleaner/thinner quantity marker line
 
-Replace:
-- calculator.html
-- calculator.js
-
-Why this version is different:
-- the syringe is now drawn as SVG instead of layered CSS blocks
-- fluid sits on the needle side, like a real drawn-up syringe
-- the plunger is represented by one fine stopper line
-- no black block
-- clean flange, barrel, hub and needle proportions
-- scale labels only at 0 / 20 / 40 / 60 / 80 / 100
-- interactive units slider still works
-
-index.html is included unchanged from the previous mobile-header update.
+Replace your calculator.html and calculator.js with these files.

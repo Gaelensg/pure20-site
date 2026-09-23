@@ -41,74 +41,51 @@
     return '';
   }
 
-  function buildSyringeMarks(svg) {
-    const group = svg.querySelector('[data-part="ticks"]');
-    if (!group || group.dataset.ready) return;
-
-    const NS = 'http://www.w3.org/2000/svg';
-    const barrelX = 105;
-    const barrelWidth = 300;
-
-    for (let value = 0; value <= 100; value += 5) {
-      const x = barrelX + (value / 100) * barrelWidth;
-      const isMajor = value % 20 === 0;
-      const isMedium = !isMajor && value % 10 === 0;
-
-      const line = document.createElementNS(NS, 'line');
-      line.setAttribute('x1', x);
-      line.setAttribute('x2', x);
-
-      const top = 38;
-      const len = isMajor ? 13 : isMedium ? 9 : 5;
-      line.setAttribute('y1', top);
-      line.setAttribute('y2', top + len);
-      line.setAttribute('class', `tick${isMajor ? ' major' : isMedium ? ' medium' : ''}`);
-      group.appendChild(line);
-
-      if (isMajor) {
-        const label = document.createElementNS(NS, 'text');
-        label.setAttribute('x', x);
-        label.setAttribute('y', 94);
-        label.setAttribute('class', 'tick-label');
-        label.textContent = String(value);
-        group.appendChild(label);
+  function buildSyringeMarks(shell) {
+    const marks = shell.querySelector('.syringe-marks');
+    if (!marks || marks.dataset.ready) return;
+    const values = [0,10,20,30,40,50,60,70,80,90,100];
+    values.forEach((value, index) => {
+      const mark = document.createElement('div');
+      mark.className = 'syringe-mark' + ((value % 20) ? ' mid' : '');
+      if (value < 100) {
+        const label = document.createElement('small');
+        label.textContent = value;
+        mark.appendChild(label);
+      } else {
+        const label = document.createElement('small');
+        label.textContent = '100';
+        mark.appendChild(label);
       }
-    }
-
-    group.dataset.ready = 'true';
+      marks.appendChild(mark);
+    });
+    marks.dataset.ready = 'true';
   }
 
   function setSyringeUnits(prefix, units) {
     const safeUnits = Number.isFinite(units) ? Math.max(0, Math.min(100, units)) : 0;
-    const svg = $(`${prefix}Syringe`);
+    const shell = $(`${prefix}Syringe`);
     const readout = $(`${prefix}SyringeReadout`);
-    if (!svg) return;
+    if (!shell) return;
+    buildSyringeMarks(shell);
 
-    buildSyringeMarks(svg);
+    const fill = shell.querySelector('.syringe-fill');
+    const plunger = shell.querySelector('.syringe-plunger');
+    const percent = safeUnits;
+    if (fill) fill.style.width = `${percent}%`;
 
-    const liquid = svg.querySelector('[data-part="liquid"]');
-    const stopper = svg.querySelector('[data-part="stopper"]');
-
-    const barrelX = 105;
-    const barrelWidth = 300;
-
-    // A drawn-up syringe contains fluid at the needle side.
-    const liquidWidth = barrelWidth * (safeUnits / 100);
-    const liquidX = barrelX + barrelWidth - liquidWidth;
-    const stopperX = liquidX;
-
-    if (liquid) {
-      liquid.setAttribute('x', liquidX);
-      liquid.setAttribute('width', liquidWidth);
-    }
-
-    if (stopper) {
-      stopper.setAttribute('x1', stopperX);
-      stopper.setAttribute('x2', stopperX);
+    if (plunger) {
+      const body = shell.querySelector('.syringe-body');
+      if (body) {
+        const bodyWidth = body.clientWidth;
+        const leftBase = body.offsetLeft;
+        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - 1.5;
+        plunger.style.left = `${x}px`;
+      }
     }
 
     if (readout) readout.textContent = `${fmt(safeUnits, 2)} U`;
-    svg.dataset.units = safeUnits;
+    shell.dataset.units = safeUnits;
   }
 
   function calculateDose() {
@@ -262,17 +239,14 @@
     el.addEventListener('input', calculateDose);
     el.addEventListener('change', calculateDose);
   });
-
   document.querySelectorAll('#view-units input,#view-units select').forEach(el => {
     el.addEventListener('change', syncInputToSlider);
   });
-
   document.querySelectorAll('#view-units input').forEach(el => {
     if (el.id !== 'unitsMark') {
       el.addEventListener('input', calculateUnits);
     }
   });
-
   $('unitsMark').addEventListener('input', syncInputToSlider);
   $('unitsSlider').addEventListener('input', syncSliderToInput);
   $('unitsSlider').addEventListener('change', syncSliderToInput);

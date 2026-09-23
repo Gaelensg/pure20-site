@@ -44,176 +44,71 @@
     .calc-disclaimer .square{margin-top:4px}
     .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .syringe-wrap{margin-top:22px}
-    .syringe-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:12px;
-      font-size:10px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:#9b9b9b;
+    .syringe-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa}
+    .syringe-top strong{color:#fff;font-size:12px}
+    .syringe-shell{position:relative;padding:8px 14px 8px 0}
+    .syringe-track{position:relative;height:94px}
+    .syringe-body{
+      position:absolute;left:40px;right:56px;top:19px;height:56px;
+      border:2px solid #fff;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+      overflow:hidden;
     }
-    .syringe-top strong{
-      color:#fff;
-      font-size:12px;
-      letter-spacing:.08em;
+    .syringe-fill{
+      position:absolute;left:0;top:0;bottom:0;width:0%;
+      background:linear-gradient(90deg,#f4f4f0 0%,#ddd9cf 100%);
+      transition:width .25s ease;
     }
-
-    .syringe-svg{
-      display:block;
-      width:100%;
-      height:auto;
-      max-height:150px;
-      overflow:visible;
+    .syringe-plunger{
+      position:absolute;top:10px;width:3px;height:74px;background:#fff;
+      transition:left .25s ease;
     }
-    .syringe-svg .barrel{
-      fill:rgba(255,255,255,.018);
-      stroke:rgba(255,255,255,.82);
-      stroke-width:1.4;
+    .syringe-plunger:before{
+      content:"";position:absolute;left:-10px;top:28px;width:10px;height:14px;border:2px solid #fff;border-right:0;background:#111
     }
-    .syringe-svg .liquid{
-      fill:rgba(242,241,236,.22);
-      transition:x .22s ease,width .22s ease;
+    .syringe-needle{
+      position:absolute;right:16px;top:46px;width:28px;height:2px;background:#fff;
     }
-    .syringe-svg .flange,
-    .syringe-svg .rod,
-    .syringe-svg .hub,
-    .syringe-svg .needle{
-      fill:none;
-      stroke:rgba(255,255,255,.82);
-      stroke-width:1.4;
-      vector-effect:non-scaling-stroke;
+    .syringe-needle:after{
+      content:"";position:absolute;right:-7px;top:-2px;width:9px;height:6px;border-radius:0 3px 3px 0;background:#fff
     }
-    .syringe-svg .needle{
-      stroke-width:1;
+    .syringe-marks{
+      position:absolute;left:40px;right:56px;top:12px;height:70px;pointer-events:none;
+      display:flex;justify-content:space-between;
     }
-    .syringe-svg .tip{
-      fill:rgba(255,255,255,.9);
+    .syringe-mark{position:relative;width:1px;background:transparent}
+    .syringe-mark:before{
+      content:"";position:absolute;left:0;top:0;width:1px;height:18px;background:#fff;opacity:.95
     }
-    .syringe-svg .stopper-line{
-      stroke:#fff;
-      stroke-width:1.5;
-      vector-effect:non-scaling-stroke;
-      transition:x1 .22s ease,x2 .22s ease;
+    .syringe-mark.mid:before{height:12px;opacity:.65}
+    .syringe-mark small{
+      position:absolute;top:24px;left:50%;transform:translateX(-50%);
+      color:#aaa;font-size:9px;letter-spacing:.08em
     }
-    .syringe-svg .tick{
-      stroke:rgba(255,255,255,.35);
-      stroke-width:1;
-      vector-effect:non-scaling-stroke;
-    }
-    .syringe-svg .tick.major{
-      stroke:rgba(255,255,255,.78);
-    }
-    .syringe-svg .tick.medium{
-      stroke:rgba(255,255,255,.52);
-    }
-    .syringe-svg .tick-label{
-      fill:#bcbcbc;
-      font-size:9px;
-      font-family:Arial,Helvetica,sans-serif;
-      letter-spacing:.03em;
-      text-anchor:middle;
-    }
-    .syringe-svg .unit-label{
-      fill:#8f8f8f;
-      font-size:8px;
-      font-family:Arial,Helvetica,sans-serif;
-      letter-spacing:.12em;
-    }
-    .syringe-svg .barrel-label{
-      fill:#777;
-      font-size:7px;
-      font-family:Arial,Helvetica,sans-serif;
-      letter-spacing:.18em;
-    }
-
-    .syringe-range{
-      width:100%;
-      appearance:none;
-      background:transparent;
-      margin-top:8px;
-    }
-    .syringe-range::-webkit-slider-runnable-track{height:1px;background:#4d4d4d}
-    .syringe-range::-webkit-slider-thumb{
-      appearance:none;
-      width:16px;height:16px;border-radius:50%;
-      background:#f2f1ec;
-      margin-top:-7.5px;
-      border:0;
-    }
-    .syringe-range::-moz-range-track{height:1px;background:#4d4d4d}
-    .syringe-range::-moz-range-thumb{
-      width:16px;height:16px;border-radius:50%;
-      background:#f2f1ec;border:0;
-    }
-    .range-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-top:6px;
-    }
-    .range-row label{
-      font-size:9px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:#888;
-      white-space:nowrap;
-    }
-    .range-row output{
-      min-width:48px;
-      text-align:right;
-      font-size:11px;
-      color:#fff;
-    }
-    .tap-note{
-      font-size:9px;
-      color:#777;
-      margin-top:8px;
-      letter-spacing:.02em;
-    }
-
-    /* Mobile header cleanup */
-    @media(max-width:640px){
-      .header-inner{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:12px;
-        align-items:start;
-      }
-      .brand{
-        font-size:32px;
-        line-height:1;
-      }
-      .header-nav{
-        width:100%;
-        display:flex;
-        flex-wrap:wrap;
-        align-items:center;
-        gap:10px 14px;
-      }
-      .header-nav > a{
-        display:inline-flex !important;
-        min-height:40px;
-        align-items:center;
-        font-size:12px;
-        letter-spacing:.08em;
-      }
-    }
-
+    .syringe-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+    .syringe-bottom p{margin:0;color:#aaa;font-size:11px;line-height:1.5}
+    .syringe-range{width:100%;appearance:none;background:transparent;margin-top:12px}
+    .syringe-range::-webkit-slider-runnable-track{height:2px;background:#555}
+    .syringe-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-8px;border:0}
+    .syringe-range::-moz-range-track{height:2px;background:#555}
+    .syringe-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0}
+    .range-row{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .range-row label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
+    .range-row output{min-width:52px;text-align:right;font-size:12px;color:#fff}
+    .tap-note{font-size:10px;color:#aaa;margin-top:8px}
     @media(max-width:850px){
       .calc-layout{grid-template-columns:1fr}
       .result-card{position:static}
     }
     @media(max-width:600px){
+      .header-nav>a{display:flex}
+      .header-nav{gap:12px;font-size:10px}
       .calc-hero{padding-top:46px}
       .calc-form,.blend-names{grid-template-columns:1fr}
       .calc-field.wide{grid-column:auto}
       .result-primary strong{font-size:38px}
       .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
-      .header-nav{gap:8px 12px;font-size:11px}
-      .brand{font-size:28px}
+      .syringe-body{left:28px;right:50px}
+      .syringe-marks{left:28px;right:50px}
     }
   </style>
 </head>
@@ -277,36 +172,11 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Visual syringe</span><strong id="doseSyringeReadout">0 U</strong></div>
-                <svg id="doseSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
-                    <defs>
-                      <clipPath id="doseBarrelClip">
-                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
-                      </clipPath>
-                    </defs>
-
-                    <!-- thumb rest + plunger rod -->
-                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
-                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
-
-                    <!-- barrel -->
-                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
-                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#doseBarrelClip)"></rect>
-                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
-
-                    <!-- scale is injected by JS -->
-                    <g data-part="ticks"></g>
-
-                    <text class="barrel-label" x="250" y="63">U-100</text>
-                    <text class="unit-label" x="105" y="105">UNITS</text>
-
-                    <!-- hub and needle -->
-                    <path class="hub" d="M405 49 H425 V65 H405"></path>
-                    <path class="needle" d="M425 57 H490"></path>
-                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
-                  </svg>
+                <div id="doseSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
-                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
@@ -348,36 +218,11 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Adjust syringe</span><strong id="unitsSyringeReadout">0 U</strong></div>
-                <svg id="unitsSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
-                    <defs>
-                      <clipPath id="unitsBarrelClip">
-                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
-                      </clipPath>
-                    </defs>
-
-                    <!-- thumb rest + plunger rod -->
-                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
-                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
-
-                    <!-- barrel -->
-                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
-                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#unitsBarrelClip)"></rect>
-                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
-
-                    <!-- scale is injected by JS -->
-                    <g data-part="ticks"></g>
-
-                    <text class="barrel-label" x="250" y="63">U-100</text>
-                    <text class="unit-label" x="105" y="105">UNITS</text>
-
-                    <!-- hub and needle -->
-                    <path class="hub" d="M405 49 H425 V65 H405"></path>
-                    <path class="needle" d="M425 57 H490"></path>
-                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
-                  </svg>
+                <div id="unitsSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
-                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
@@ -434,36 +279,11 @@
 
               <div class="syringe-wrap">
                 <div class="syringe-top"><span>Visual syringe</span><strong id="blendSyringeReadout">0 U</strong></div>
-                <svg id="blendSyringe" class="syringe-svg" viewBox="0 0 520 126" role="img" aria-label="U-100 syringe visual">
-                    <defs>
-                      <clipPath id="blendBarrelClip">
-                        <rect x="105" y="38" width="300" height="38" rx="1"></rect>
-                      </clipPath>
-                    </defs>
-
-                    <!-- thumb rest + plunger rod -->
-                    <path class="flange" d="M44 31 V83 M44 31 H62 M44 83 H62"></path>
-                    <path class="rod" d="M62 44 H105 M62 70 H105"></path>
-
-                    <!-- barrel -->
-                    <rect class="barrel" x="105" y="38" width="300" height="38" rx="1"></rect>
-                    <rect class="liquid" data-part="liquid" x="405" y="38" width="0" height="38" clip-path="url(#blendBarrelClip)"></rect>
-                    <line class="stopper-line" data-part="stopper" x1="405" x2="405" y1="35" y2="79"></line>
-
-                    <!-- scale is injected by JS -->
-                    <g data-part="ticks"></g>
-
-                    <text class="barrel-label" x="250" y="63">U-100</text>
-                    <text class="unit-label" x="105" y="105">UNITS</text>
-
-                    <!-- hub and needle -->
-                    <path class="hub" d="M405 49 H425 V65 H405"></path>
-                    <path class="needle" d="M425 57 H490"></path>
-                    <path class="tip" d="M490 55.5 L507 57 L490 58.5 Z"></path>
-                  </svg>
+                <div id="blendSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
                     <div class="syringe-marks"></div>
                     <div class="syringe-plunger"></div>
-                    <div class="syringe-hub"></div>
                     <div class="syringe-needle"></div>
                   </div>
                 </div>
@@ -480,6 +300,7 @@
             </aside>
           </div>
         </section>
+
       </div>
     </section>
 
