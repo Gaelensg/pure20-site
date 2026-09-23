@@ -4,26 +4,343 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PURE20. — Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+
   <style>
-:root{
-  --bg:#f2f1ec;--paper:#f8f7f3;--ink:#111;--muted:#6b6a66;--line:#d7d5ce;--dark:#111;--white:#fff;
-  --ok:#1e6b45;--warn:#9b6518;--bad:#9d2e2e;--radius:0px;--shadow:0 18px 50px rgba(0,0,0,.10)
-}
-*{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased} button,input,select,textarea{font:inherit;color:inherit} button{cursor:pointer}.shell{width:min(1180px,calc(100% - 40px));margin:0 auto}.sr-only{position:absolute;left:-9999px}
-a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(242,241,236,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.header-inner{height:72px;display:flex;align-items:center;justify-content:space-between}.brand{text-decoration:none;font-size:27px;font-weight:900;letter-spacing:-1.5px}.header-nav{display:flex;align-items:center;gap:24px;font-size:13px;text-transform:uppercase;letter-spacing:.08em}.header-nav a{text-decoration:none}.header-cart{border:0;background:var(--dark);color:#fff;padding:12px 14px;text-transform:uppercase;letter-spacing:.08em}.header-cart span{display:inline-grid;place-items:center;min-width:22px;height:22px;border:1px solid rgba(255,255,255,.35);margin-left:7px}.hero{padding:72px 0 34px}.hero-grid{display:grid;grid-template-columns:1fr 270px;gap:50px;align-items:end}.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 20px}.hero h1{font-size:clamp(46px,7vw,94px);line-height:.92;letter-spacing:-.055em;margin:0;max-width:920px;font-weight:800}.lede{font-size:17px;line-height:1.6;max-width:650px;color:#4e4d49;margin:28px 0 0}.hero-aside{border-left:1px solid var(--line);padding-left:28px}.hero-mark{font-size:90px;line-height:.8;font-weight:900;letter-spacing:-.08em}.hero-mark span{font-weight:400}.hero-aside p{font-size:12px;text-transform:uppercase;letter-spacing:.14em;line-height:1.7;margin:22px 0 0}.hero-tools{margin-top:54px;border-top:1px solid var(--line);padding-top:22px}.search-wrap{position:relative}.search-wrap input{width:100%;border:0;border-bottom:2px solid var(--ink);background:transparent;padding:18px 48px 18px 0;font-size:24px;outline:none}.icon-btn{border:0;background:transparent;font-size:28px;line-height:1;padding:8px}.search-wrap .icon-btn{position:absolute;right:0;top:10px}.hero-statline{display:flex;flex-wrap:wrap;gap:12px 24px;margin-top:16px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.catalogue-zone{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper)}.catalogue-toolbar{padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:20px}.category-pills{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid #aaa8a0;background:transparent;padding:9px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.08em}.pill.active{background:var(--dark);color:#fff;border-color:var(--dark)}.toolbar-note{font-size:12px;color:var(--muted)}.status-dot{display:inline-block;width:7px;height:7px;background:var(--ok);border-radius:50%;margin-right:7px}.catalogue-section{padding-bottom:70px}.catalogue-head,.product-row{display:grid;grid-template-columns:minmax(0,1fr) 145px 180px;gap:18px;align-items:center}.catalogue-head{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;color:var(--muted);letter-spacing:.14em}.category-heading{display:flex;align-items:baseline;justify-content:space-between;padding:48px 0 12px;border-bottom:2px solid var(--ink)}.category-heading h2{font-size:28px;margin:0;letter-spacing:-.03em}.category-heading span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.product-row{padding:19px 0;border-bottom:1px solid var(--line)}.product-main{display:flex;gap:20px;align-items:center;min-width:0}.product-index{width:34px;color:#999;font-size:11px}.product-name-line{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.product-name{font-weight:800;font-size:17px}.product-variant{font-size:15px}.badge{font-size:9px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:#fff;padding:4px 6px}.product-code{margin-top:5px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}.product-price strong{font-size:20px}.product-price span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}.qty-control{display:grid;grid-template-columns:44px 70px 44px;border:1px solid var(--ink)}.qty-control button,.qty-control input{height:44px;border:0;background:transparent;text-align:center}.qty-control button{font-size:20px}.qty-control button:disabled{opacity:.25;cursor:not-allowed}.qty-control input{border-left:1px solid var(--ink);border-right:1px solid var(--ink);width:100%;appearance:textfield}.qty-control input::-webkit-outer-spin-button,.qty-control input::-webkit-inner-spin-button{appearance:none}.stockline{font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin-top:5px}.stock-ok{color:var(--ok)}.stock-low{color:var(--warn)}.stock-out{color:var(--bad)}.product-card.out{opacity:.55}.empty-state{padding:70px 0;text-align:center}.empty-state strong{display:block;font-size:24px}.empty-state span{color:var(--muted)}.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:60px}.info-grid article{background:var(--bg);padding:28px}.info-index{font-size:11px;color:var(--muted)}.info-grid h2{font-size:20px;margin:28px 0 8px}.info-grid p{color:var(--muted);line-height:1.55;margin:0;font-size:14px}.research-note{display:flex;gap:16px;padding-top:34px;padding-bottom:125px;font-size:12px;color:var(--muted);line-height:1.55}.square{width:12px;height:12px;background:var(--ink);margin-top:3px;flex:0 0 auto}.cart-bar{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--dark);color:#fff}.cart-bar-inner{height:74px;display:flex;align-items:center;gap:20px}.cart-copy{display:flex;gap:10px;align-items:center;margin-right:auto}.cart-separator{opacity:.4}.cart-clear{background:transparent;color:#fff;border:0;text-transform:uppercase;letter-spacing:.1em;font-size:11px}.cart-review{height:74px;padding:0 24px;background:#fff;color:#111;border:0;font-weight:700;text-transform:uppercase;letter-spacing:.08em}.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.36);z-index:40;opacity:0;transition:.2s}.drawer-backdrop.visible{opacity:1}.order-drawer{position:fixed;z-index:41;top:0;right:0;width:min(600px,100%);height:100vh;background:var(--paper);transform:translateX(100%);transition:.24s ease;box-shadow:var(--shadow);display:flex;flex-direction:column}.order-drawer.open{transform:none}.drawer-header{display:flex;justify-content:space-between;align-items:start;padding:26px 28px;border-bottom:1px solid var(--line)}.drawer-header h2{font-size:32px;letter-spacing:-.04em;margin:0}.drawer-header .eyebrow{margin-bottom:6px}.large{font-size:34px}.drawer-scroll{overflow:auto;padding:0 28px 28px}.drawer-block{padding:28px 0;border-bottom:1px solid var(--line)}.first-block{padding-top:18px}.section-heading{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}.section-heading span{font-size:10px;color:var(--muted)}.section-heading h3{margin:0;font-size:16px}.section-heading small{margin-left:auto;color:var(--muted)}.order-line{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-top:1px solid var(--line)}.order-line-name{font-weight:700}.order-line-meta{font-size:11px;color:var(--muted);margin-top:4px}.order-line-right{text-align:right}.order-line-total{font-weight:700}.order-line-actions{margin-top:5px}.mini-btn{width:28px;height:26px;background:transparent;border:1px solid var(--line)}.drawer-empty{color:var(--muted);font-size:14px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.field-wide{grid-column:1/-1}.field input,.field select,.field textarea,.coupon-row input{width:100%;margin-top:7px;background:transparent;border:1px solid #bdbbb3;padding:12px;outline:none}.coupon-row{display:grid;grid-template-columns:1fr auto;gap:8px}.outline-btn,.solid-btn{padding:12px 16px;border:1px solid var(--ink);background:transparent;font-weight:700}.solid-btn{background:var(--ink);color:#fff}.coupon-message{min-height:18px;margin-top:7px;font-size:11px;color:var(--bad)}.coupon-message.success{color:var(--ok)}.totals-card{padding:22px 0}.totals-card>div{display:flex;justify-content:space-between;padding:7px 0}.grand-total{border-top:2px solid var(--ink);margin-top:10px;padding-top:16px!important;font-size:20px}.grand-total small{font-size:9px;color:var(--muted)}.research-check{display:flex;gap:12px;font-size:12px;line-height:1.5;color:var(--muted);padding:14px 0}.drawer-actions{margin-top:auto;border-top:1px solid var(--line);padding:16px 28px;display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--paper)}.action-btn{height:48px}.toast{position:fixed;left:50%;bottom:95px;transform:translate(-50%,20px);background:#111;color:#fff;padding:12px 16px;z-index:60;opacity:0;pointer-events:none;transition:.2s;font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
-/* admin */
-.admin-body{background:#ecebe6}.admin-header{position:sticky;top:0;z-index:20;background:#111;color:#fff;border-bottom:1px solid #333}.admin-header-inner{height:70px;display:flex;align-items:center;gap:22px}.admin-brand{font-size:25px;font-weight:900;letter-spacing:-1px}.admin-mode{font-size:10px;letter-spacing:.11em;text-transform:uppercase;border:1px solid #555;padding:7px 9px}.admin-spacer{flex:1}.admin-link{color:#fff;text-decoration:none;font-size:11px;text-transform:uppercase;letter-spacing:.1em}.admin-shell{width:min(1320px,calc(100% - 36px));margin:0 auto;padding:34px 0 90px}.admin-hero{display:flex;justify-content:space-between;gap:28px;align-items:end;margin-bottom:26px}.admin-hero h1{font-size:clamp(38px,6vw,68px);letter-spacing:-.05em;margin:0}.admin-hero p{max-width:560px;color:#61605c;line-height:1.55}.admin-alert{border:1px solid #c8b07a;background:#fff8e7;padding:14px 16px;margin:0 0 24px;font-size:12px;line-height:1.5}.admin-actions{display:flex;gap:8px;flex-wrap:wrap}.admin-btn{border:1px solid #111;background:#fff;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.08em}.admin-btn.primary{background:#111;color:#fff}.admin-btn.danger{border-color:#9d2e2e;color:#9d2e2e}.admin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0}.stat-card{background:#fff;border:1px solid #d0cec8;padding:18px}.stat-card small{display:block;text-transform:uppercase;letter-spacing:.09em;color:#777;font-size:10px}.stat-card strong{display:block;margin-top:12px;font-size:30px}.admin-tabs{display:flex;gap:0;border-bottom:1px solid #aaa;margin-top:28px}.admin-tab{border:0;background:transparent;padding:13px 18px;text-transform:uppercase;letter-spacing:.08em;font-size:11px;border-bottom:3px solid transparent}.admin-tab.active{border-bottom-color:#111;font-weight:700}.admin-panel{display:none;padding-top:22px}.admin-panel.active{display:block}.admin-card{background:#fff;border:1px solid #d0cec8;padding:20px;margin-bottom:14px}.admin-card-head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:16px}.admin-card-head h2{margin:0;font-size:22px}.admin-form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.admin-field{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#666}.admin-field.wide{grid-column:1/-1}.admin-field input,.admin-field select,.admin-field textarea{display:block;width:100%;margin-top:6px;padding:11px;border:1px solid #bdbbb4;background:#faf9f6}.admin-field textarea{min-height:90px;resize:vertical}.admin-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.admin-toolbar input,.admin-toolbar select{padding:10px 12px;border:1px solid #bbb;background:#fff}.admin-table-wrap{overflow:auto;border:1px solid #ccc;background:#fff}.admin-table{width:100%;border-collapse:collapse;min-width:1000px}.admin-table th,.admin-table td{border-bottom:1px solid #ddd;padding:10px;text-align:left;font-size:12px;vertical-align:middle}.admin-table th{position:sticky;top:0;background:#f4f3ef;text-transform:uppercase;letter-spacing:.08em;font-size:9px;color:#666}.admin-table tr:last-child td{border-bottom:0}.status-chip{display:inline-block;padding:5px 7px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;border:1px solid}.chip-on{color:var(--ok);border-color:#79a98f}.chip-off{color:var(--bad);border-color:#c89494}.row-actions{display:flex;gap:6px}.row-btn{border:1px solid #bbb;background:#fff;padding:6px 8px;font-size:10px}.admin-empty{padding:30px;text-align:center;color:#777}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:70;display:none}.modal-backdrop.open{display:block}.admin-modal{position:fixed;z-index:71;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px,calc(100% - 28px));max-height:90vh;overflow:auto;background:#fff;border:1px solid #111;padding:22px;display:none;box-shadow:var(--shadow)}.admin-modal.open{display:block}.modal-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:18px}.modal-head h3{font-size:26px;margin:0}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.login-gate{position:fixed;inset:0;background:#111;z-index:100;color:#fff;display:grid;place-items:center}.login-card{width:min(440px,calc(100% - 40px));border:1px solid #444;padding:28px}.login-card h1{font-size:40px;margin:0 0 8px;letter-spacing:-.04em}.login-card p{color:#aaa;line-height:1.55}.login-card input{width:100%;padding:13px;border:1px solid #666;background:#111;color:#fff;margin:14px 0}.login-card button{width:100%;padding:13px;border:0;background:#fff;color:#111;font-weight:700}.login-error{color:#ef9696;font-size:12px;min-height:18px;margin-top:8px}.admin-note{color:#777;font-size:12px;line-height:1.55}.dropzone{border:1px dashed #888;padding:24px;text-align:center;background:#faf9f6}.hidden{display:none!important}
-@media(max-width:850px){.shell{width:min(100% - 24px,1180px)}.hero{padding-top:48px}.hero-grid{grid-template-columns:1fr}.hero-aside{display:none}.catalogue-toolbar{align-items:flex-start;flex-direction:column}.catalogue-head{display:none}.product-row{grid-template-columns:1fr auto;gap:12px}.product-price{grid-column:2;grid-row:1}.qty-control{grid-column:1/-1;width:158px;margin-left:54px}.info-grid{grid-template-columns:1fr}.cart-bar-inner{height:68px}.cart-review{height:68px;padding:0 13px}.cart-clear{display:none}.form-grid{grid-template-columns:1fr}.field-wide{grid-column:auto}.drawer-scroll{padding-left:20px;padding-right:20px}.drawer-header,.drawer-actions{padding-left:20px;padding-right:20px}.admin-grid{grid-template-columns:1fr 1fr}.admin-form{grid-template-columns:1fr}.admin-field.wide{grid-column:auto}.admin-hero{display:block}.admin-actions{margin-top:16px}}
-@media(max-width:520px){.header-nav>a{display:none}.hero h1{font-size:52px}.hero-statline{display:grid;grid-template-columns:1fr 1fr}.product-main{gap:10px}.product-index{width:24px}.qty-control{margin-left:34px}.drawer-actions{grid-template-columns:1fr}.admin-grid{grid-template-columns:1fr 1fr}.admin-shell{width:min(100% - 20px,1320px)}.admin-tabs{overflow:auto}.admin-tab{white-space:nowrap;padding-left:12px;padding-right:12px}}
+    /* Retail admin mobile refinement */
+    .product-list-hint{
+      display:none;
+      color:#777;
+      font-size:11px;
+      line-height:1.5;
+      margin:0 0 12px;
+    }
 
-/* v4 cloud additions */
-.cloud-strip{border-bottom:1px solid var(--line);background:#fff}.cloud-strip-inner{height:36px;display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}.cloud-dot{width:7px;height:7px;border-radius:50%;background:#8a8a85}.cloud-dot.live{background:#237a52}.cloud-dot.demo{background:#b57922}.cloud-dot.error{background:#a83939}.cloud-copy{color:var(--muted)}.cloud-copy strong{color:var(--ink)}
-.admin-session{display:flex;gap:10px;align-items:center}.admin-user{font-size:11px;color:#aaa}.admin-status{display:inline-flex;align-items:center;gap:7px;border:1px solid #555;padding:7px 9px;font-size:10px;letter-spacing:.09em;text-transform:uppercase}.admin-status .cloud-dot{background:#aaa}.admin-status.live .cloud-dot{background:#47b47e}.admin-status.demo .cloud-dot{background:#d7a34f}.admin-auth-card{width:min(480px,calc(100% - 36px));border:1px solid #444;padding:30px;background:#151515}.admin-auth-card h1{font-size:44px;margin:4px 0 8px;letter-spacing:-.045em}.admin-auth-card p{color:#aaa;line-height:1.55}.admin-auth-card .auth-kicker{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8c8c87}.admin-auth-card input{width:100%;padding:13px;border:1px solid #555;background:#111;color:#fff;margin-top:10px}.admin-auth-card button{width:100%;padding:13px;border:1px solid #fff;background:#fff;color:#111;font-weight:700;margin-top:10px}.admin-auth-card button.secondary{background:transparent;color:#fff;border-color:#666}.admin-auth-card small{display:block;color:#777;margin-top:12px;line-height:1.5}.sync-note{display:flex;gap:10px;align-items:center;font-size:11px;color:#666}.sync-note .cloud-dot{background:#237a52}.sync-note.pending .cloud-dot{background:#b57922}.sync-note.error .cloud-dot{background:#a83939}.setup-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.setup-card{border:1px solid #d0cec8;background:#fff;padding:20px}.setup-card h2{margin:0 0 8px;font-size:20px}.setup-card p{color:#6a6965;line-height:1.55;font-size:13px}.setup-code{display:block;background:#111;color:#eee;padding:12px;white-space:pre-wrap;overflow:auto;font-size:11px;line-height:1.5;margin-top:10px}.setup-status{display:flex;align-items:center;gap:8px;font-size:12px}.setup-status.ok{color:#237a52}.setup-status.warn{color:#9b671a}.data-source-note{font-size:10px;color:var(--muted);margin-top:5px}.connection-error{border:1px solid #c89494;background:#fff1f1;padding:13px 15px;margin:18px auto 0;font-size:12px;line-height:1.5}.admin-table td input.inline-number{width:82px;padding:7px;border:1px solid #bbb}.admin-table td input.inline-price{width:90px;padding:7px;border:1px solid #bbb}.saving{opacity:.65;pointer-events:none}.admin-login-help{border-top:1px solid #333;margin-top:18px;padding-top:14px}.setup-steps{counter-reset:steps}.setup-step{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:14px 0;border-top:1px solid #d7d5cf}.setup-step:first-child{border-top:0}.setup-step:before{counter-increment:steps;content:counter(steps);width:28px;height:28px;border:1px solid #111;display:grid;place-items:center;font-size:11px}.setup-step h3{margin:2px 0 5px;font-size:15px}.setup-step p{margin:0;color:#6a6965;font-size:12px;line-height:1.5}.copy-chip{display:inline-block;border:1px solid #bbb;padding:5px 8px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;background:#fff}.copy-chip:hover{border-color:#111}.auth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth-row .wide{grid-column:1/-1}
-@media(max-width:850px){.setup-grid{grid-template-columns:1fr}.admin-session{gap:6px}.admin-user{display:none}}
-@media(max-width:520px){.cloud-strip-inner{height:auto;min-height:36px;padding:7px 0}.admin-status{display:none}.auth-row{grid-template-columns:1fr}}
+    @media(max-width:680px){
+      .admin-shell{
+        width:min(100% - 20px,1320px);
+      }
 
-</style>
+      /* compact header */
+      .admin-header-inner{
+        height:auto !important;
+        min-height:0;
+        padding:11px 0 !important;
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:9px 10px;
+        align-items:center;
+      }
+
+      .admin-header .admin-brand{
+        font-size:24px;
+      }
+
+      .admin-header .admin-status{
+        justify-self:end;
+      }
+
+      .admin-header .admin-spacer,
+      .admin-header .admin-user{
+        display:none;
+      }
+
+      .admin-header .admin-link{
+        font-size:9px;
+        letter-spacing:.07em;
+        border:1px solid #444;
+        padding:8px 9px;
+        text-align:center;
+        white-space:nowrap;
+      }
+
+      .admin-header a.admin-link{
+        grid-column:1;
+      }
+
+      .admin-header button.admin-link{
+        grid-column:2;
+      }
+
+      /* smaller intro */
+      .admin-hero{
+        margin-bottom:18px;
+      }
+
+      .admin-hero h1{
+        font-size:42px;
+        line-height:.96;
+      }
+
+      .admin-hero p{
+        font-size:14px;
+        line-height:1.5;
+      }
+
+      .admin-grid{
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+        margin:16px 0;
+      }
+
+      .stat-card{
+        padding:12px;
+      }
+
+      .stat-card strong{
+        font-size:24px;
+        margin-top:8px;
+      }
+
+      .admin-tabs{
+        margin-top:18px;
+      }
+
+      .admin-tab{
+        padding:11px 12px;
+      }
+
+      .admin-card{
+        padding:14px;
+      }
+
+      .admin-card-head{
+        align-items:center;
+        margin-bottom:12px;
+      }
+
+      .admin-card-head h2{
+        font-size:24px;
+      }
+
+      #addProduct{
+        min-height:42px;
+      }
+
+      .admin-toolbar{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+      }
+
+      .admin-toolbar input,
+      .admin-toolbar select{
+        width:100%;
+        min-height:44px;
+        padding:10px;
+        font-size:16px;
+      }
+
+      #productSearch{
+        grid-column:1/-1;
+      }
+
+      #exportCsv,
+      #importCsvBtn{
+        display:none;
+      }
+
+      .product-list-hint{
+        display:block;
+      }
+
+      /* table becomes tap-friendly peptide list */
+      #panel-products .admin-table-wrap{
+        overflow:visible;
+        border:0;
+        background:transparent;
+      }
+
+      #panel-products .admin-table{
+        display:block;
+        width:100%;
+        min-width:0;
+      }
+
+      #panel-products .admin-table thead{
+        display:none;
+      }
+
+      #panel-products .admin-table tbody{
+        display:grid;
+        gap:8px;
+      }
+
+      #panel-products .admin-table tr[data-id]{
+        position:relative;
+        display:grid;
+        grid-template-columns:1fr auto;
+        gap:3px 12px;
+        align-items:center;
+        background:#fff;
+        border:1px solid #d0cec8;
+        padding:14px 44px 14px 14px;
+        cursor:pointer;
+      }
+
+      #panel-products .admin-table tr[data-id]::after{
+        content:"›";
+        position:absolute;
+        right:15px;
+        top:50%;
+        transform:translateY(-50%);
+        font-size:28px;
+        line-height:1;
+        color:#777;
+      }
+
+      #panel-products .admin-table td{
+        display:none;
+        border:0;
+        padding:0;
+      }
+
+      /* Product */
+      #panel-products .admin-table td:nth-child(2){
+        display:block;
+        grid-column:1;
+        grid-row:1;
+      }
+
+      #panel-products .admin-table td:nth-child(2) strong{
+        font-size:16px;
+        line-height:1.2;
+      }
+
+      /* Variant */
+      #panel-products .admin-table td:nth-child(3){
+        display:block;
+        grid-column:1;
+        grid-row:2;
+        color:#666;
+        font-size:12px;
+      }
+
+      /* Price */
+      #panel-products .admin-table td:nth-child(6){
+        display:block;
+        grid-column:2;
+        grid-row:1;
+        text-align:right;
+        font-size:15px;
+        font-weight:700;
+      }
+
+      /* Stock */
+      #panel-products .admin-table td:nth-child(7){
+        display:block;
+        grid-column:2;
+        grid-row:2;
+        text-align:right;
+        color:#666;
+        font-size:11px;
+      }
+
+      #panel-products .admin-table td:nth-child(7)::before{
+        content:"Stock ";
+      }
+
+      /* status */
+      #panel-products .admin-table td:nth-child(8){
+        display:block;
+        grid-column:1/-1;
+        grid-row:3;
+        margin-top:6px;
+      }
+
+      #panel-products .status-chip{
+        padding:4px 6px;
+        font-size:8px;
+      }
+
+      /* hide old action buttons, whole card opens edit */
+      #panel-products .admin-table td:nth-child(9){
+        display:none;
+      }
+
+      #panel-products .admin-empty{
+        background:#fff;
+        border:1px solid #d0cec8;
+        padding:24px 12px;
+      }
+
+      /* edit modal becomes bottom-sheet style card */
+      #productModal.admin-modal{
+        left:0;
+        right:0;
+        top:auto;
+        bottom:0;
+        transform:none;
+        width:100%;
+        max-height:92dvh;
+        padding:18px 16px 18px;
+        border:0;
+        border-top:1px solid #111;
+        box-shadow:0 -18px 50px rgba(0,0,0,.18);
+      }
+
+      #productModal .modal-head{
+        margin-bottom:14px;
+      }
+
+      #productModal .modal-head h3{
+        font-size:28px;
+      }
+
+      #productModal .admin-form{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+
+      #productModal .admin-field{
+        font-size:9px;
+      }
+
+      #productModal .admin-field.wide{
+        grid-column:1/-1;
+      }
+
+      #productModal .admin-field input,
+      #productModal .admin-field select{
+        min-height:44px;
+        padding:10px;
+        font-size:16px;
+      }
+
+      #productModal .modal-actions{
+        position:sticky;
+        bottom:-18px;
+        background:#fff;
+        margin:16px -16px -18px;
+        padding:12px 16px 18px;
+        border-top:1px solid #ddd;
+        display:grid;
+        grid-template-columns:1fr 1.4fr;
+        gap:8px;
+      }
+
+      #productModal .modal-actions .admin-btn{
+        min-height:46px;
+      }
+
+      /* settings and coupon forms stay phone friendly */
+      .admin-form{
+        grid-template-columns:1fr;
+      }
+
+      .admin-field.wide{
+        grid-column:auto;
+      }
+
+      .admin-field input,
+      .admin-field select,
+      .admin-field textarea{
+        font-size:16px;
+      }
+    }
+  </style>
 </head>
+
 <body class="admin-body">
   <div id="loginGate" class="login-gate">
     <div class="admin-auth-card">
@@ -31,21 +348,29 @@ a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(24
       <div id="authKicker" class="auth-kicker">SECURE ADMIN / V4</div>
       <h1>Store manager.</h1>
       <p id="authIntro">Sign in with the admin account you created in Supabase.</p>
+
       <div id="cloudLoginFields" class="auth-row">
         <input id="emailInput" class="wide" type="email" autocomplete="username" placeholder="Admin email" />
         <input id="passwordInput" class="wide" type="password" autocomplete="current-password" placeholder="Password" />
         <button id="loginButton" type="button">Sign in</button>
       </div>
+
       <button id="demoButton" class="secondary" type="button" hidden>Open demo admin</button>
       <div id="loginError" class="login-error"></div>
-      <div class="admin-login-help"><small id="loginHelp">This page uses Supabase Auth in cloud mode. No service-role key is stored in the browser.</small></div>
+
+      <div class="admin-login-help">
+        <small id="loginHelp">This page uses Supabase Auth in cloud mode.</small>
+      </div>
     </div>
   </div>
 
   <header class="admin-header">
     <div class="admin-shell admin-header-inner" style="padding:0">
       <div class="admin-brand">PURE20.</div>
-      <span id="adminStatus" class="admin-status"><span class="cloud-dot"></span><span>Checking</span></span>
+      <span id="adminStatus" class="admin-status">
+        <span class="cloud-dot"></span>
+        <span>Checking</span>
+      </span>
       <div class="admin-spacer"></div>
       <span id="adminUser" class="admin-user"></span>
       <a class="admin-link" href="index.html" target="_blank">Open shop ↗</a>
@@ -55,12 +380,26 @@ a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(24
 
   <main class="admin-shell">
     <section class="admin-hero">
-      <div><p class="eyebrow">CONTROL PANEL / V4</p><h1>Live store manager.</h1></div>
-      <div><p>Update products, stock, coupons and shop settings here. In cloud mode the changes are stored centrally and become visible to visitors without a redeploy.</p><div id="syncNote" class="sync-note"><span class="cloud-dot"></span><span>Ready</span></div></div>
+      <div>
+        <p class="eyebrow">CONTROL PANEL / V4</p>
+        <h1>Live store manager.</h1>
+      </div>
+      <div>
+        <p>Update products, stock, coupons and shop settings here. Changes are stored centrally and become visible in the shop automatically.</p>
+        <div id="syncNote" class="sync-note">
+          <span class="cloud-dot"></span>
+          <span>Ready</span>
+        </div>
+      </div>
     </section>
 
-    <div id="demoAlert" class="admin-alert" hidden><strong>Demo mode:</strong> edits are only saved in this browser. Connect Supabase to make the same admin page update the public shop for every visitor.</div>
-    <div id="cloudAlert" class="admin-alert" hidden><strong>Cloud mode:</strong> you are editing the shared database. Product and settings changes are reflected in the public shop automatically.</div>
+    <div id="demoAlert" class="admin-alert" hidden>
+      <strong>Demo mode:</strong> edits are only saved in this browser.
+    </div>
+
+    <div id="cloudAlert" class="admin-alert" hidden>
+      <strong>Cloud mode:</strong> you are editing the shared database.
+    </div>
 
     <section class="admin-grid">
       <div class="stat-card"><small>Active products</small><strong id="statActive">0</strong></div>
@@ -69,36 +408,271 @@ a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(24
       <div class="stat-card"><small>Active coupons</small><strong id="statCoupons">0</strong></div>
     </section>
 
-    <nav class="admin-tabs"><button class="admin-tab active" data-tab="products">Products</button><button class="admin-tab" data-tab="coupons">Coupons</button><button class="admin-tab" data-tab="settings">Settings</button><button class="admin-tab" data-tab="backup">Backup & import</button></nav>
+    <nav class="admin-tabs">
+      <button class="admin-tab active" data-tab="products">Products</button>
+      <button class="admin-tab" data-tab="coupons">Coupons</button>
+      <button class="admin-tab" data-tab="settings">Settings</button>
+      <button class="admin-tab" data-tab="backup">Backup & import</button>
+    </nav>
 
     <section id="panel-products" class="admin-panel active">
       <div class="admin-card">
-        <div class="admin-card-head"><h2>Products</h2><button id="addProduct" class="admin-btn primary" type="button">+ Add product</button></div>
-        <div class="admin-toolbar"><input id="productSearch" type="search" placeholder="Search products…" /><select id="productCategory"><option value="All">All categories</option></select><select id="productStatus"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="out">Out of stock</option></select><button id="exportCsv" class="admin-btn" type="button">Export CSV</button><button id="importCsvBtn" class="admin-btn" type="button">Import CSV</button></div>
-        <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Order</th><th>Product</th><th>Variant</th><th>Category</th><th>Code</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="productsBody"></tbody></table></div>
+        <div class="admin-card-head">
+          <h2>Products</h2>
+          <button id="addProduct" class="admin-btn primary" type="button">+ Add product</button>
+        </div>
+
+        <div class="admin-toolbar">
+          <input id="productSearch" type="search" placeholder="Search products…" />
+          <select id="productCategory">
+            <option value="All">All categories</option>
+          </select>
+          <select id="productStatus">
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="out">Out of stock</option>
+          </select>
+          <button id="exportCsv" class="admin-btn" type="button">Export CSV</button>
+          <button id="importCsvBtn" class="admin-btn" type="button">Import CSV</button>
+        </div>
+
+        <p class="product-list-hint">Tap a peptide to edit its price, stock, variant, category or visibility.</p>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Category</th>
+                <th>Code</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <section id="panel-coupons" class="admin-panel"><div class="admin-card"><div class="admin-card-head"><h2>Coupon codes</h2><button id="addCoupon" class="admin-btn primary" type="button">+ Add coupon</button></div><p class="admin-note">Coupon rows are not publicly listable. The shop validates only the code a visitor enters.</p><div class="admin-table-wrap"><table class="admin-table" style="min-width:760px"><thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Minimum</th><th>Status</th><th>Actions</th></tr></thead><tbody id="couponsBody"></tbody></table></div></div></section>
+    <section id="panel-coupons" class="admin-panel">
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h2>Coupon codes</h2>
+          <button id="addCoupon" class="admin-btn primary" type="button">+ Add coupon</button>
+        </div>
+        <p class="admin-note">Coupon rows are not publicly listable. The shop validates only the code a visitor enters.</p>
 
-    <section id="panel-settings" class="admin-panel"><div class="admin-card"><div class="admin-card-head"><h2>Shop settings</h2></div><div class="admin-form">
-      <label class="admin-field">Brand name<input id="setBrand" /></label><label class="admin-field">Currency symbol<input id="setSymbol" /></label><label class="admin-field">Currency code<input id="setCurrency" /></label>
-      <label class="admin-field">Flat shipping (€)<input id="setShipping" type="number" min="0" step="0.01" /></label><label class="admin-field">Free shipping from (€)<input id="setFreeShipping" type="number" min="0" step="0.01" /></label><label class="admin-field">Low stock threshold<input id="setLowStock" type="number" min="0" step="1" /></label>
-      <label class="admin-field wide">Shipping text<input id="setShippingText" /></label><label class="admin-field wide">WhatsApp number <small>(international, e.g. 3247…)</small><input id="setWhatsapp" /></label><label class="admin-field wide">Hero eyebrow<input id="setEyebrow" /></label><label class="admin-field wide">Hero title<input id="setTitle" /></label><label class="admin-field wide">Hero subtitle<textarea id="setSubtitle"></textarea></label><label class="admin-field wide">Footer notice<textarea id="setFooter"></textarea></label>
-    </div><div class="modal-actions"><button id="saveSettings" class="admin-btn primary" type="button">Save settings</button></div></div></section>
+        <div class="admin-table-wrap">
+          <table class="admin-table" style="min-width:760px">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Minimum</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="couponsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-    <section id="panel-backup" class="admin-panel"><div class="admin-card"><div class="admin-card-head"><h2>Backup & import</h2></div><p class="admin-note">Export a JSON backup before large edits. CSV import replaces the entire product catalogue, so use it deliberately. Supported columns: order, category, product, variant, code, unit, price_eur, stock, active, badge, note.</p><div class="admin-actions" style="margin-top:18px"><button id="exportJson" class="admin-btn primary" type="button">Download JSON backup</button><button id="downloadTemplate" class="admin-btn" type="button">Download CSV template</button><button id="backupImport" class="admin-btn" type="button">Import JSON / CSV</button></div></div></section>
+    <section id="panel-settings" class="admin-panel">
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Shop settings</h2></div>
+
+        <div class="admin-form">
+          <label class="admin-field">Brand name<input id="setBrand" /></label>
+          <label class="admin-field">Currency symbol<input id="setSymbol" /></label>
+          <label class="admin-field">Currency code<input id="setCurrency" /></label>
+
+          <label class="admin-field">Flat shipping (€)<input id="setShipping" type="number" min="0" step="0.01" /></label>
+          <label class="admin-field">Free shipping from (€)<input id="setFreeShipping" type="number" min="0" step="0.01" /></label>
+          <label class="admin-field">Low stock threshold<input id="setLowStock" type="number" min="0" step="1" /></label>
+
+          <label class="admin-field wide">Shipping text<input id="setShippingText" /></label>
+          <label class="admin-field wide">WhatsApp number<input id="setWhatsapp" /></label>
+          <label class="admin-field wide">Hero eyebrow<input id="setEyebrow" /></label>
+          <label class="admin-field wide">Hero title<input id="setTitle" /></label>
+          <label class="admin-field wide">Hero subtitle<textarea id="setSubtitle"></textarea></label>
+          <label class="admin-field wide">Footer notice<textarea id="setFooter"></textarea></label>
+        </div>
+
+        <div class="modal-actions">
+          <button id="saveSettings" class="admin-btn primary" type="button">Save settings</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-backup" class="admin-panel">
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>Backup & import</h2></div>
+        <p class="admin-note">Export a JSON backup before large edits. CSV import replaces the entire product catalogue.</p>
+
+        <div class="admin-actions" style="margin-top:18px">
+          <button id="exportJson" class="admin-btn primary" type="button">Download JSON backup</button>
+          <button id="downloadTemplate" class="admin-btn" type="button">Download CSV template</button>
+          <button id="backupImport" class="admin-btn" type="button">Import JSON / CSV</button>
+        </div>
+      </div>
+    </section>
   </main>
 
   <input id="fileInput" class="hidden" type="file" accept=".json,.csv,text/csv,application/json" />
+
   <div id="modalBackdrop" class="modal-backdrop"></div>
-  <div id="productModal" class="admin-modal"><div class="modal-head"><div><p class="eyebrow">PRODUCT</p><h3 id="productModalTitle">Add product</h3></div><button class="icon-btn" data-close-modal type="button">×</button></div><form id="productForm" class="admin-form"><input id="prodId" type="hidden" /><label class="admin-field">Product<input id="prodName" required /></label><label class="admin-field">Variant<input id="prodVariant" /></label><label class="admin-field">Code<input id="prodCode" /></label><label class="admin-field">Category<input id="prodCategory" /></label><label class="admin-field">Unit<input id="prodUnit" value="vial" /></label><label class="admin-field">Price (€)<input id="prodPrice" type="number" min="0" step="0.01" required /></label><label class="admin-field">Stock<input id="prodStock" type="number" min="0" step="1" required /></label><label class="admin-field">Order<input id="prodOrder" type="number" step="1" /></label><label class="admin-field">Badge<input id="prodBadge" placeholder="Popular" /></label><label class="admin-field wide">Note<input id="prodNote" /></label><label class="admin-field"><span>Visible</span><select id="prodActive"><option value="true">Active</option><option value="false">Hidden</option></select></label></form><div class="modal-actions"><button class="admin-btn" data-close-modal type="button">Cancel</button><button id="saveProduct" class="admin-btn primary" type="button">Save product</button></div></div>
-  <div id="couponModal" class="admin-modal"><div class="modal-head"><div><p class="eyebrow">COUPON</p><h3 id="couponModalTitle">Add coupon</h3></div><button class="icon-btn" data-close-modal type="button">×</button></div><form class="admin-form"><input id="couponId" type="hidden" /><label class="admin-field">Code<input id="couponCode" /></label><label class="admin-field">Type<select id="couponType"><option value="percent">Percent</option><option value="fixed">Fixed amount</option></select></label><label class="admin-field">Value<input id="couponValue" type="number" min="0" step="0.01" /></label><label class="admin-field">Minimum subtotal<input id="couponMin" type="number" min="0" step="0.01" /></label><label class="admin-field">Status<select id="couponActive"><option value="true">Active</option><option value="false">Inactive</option></select></label></form><div class="modal-actions"><button class="admin-btn" data-close-modal type="button">Cancel</button><button id="saveCoupon" class="admin-btn primary" type="button">Save coupon</button></div></div>
+
+  <div id="productModal" class="admin-modal">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow">PRODUCT</p>
+        <h3 id="productModalTitle">Add product</h3>
+      </div>
+      <button class="icon-btn" data-close-modal type="button">×</button>
+    </div>
+
+    <form id="productForm" class="admin-form">
+      <input id="prodId" type="hidden" />
+
+      <label class="admin-field">
+        Product
+        <input id="prodName" required />
+      </label>
+
+      <label class="admin-field">
+        Variant
+        <input id="prodVariant" />
+      </label>
+
+      <label class="admin-field">
+        Code
+        <input id="prodCode" />
+      </label>
+
+      <label class="admin-field">
+        Category
+        <input id="prodCategory" />
+      </label>
+
+      <label class="admin-field">
+        Unit
+        <input id="prodUnit" value="vial" />
+      </label>
+
+      <label class="admin-field">
+        Price (€)
+        <input id="prodPrice" type="number" min="0" step="0.01" required />
+      </label>
+
+      <label class="admin-field">
+        Stock
+        <input id="prodStock" type="number" min="0" step="1" required />
+      </label>
+
+      <label class="admin-field">
+        Order
+        <input id="prodOrder" type="number" step="1" />
+      </label>
+
+      <label class="admin-field">
+        Badge
+        <input id="prodBadge" placeholder="Popular" />
+      </label>
+
+      <label class="admin-field wide">
+        Note
+        <input id="prodNote" />
+      </label>
+
+      <label class="admin-field">
+        <span>Visible</span>
+        <select id="prodActive">
+          <option value="true">Active</option>
+          <option value="false">Hidden</option>
+        </select>
+      </label>
+    </form>
+
+    <div class="modal-actions">
+      <button class="admin-btn" data-close-modal type="button">Cancel</button>
+      <button id="saveProduct" class="admin-btn primary" type="button">Save product</button>
+    </div>
+  </div>
+
+  <div id="couponModal" class="admin-modal">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow">COUPON</p>
+        <h3 id="couponModalTitle">Add coupon</h3>
+      </div>
+      <button class="icon-btn" data-close-modal type="button">×</button>
+    </div>
+
+    <form class="admin-form">
+      <input id="couponId" type="hidden" />
+
+      <label class="admin-field">
+        Code
+        <input id="couponCode" />
+      </label>
+
+      <label class="admin-field">
+        Type
+        <select id="couponType">
+          <option value="percent">Percent</option>
+          <option value="fixed">Fixed amount</option>
+        </select>
+      </label>
+
+      <label class="admin-field">
+        Value
+        <input id="couponValue" type="number" min="0" step="0.01" />
+      </label>
+
+      <label class="admin-field">
+        Minimum subtotal
+        <input id="couponMin" type="number" min="0" step="0.01" />
+      </label>
+
+      <label class="admin-field">
+        Status
+        <select id="couponActive">
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </label>
+    </form>
+
+    <div class="modal-actions">
+      <button class="admin-btn" data-close-modal type="button">Cancel</button>
+      <button id="saveCoupon" class="admin-btn primary" type="button">Save coupon</button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="fallback-data.js"></script>
   <script src="api.js"></script>
   <script src="admin.js"></script>
+
+  <script>
+    // On mobile, tapping the product card triggers the existing Edit action.
+    document.getElementById('productsBody').addEventListener('click', function(e){
+      if(e.target.closest('button, input, select, a')) return;
+      const row = e.target.closest('tr[data-id]');
+      if(!row) return;
+      const editButton = row.querySelector('button[data-act="edit"]');
+      if(editButton) editButton.click();
+    });
+  </script>
 </body>
 </html>
