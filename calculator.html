@@ -18,7 +18,7 @@
     .calc-tab.active{border-bottom-color:var(--ink);font-weight:800}
     .calc-view{display:none;padding-top:28px}
     .calc-view.active{display:block}
-    .calc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,.78fr);gap:34px;align-items:start}
+    .calc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.82fr);gap:34px;align-items:start}
     .calc-panel{border-top:2px solid var(--ink);padding-top:18px}
     .calc-panel h2{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}
     .calc-panel>p{color:var(--muted);font-size:13px;line-height:1.65;margin:0 0 24px;max-width:700px}
@@ -38,27 +38,77 @@
     .result-row{display:flex;justify-content:space-between;gap:18px;padding:13px 0;border-bottom:1px solid #333;font-size:12px}
     .result-row span{color:#aaa}
     .result-row strong{text-align:right}
-    .calc-help{font-size:11px;color:var(--muted);line-height:1.55;margin:8px 0 0}
     .calc-alert{margin-top:14px;border:1px solid #777;padding:11px 12px;font-size:11px;line-height:1.5;color:#ddd}
     .calc-alert:empty{display:none}
-    .formula-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:42px}
-    .formula-strip article{background:var(--bg);padding:20px}
-    .formula-strip small{display:block;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}
-    .formula-strip strong{display:block;margin-top:12px;font-size:15px;line-height:1.45}
     .calc-disclaimer{display:grid;grid-template-columns:16px 1fr;gap:14px;padding-top:30px;padding-bottom:70px;color:var(--muted);font-size:12px;line-height:1.65}
     .calc-disclaimer .square{margin-top:4px}
     .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .syringe-wrap{margin-top:22px}
+    .syringe-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa}
+    .syringe-top strong{color:#fff;font-size:12px}
+    .syringe-shell{position:relative;padding:8px 14px 8px 0}
+    .syringe-track{position:relative;height:94px}
+    .syringe-body{
+      position:absolute;left:40px;right:56px;top:19px;height:56px;
+      border:2px solid #fff;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+      overflow:hidden;
+    }
+    .syringe-fill{
+      position:absolute;left:0;top:0;bottom:0;width:0%;
+      background:linear-gradient(90deg,#f4f4f0 0%,#ddd9cf 100%);
+      transition:width .25s ease;
+    }
+    .syringe-plunger{
+      position:absolute;top:11px;width:18px;height:72px;border:2px solid #fff;background:#111;
+      transition:left .25s ease;
+    }
+    .syringe-plunger:before{
+      content:"";position:absolute;left:-18px;top:25px;width:18px;height:18px;border:2px solid #fff;border-right:0
+    }
+    .syringe-needle{
+      position:absolute;right:8px;top:46px;width:48px;height:2px;background:#fff;
+    }
+    .syringe-needle:after{
+      content:"";position:absolute;right:-8px;top:-2px;width:10px;height:6px;border-radius:0 3px 3px 0;background:#fff
+    }
+    .syringe-marks{
+      position:absolute;left:40px;right:56px;top:12px;height:70px;pointer-events:none;
+      display:flex;justify-content:space-between;
+    }
+    .syringe-mark{position:relative;width:1px;background:transparent}
+    .syringe-mark:before{
+      content:"";position:absolute;left:0;top:0;width:1px;height:18px;background:#fff;opacity:.95
+    }
+    .syringe-mark.mid:before{height:12px;opacity:.65}
+    .syringe-mark small{
+      position:absolute;top:24px;left:50%;transform:translateX(-50%);
+      color:#aaa;font-size:9px;letter-spacing:.08em
+    }
+    .syringe-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+    .syringe-bottom p{margin:0;color:#aaa;font-size:11px;line-height:1.5}
+    .syringe-range{width:100%;appearance:none;background:transparent;margin-top:12px}
+    .syringe-range::-webkit-slider-runnable-track{height:2px;background:#555}
+    .syringe-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-8px;border:0}
+    .syringe-range::-moz-range-track{height:2px;background:#555}
+    .syringe-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0}
+    .range-row{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .range-row label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
+    .range-row output{min-width:52px;text-align:right;font-size:12px;color:#fff}
+    .tap-note{font-size:10px;color:#aaa;margin-top:8px}
     @media(max-width:850px){
       .calc-layout{grid-template-columns:1fr}
       .result-card{position:static}
-      .formula-strip{grid-template-columns:1fr}
     }
     @media(max-width:600px){
+      .header-nav>a{display:flex}
+      .header-nav{gap:12px;font-size:10px}
       .calc-hero{padding-top:46px}
       .calc-form,.blend-names{grid-template-columns:1fr}
       .calc-field.wide{grid-column:auto}
       .result-primary strong{font-size:38px}
       .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
+      .syringe-body{left:28px;right:44px}
+      .syringe-marks{left:28px;right:44px}
     }
   </style>
 </head>
@@ -80,7 +130,7 @@
         <div class="hero-copy">
           <p class="eyebrow">PURE20 / RESEARCH CALCULATOR</p>
           <h1>Calculate.<br>Don't guess.</h1>
-          <p class="lede">Convert vial concentration, liquid volume and U-100 syringe units with transparent formulas. Built for arithmetic only, not dosing advice.</p>
+          <p class="lede">Convert vial concentration, liquid volume and U-100 syringe units with transparent formulas. Now with an interactive syringe that visually shows the selected or calculated fill level.</p>
           <div class="calc-kicker"><span class="dot"></span> U-100 standard: 100 units = 1.00 mL</div>
         </div>
         <div class="hero-aside">
@@ -102,7 +152,7 @@
           <div class="calc-layout">
             <div class="calc-panel">
               <h2>Dose → syringe units</h2>
-              <p>Enter the amount in the vial, the total liquid volume after mixing, and the amount you want to convert. The calculator returns the theoretical U-100 syringe marking.</p>
+              <p>Enter the amount in the vial, the total liquid volume after mixing, and the amount you want to convert. The calculator returns the theoretical U-100 syringe marking and visualizes the fill level on the syringe.</p>
               <div class="calc-form">
                 <label class="calc-field">Amount in vial
                   <div class="calc-input-row"><input id="doseVial" inputmode="decimal" placeholder="e.g. 10"><select id="doseVialUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
@@ -119,6 +169,20 @@
             <aside class="result-card" aria-live="polite">
               <div class="result-eyebrow">CALCULATED RESULT</div>
               <div class="result-primary"><span>U-100 syringe</span><strong id="doseUnits">— units</strong></div>
+
+              <div class="syringe-wrap">
+                <div class="syringe-top"><span>Visual syringe</span><strong id="doseSyringeReadout">0 U</strong></div>
+                <div id="doseSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                    <div class="syringe-marks"></div>
+                    <div class="syringe-plunger"></div>
+                    <div class="syringe-needle"></div>
+                  </div>
+                </div>
+                <p class="tap-note">Visual result based on calculated units.</p>
+              </div>
+
               <div class="result-list">
                 <div class="result-row"><span>Volume</span><strong id="doseMl">—</strong></div>
                 <div class="result-row"><span>Concentration</span><strong id="doseConc">—</strong></div>
@@ -134,7 +198,7 @@
           <div class="calc-layout">
             <div class="calc-panel">
               <h2>Syringe units → amount</h2>
-              <p>Use this mode when you know the vial concentration and syringe marking and want to calculate how much material that volume contains.</p>
+              <p>Use this mode when you know the vial concentration and syringe marking and want to calculate how much material that volume contains. Here the syringe is fully interactive: drag the slider or type a value.</p>
               <div class="calc-form">
                 <label class="calc-field">Amount in vial
                   <div class="calc-input-row"><input id="unitsVial" inputmode="decimal" placeholder="e.g. 10"><select id="unitsVialUnit"><option value="mg">mg</option><option value="mcg">mcg</option></select></div>
@@ -149,8 +213,27 @@
               <p class="calc-help">This page assumes a U-100 syringe scale. A marking of 10 units corresponds to 0.10 mL.</p>
             </div>
             <aside class="result-card" aria-live="polite">
-              <div class="result-eyebrow">CALCULATED RESULT</div>
+              <div class="result-eyebrow">INTERACTIVE SYRINGE</div>
               <div class="result-primary"><span>Contained amount</span><strong id="unitsAmount">—</strong></div>
+
+              <div class="syringe-wrap">
+                <div class="syringe-top"><span>Adjust syringe</span><strong id="unitsSyringeReadout">0 U</strong></div>
+                <div id="unitsSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                    <div class="syringe-marks"></div>
+                    <div class="syringe-plunger"></div>
+                    <div class="syringe-needle"></div>
+                  </div>
+                </div>
+                <div class="range-row">
+                  <label for="unitsSlider">Drag</label>
+                  <input id="unitsSlider" class="syringe-range" type="range" min="0" max="100" step="0.5" value="0">
+                  <output id="unitsSliderOutput" for="unitsSlider">0 U</output>
+                </div>
+                <p class="tap-note">Moving the slider updates the units field automatically.</p>
+              </div>
+
               <div class="result-list">
                 <div class="result-row"><span>Same amount</span><strong id="unitsAmountAlt">—</strong></div>
                 <div class="result-row"><span>Volume</span><strong id="unitsMl">—</strong></div>
@@ -166,7 +249,7 @@
           <div class="calc-layout">
             <div class="calc-panel">
               <h2>Two-component blend</h2>
-              <p>Calculate a shared syringe volume when two components are present in the same vial. Choose which component you want to use as the basis; the calculator shows the simultaneous amount of the other component.</p>
+              <p>Calculate a shared syringe volume when two components are present in the same vial. Choose which component you want to use as the basis; the calculator shows the simultaneous amount of the other component and visualizes the resulting syringe fill.</p>
               <div class="blend-names">
                 <label class="calc-field">Component A name<input id="blendNameA" value="Component A"></label>
                 <label class="calc-field">Component B name<input id="blendNameB" value="Component B"></label>
@@ -193,6 +276,20 @@
             <aside class="result-card" aria-live="polite">
               <div class="result-eyebrow">BLEND RESULT</div>
               <div class="result-primary"><span>U-100 syringe</span><strong id="blendUnits">— units</strong></div>
+
+              <div class="syringe-wrap">
+                <div class="syringe-top"><span>Visual syringe</span><strong id="blendSyringeReadout">0 U</strong></div>
+                <div id="blendSyringe" class="syringe-shell" data-units="0">
+                  <div class="syringe-track">
+                    <div class="syringe-body"><div class="syringe-fill"></div></div>
+                    <div class="syringe-marks"></div>
+                    <div class="syringe-plunger"></div>
+                    <div class="syringe-needle"></div>
+                  </div>
+                </div>
+                <p class="tap-note">Visual result based on calculated units.</p>
+              </div>
+
               <div class="result-list">
                 <div class="result-row"><span>Volume</span><strong id="blendMl">—</strong></div>
                 <div class="result-row"><span id="blendLabelA">Component A</span><strong id="blendOutA">—</strong></div>
@@ -204,11 +301,6 @@
           </div>
         </section>
 
-        <div class="formula-strip" aria-label="Calculation formulas">
-          <article><small>01 / Concentration</small><strong>Amount in vial ÷ total liquid volume</strong></article>
-          <article><small>02 / U-100 volume</small><strong>Syringe units ÷ 100 = mL</strong></article>
-          <article><small>03 / Unit conversion</small><strong>1 mg = 1,000 mcg</strong></article>
-        </div>
       </div>
     </section>
 

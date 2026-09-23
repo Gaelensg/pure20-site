@@ -1,29 +1,28 @@
-PURE20 peptide calculator
-===========================
+PURE20 INTERACTIVE SYRINGE CALCULATOR
+=====================================
 
-Upload these two files to the ROOT of the GitHub repository:
+Files included:
 - calculator.html
 - calculator.js
+- INSTALL.txt
 
-The page will then be available at:
-https://prime-peptides-2-0.vercel.app/calculator
+What changed:
+- Added a visual U-100 syringe to all 3 calculator modes
+- In "Units -> amount" the syringe is interactive:
+  - drag the slider
+  - units field updates automatically
+  - results update live
+- In "Dose -> units" and "Blend" the syringe updates automatically based on the calculated units
+- Mobile navigation fix included in calculator.html
 
-Because vercel.json uses cleanUrls, /calculator should work after Vercel deploys.
+How to use:
+1) Replace the existing calculator.html
+2) Replace the existing calculator.js
+3) Commit/upload both files to the root of your repo
+4) Vercel will redeploy automatically
 
-Add to index.html navigation after the Knowledge link:
-<a class="calculator-link" href="calculator.html">Calculator</a>
+Notes:
+- The syringe visual clamps display from 0 to 100 U because it is a U-100 visual scale.
+- The warning text still appears if the mathematical result goes over 100 U.
 
-Add to knowledge.html navigation after the Knowledge link:
-<a href="calculator.html">Calculator</a>
-
-The calculator uses the existing styles.css and therefore follows the current PURE20 visual language.
-
-Modes:
-1. Dose -> U-100 syringe units
-2. U-100 syringe units -> amount
-3. Two-component blend calculator
-
-Assumption:
-U-100 = 100 units per 1.00 mL.
-
-The page intentionally provides mathematical conversions only and does not recommend dosing.
+- Formula strip removed from below the calculator.

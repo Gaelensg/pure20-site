@@ -1,0 +1,29 @@
+PURE20 CALCULATOR TEST RESULTS
+==============================
+
+Browser functional test: PASS
+
+Tested:
+- Page renders and JavaScript initializes without console errors
+- Dose -> units tab switches and calculates
+- Units -> amount tab switches and calculates
+- Blend tab switches and calculates
+- mg <-> mcg conversions
+- U-100 conversion
+- >100 unit warning
+- Empty input does not show NaN or Infinity
+- 375 px mobile viewport has no horizontal page overflow
+- Mobile header navigation override added
+
+Reference calculations:
+1) 10 mg in 2 mL; target 500 mcg
+   Result: 10 units, 0.1 mL, 5 mg/mL, 50 mcg/unit
+
+2) 10 mg in 2 mL; 20 units
+   Result: 1,000 mcg = 1 mg, 0.2 mL
+
+3) Blend 10 mg + 5 mg in 2 mL; target 500 mcg of component A
+   Result: 10 units, 500 mcg A + 250 mcg B, ratio 2:1
+
+Note:
+This verifies the calculator package locally. The production Vercel URL can only be tested after calculator.html and calculator.js are uploaded/deployed.

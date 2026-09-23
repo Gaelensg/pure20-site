@@ -41,6 +41,53 @@
     return '';
   }
 
+  function buildSyringeMarks(shell) {
+    const marks = shell.querySelector('.syringe-marks');
+    if (!marks || marks.dataset.ready) return;
+    const values = [0,10,20,30,40,50,60,70,80,90,100];
+    values.forEach((value, index) => {
+      const mark = document.createElement('div');
+      mark.className = 'syringe-mark' + ((value % 20) ? ' mid' : '');
+      if (value < 100) {
+        const label = document.createElement('small');
+        label.textContent = value;
+        mark.appendChild(label);
+      } else {
+        const label = document.createElement('small');
+        label.textContent = '100';
+        mark.appendChild(label);
+      }
+      marks.appendChild(mark);
+    });
+    marks.dataset.ready = 'true';
+  }
+
+  function setSyringeUnits(prefix, units) {
+    const safeUnits = Number.isFinite(units) ? Math.max(0, Math.min(100, units)) : 0;
+    const shell = $(`${prefix}Syringe`);
+    const readout = $(`${prefix}SyringeReadout`);
+    if (!shell) return;
+    buildSyringeMarks(shell);
+
+    const fill = shell.querySelector('.syringe-fill');
+    const plunger = shell.querySelector('.syringe-plunger');
+    const percent = safeUnits;
+    if (fill) fill.style.width = `${percent}%`;
+
+    if (plunger) {
+      const body = shell.querySelector('.syringe-body');
+      if (body) {
+        const bodyWidth = body.clientWidth;
+        const leftBase = body.offsetLeft;
+        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - 9;
+        plunger.style.left = `${x}px`;
+      }
+    }
+
+    if (readout) readout.textContent = `${fmt(safeUnits, 2)} U`;
+    shell.dataset.units = safeUnits;
+  }
+
   function calculateDose() {
     const vial = parseNumber($('doseVial'));
     const water = parseNumber($('doseWater'));
@@ -52,6 +99,7 @@
       $('doseUnits').textContent = '— units';
       clear(['doseMl','doseConc','dosePerUnit','doseCount']);
       $('doseAlert').textContent = '';
+      setSyringeUnits('dose', 0);
       return;
     }
 
@@ -67,6 +115,7 @@
     $('dosePerUnit').textContent = amountLabel(mgPerUnit);
     $('doseCount').textContent = fmt(portions, 3);
     $('doseAlert').textContent = warningForUnits(units);
+    setSyringeUnits('dose', units);
   }
 
   function calculateUnits() {
@@ -79,6 +128,7 @@
       $('unitsAmount').textContent = '—';
       clear(['unitsAmountAlt','unitsMl','unitsConc','unitsPerUnit']);
       $('unitsAlert').textContent = '';
+      setSyringeUnits('units', Number.isFinite(mark) ? mark : 0);
       return;
     }
 
@@ -93,6 +143,10 @@
     $('unitsConc').textContent = `${fmt(concentration, 4)} mg/mL`;
     $('unitsPerUnit').textContent = amountLabel(mgPerUnit);
     $('unitsAlert').textContent = warningForUnits(mark);
+    setSyringeUnits('units', mark);
+
+    const output = $('unitsSliderOutput');
+    if (output) output.textContent = `${fmt(mark, 2)} U`;
   }
 
   function calculateBlend() {
@@ -116,6 +170,7 @@
       $('blendUnits').textContent = '— units';
       clear(['blendMl','blendOutA','blendOutB','blendRatio']);
       $('blendAlert').textContent = '';
+      setSyringeUnits('blend', 0);
       return;
     }
 
@@ -136,6 +191,31 @@
     $('blendOutB').textContent = amountLabel(outB);
     $('blendRatio').textContent = `${fmt(ratioA, 3)} : ${fmt(ratioB, 3)}`;
     $('blendAlert').textContent = warningForUnits(units);
+    setSyringeUnits('blend', units);
+  }
+
+  function syncSliderToInput() {
+    const slider = $('unitsSlider');
+    const input = $('unitsMark');
+    const output = $('unitsSliderOutput');
+    if (!slider || !input) return;
+    input.value = slider.value;
+    if (output) output.textContent = `${fmt(Number(slider.value), 2)} U`;
+    calculateUnits();
+  }
+
+  function syncInputToSlider() {
+    const slider = $('unitsSlider');
+    const input = $('unitsMark');
+    const output = $('unitsSliderOutput');
+    if (!slider || !input) return;
+    const value = parseNumber(input);
+    if (Number.isFinite(value)) {
+      const safe = Math.max(0, Math.min(100, value));
+      slider.value = safe;
+      if (output) output.textContent = `${fmt(safe, 2)} U`;
+    }
+    calculateUnits();
   }
 
   tabs.forEach(tab => {
@@ -147,6 +227,11 @@
         t.setAttribute('aria-selected', String(active));
       });
       views.forEach(v => v.classList.toggle('active', v.id === `view-${key}`));
+      setTimeout(() => {
+        setSyringeUnits('dose', parseFloat(($('doseSyringe')?.dataset.units) || '0'));
+        setSyringeUnits('units', parseFloat(($('unitsSyringe')?.dataset.units) || '0'));
+        setSyringeUnits('blend', parseFloat(($('blendSyringe')?.dataset.units) || '0'));
+      }, 10);
     });
   });
 
@@ -155,15 +240,31 @@
     el.addEventListener('change', calculateDose);
   });
   document.querySelectorAll('#view-units input,#view-units select').forEach(el => {
-    el.addEventListener('input', calculateUnits);
-    el.addEventListener('change', calculateUnits);
+    el.addEventListener('change', syncInputToSlider);
   });
+  document.querySelectorAll('#view-units input').forEach(el => {
+    if (el.id !== 'unitsMark') {
+      el.addEventListener('input', calculateUnits);
+    }
+  });
+  $('unitsMark').addEventListener('input', syncInputToSlider);
+  $('unitsSlider').addEventListener('input', syncSliderToInput);
+  $('unitsSlider').addEventListener('change', syncSliderToInput);
+
   document.querySelectorAll('#view-blend input,#view-blend select').forEach(el => {
     el.addEventListener('input', calculateBlend);
     el.addEventListener('change', calculateBlend);
   });
 
+  window.addEventListener('resize', () => {
+    setSyringeUnits('dose', parseFloat(($('doseSyringe')?.dataset.units) || '0'));
+    setSyringeUnits('units', parseFloat(($('unitsSyringe')?.dataset.units) || '0'));
+    setSyringeUnits('blend', parseFloat(($('blendSyringe')?.dataset.units) || '0'));
+  });
+
   calculateDose();
+  $('unitsSlider').value = 0;
+  $('unitsMark').value = 0;
   calculateUnits();
   calculateBlend();
 })();
