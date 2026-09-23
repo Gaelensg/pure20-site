@@ -44,15 +44,25 @@
   function buildSyringeMarks(shell) {
     const marks = shell.querySelector('.syringe-marks');
     if (!marks || marks.dataset.ready) return;
-    const values = [0,10,20,30,40,50,60,70,80,90,100];
-    values.forEach((value) => {
+
+    for (let value = 0; value <= 100; value += 5) {
       const mark = document.createElement('div');
-      mark.className = 'syringe-mark' + ((value % 20) ? ' mid' : '');
-      const label = document.createElement('small');
-      label.textContent = String(value);
-      mark.appendChild(label);
+      const isMajor = value % 20 === 0;
+      const isMedium = !isMajor && value % 10 === 0;
+
+      mark.className =
+        'syringe-mark' +
+        (isMajor ? ' major' : isMedium ? ' medium' : ' minor');
+
+      if (isMajor) {
+        const label = document.createElement('small');
+        label.textContent = String(value);
+        mark.appendChild(label);
+      }
+
       marks.appendChild(mark);
-    });
+    }
+
     marks.dataset.ready = 'true';
   }
 

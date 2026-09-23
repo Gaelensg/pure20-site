@@ -44,112 +44,194 @@
     .calc-disclaimer .square{margin-top:4px}
     .blend-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .syringe-wrap{margin-top:22px}
-    .syringe-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa}
-    .syringe-top strong{color:#fff;font-size:12px}
-    .syringe-shell{position:relative;padding:8px 14px 8px 0}
-    .syringe-track{position:relative;height:98px}
+    .syringe-top{
+      display:flex;justify-content:space-between;gap:10px;align-items:center;
+      margin-bottom:12px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#929292
+    }
+    .syringe-top strong{color:#fff;font-size:12px;letter-spacing:.08em}
+
+    /* PURE20 ultra-clean U-100 syringe */
+    .syringe-shell{
+      --barrel-left:48px;
+      --barrel-right:86px;
+      position:relative;
+      padding:4px 0 0;
+    }
+    .syringe-track{position:relative;height:112px}
+
     .syringe-body{
-      position:absolute;left:52px;right:92px;top:20px;height:54px;
-      border:2px solid #fff;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+      position:absolute;
+      left:var(--barrel-left);
+      right:var(--barrel-right);
+      top:28px;
+      height:46px;
+      border:1px solid rgba(255,255,255,.78);
+      background:rgba(255,255,255,.018);
       overflow:hidden;
     }
+
+    /* Liquid is intentionally pale so the scale remains readable */
     .syringe-fill{
-      position:absolute;left:0;top:0;bottom:0;width:0%;
-      background:linear-gradient(90deg,#f4f4f0 0%,#ddd9cf 100%);
-      transition:width .25s ease;
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:0%;
+      background:rgba(242,241,236,.14);
+      border-right:0;
+      transition:width .22s ease;
     }
 
-    /* thin plunger indicator only */
+    /* One fine endpoint line, no block or bulky plunger */
     .syringe-plunger{
       position:absolute;
-      top:14px;
-      width:3px;
-      height:66px;
+      top:23px;
+      width:1.5px;
+      height:56px;
       background:#fff;
       border:0;
-      transition:left .25s ease;
-      box-shadow:0 0 0 1px rgba(255,255,255,.12);
+      opacity:.95;
+      transition:left .22s ease;
+      box-shadow:none;
     }
-    .syringe-plunger:before,
-    .syringe-plunger:after{
-      content:none;
+    .syringe-plunger:before{
+      content:"";
+      position:absolute;
+      top:-3px;
+      left:-2.25px;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:#fff;
     }
+    .syringe-plunger:after{content:none}
 
-    /* left handle outside the barrel */
+    /* Minimal thumb rest, clearly outside the barrel */
     .syringe-handle{
       position:absolute;
-      left:20px;
-      top:17px;
-      width:28px;
-      height:60px;
-      border:2px solid #fff;
-      background:rgba(255,255,255,.08);
+      left:18px;
+      top:32px;
+      width:24px;
+      height:38px;
+      border-left:1px solid rgba(255,255,255,.76);
+      border-top:1px solid rgba(255,255,255,.76);
+      border-bottom:1px solid rgba(255,255,255,.76);
+      background:transparent;
     }
     .syringe-handle:before{
       content:"";
       position:absolute;
-      left:-12px;
-      top:-2px;
-      width:10px;
-      height:60px;
-      border-left:2px solid #fff;
-      border-top:2px solid #fff;
-      border-bottom:2px solid #fff;
+      left:-10px;
+      top:-7px;
+      width:9px;
+      height:52px;
+      border-left:1px solid rgba(255,255,255,.76);
+      border-top:1px solid rgba(255,255,255,.76);
+      border-bottom:1px solid rgba(255,255,255,.76);
     }
 
-    /* right hub + needle with gap after barrel */
+    /* A small hub creates a clear visual gap before the needle */
     .syringe-hub{
       position:absolute;
-      right:66px;
-      top:42px;
+      right:61px;
+      top:44px;
       width:18px;
-      height:10px;
-      border:2px solid #fff;
-      background:rgba(255,255,255,.08);
+      height:12px;
+      border:1px solid rgba(255,255,255,.78);
+      background:#111;
     }
+    .syringe-hub:after{
+      content:"";
+      position:absolute;
+      right:-8px;
+      top:3px;
+      width:7px;
+      height:4px;
+      background:rgba(255,255,255,.78);
+    }
+
     .syringe-needle{
       position:absolute;
       right:12px;
-      top:47px;
-      width:48px;
-      height:2px;
-      background:#fff;
+      top:49px;
+      width:40px;
+      height:1px;
+      background:rgba(255,255,255,.88);
     }
     .syringe-needle:after{
       content:"";
       position:absolute;
       right:-10px;
       top:-2px;
-      width:12px;
-      height:6px;
-      border-radius:0 3px 3px 0;
-      background:#fff;
-      clip-path:polygon(0 0,100% 50%,0 100%);
+      width:11px;
+      height:5px;
+      background:rgba(255,255,255,.9);
+      clip-path:polygon(0 35%,100% 50%,0 65%);
     }
 
+    /* 5-unit ticks; only 20-unit values are labelled */
     .syringe-marks{
-      position:absolute;left:52px;right:92px;top:12px;height:70px;pointer-events:none;
-      display:flex;justify-content:space-between;
+      position:absolute;
+      left:var(--barrel-left);
+      right:var(--barrel-right);
+      top:20px;
+      height:72px;
+      pointer-events:none;
+      display:flex;
+      justify-content:space-between;
     }
-    .syringe-mark{position:relative;width:1px;background:transparent}
+    .syringe-mark{
+      position:relative;
+      width:1px;
+      flex:0 0 1px;
+    }
     .syringe-mark:before{
-      content:"";position:absolute;left:0;top:0;width:1px;height:18px;background:#fff;opacity:.95
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      width:1px;
+      height:8px;
+      background:rgba(255,255,255,.30);
     }
-    .syringe-mark.mid:before{height:12px;opacity:.65}
+    .syringe-mark.medium:before{
+      height:12px;
+      background:rgba(255,255,255,.52);
+    }
+    .syringe-mark.major:before{
+      height:17px;
+      background:rgba(255,255,255,.82);
+    }
     .syringe-mark small{
-      position:absolute;top:24px;left:50%;transform:translateX(-50%);
-      color:#cfcfcf;font-size:9px;letter-spacing:.08em
+      position:absolute;
+      top:58px;
+      left:50%;
+      transform:translateX(-50%);
+      color:#969696;
+      font-size:8px;
+      line-height:1;
+      letter-spacing:.04em;
+      white-space:nowrap;
     }
+    .syringe-mark.major small{color:#c8c8c8}
 
-    .syringe-range{width:100%;appearance:none;background:transparent;margin-top:12px}
-    .syringe-range::-webkit-slider-runnable-track{height:2px;background:#555}
-    .syringe-range::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;margin-top:-8px;border:0}
-    .syringe-range::-moz-range-track{height:2px;background:#555}
-    .syringe-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:0}
-    .range-row{display:flex;gap:10px;align-items:center;margin-top:10px}
-    .range-row label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#aaa;white-space:nowrap}
-    .range-row output{min-width:52px;text-align:right;font-size:12px;color:#fff}
-    .tap-note{font-size:10px;color:#aaa;margin-top:8px}
+    .syringe-range{
+      width:100%;
+      appearance:none;
+      background:transparent;
+      margin-top:8px
+    }
+    .syringe-range::-webkit-slider-runnable-track{height:1px;background:#4d4d4d}
+    .syringe-range::-webkit-slider-thumb{
+      appearance:none;width:16px;height:16px;border-radius:50%;
+      background:#f2f1ec;margin-top:-7.5px;border:0
+    }
+    .syringe-range::-moz-range-track{height:1px;background:#4d4d4d}
+    .syringe-range::-moz-range-thumb{
+      width:16px;height:16px;border-radius:50%;background:#f2f1ec;border:0
+    }
+    .range-row{display:flex;gap:10px;align-items:center;margin-top:6px}
+    .range-row label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#888;white-space:nowrap}
+    .range-row output{min-width:48px;text-align:right;font-size:11px;color:#fff}
+    .tap-note{font-size:9px;color:#777;margin-top:8px;letter-spacing:.02em}
 
     /* Mobile header cleanup */
     @media(max-width:640px){
@@ -191,12 +273,12 @@
       .calc-tabs{margin-left:-12px;margin-right:-12px;padding:0 12px}
       .header-nav{gap:8px 12px;font-size:11px}
       .brand{font-size:28px}
-      .syringe-body{left:40px;right:78px}
-      .syringe-marks{left:40px;right:78px}
-      .syringe-handle{left:12px;width:22px;height:58px}
-      .syringe-handle:before{height:58px}
-      .syringe-hub{right:56px}
-      .syringe-needle{right:8px;width:38px}
+      .syringe-shell{--barrel-left:38px;--barrel-right:72px}
+      .syringe-handle{left:12px;width:20px}
+      .syringe-handle:before{left:-8px}
+      .syringe-hub{right:51px;width:14px}
+      .syringe-needle{right:7px;width:34px}
+      .syringe-mark small{font-size:7px}
     }
   </style>
 </head>

@@ -1,13 +1,18 @@
-Replace these files in your repo:
-- index.html
+PURE20 ultra-clean syringe update
+
+Replace:
 - calculator.html
 - calculator.js
 
-Changes included:
-1) Syringe cleaned up:
-   - black block removed
-   - plunger marker made thinner
-   - needle separated from barrel with a cleaner hub
-2) Mobile header improved on Shop and Calculator:
-   - brand and nav stack cleanly on small screens
-   - links no longer collide with the order/cart button
+Optional:
+- index.html is included unchanged from the previous mobile-header package,
+  so you can upload all three files together if that is easier.
+
+Visual changes:
+- subtle 5-unit tick marks
+- labels only at 0 / 20 / 40 / 60 / 80 / 100
+- pale liquid fill so markings stay readable
+- very thin endpoint marker
+- smaller, cleaner hub and needle
+- no black block inside the syringe
+- mobile spacing preserved
