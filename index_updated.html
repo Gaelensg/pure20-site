@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f2f1ec" />
+  <meta name="description" content="PURE20 research catalogue and order builder" />
+  <title>PURE20. — Order</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* Search field override */
+    .search-wrap input{
+      font-size:17px;
+    }
+
+    /* Keep the status elements available for app.js, but invisible */
+    .cloud-status-hidden{
+      display:none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="PURE20 home">PURE20.</a>
+      <nav class="header-nav" aria-label="Page navigation">
+        <a href="#catalogueSection">Catalogue</a>
+        <button id="headerCart" class="header-cart" type="button">
+          Order <span id="headerCartCount">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!--
+    app.js still expects these two IDs.
+    They stay hidden so the "Live catalogue / synced with database" bar
+    does not appear, while the catalogue JavaScript keeps working.
+  -->
+  <div class="cloud-status-hidden" aria-hidden="true">
+    <span id="cloudDot" class="cloud-dot"></span>
+    <span id="cloudStatus" class="cloud-copy"></span>
+  </div>
+
+  <main id="top">
+    <div id="connectionError" class="shell connection-error" hidden></div>
+
+    <section class="hero shell">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p id="eyebrow" class="eyebrow"></p>
+          <h1 id="pageTitle"></h1>
+          <p id="pageSubtitle" class="lede"></p>
+        </div>
+
+        <div class="hero-aside">
+          <div class="hero-mark">20<span>.</span></div>
+          <p>Defined.<br>Minimal.<br>Precise.</p>
+        </div>
+      </div>
+
+      <div class="hero-tools">
+        <div class="search-wrap">
+          <label class="sr-only" for="search">Search catalogue</label>
+          <input
+            id="search"
+            type="search"
+            placeholder="Search product, strength or code"
+            autocomplete="off"
+          />
+          <button id="clearSearch" class="icon-btn" type="button" aria-label="Clear search">×</button>
+        </div>
+
+        <div class="hero-statline">
+          <span><strong id="productCount">0</strong> products</span>
+          <span><strong id="variantCount">0</strong> options</span>
+          <span>Prices per <strong>vial</strong></span>
+          <span id="shippingText"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalogueSection" class="catalogue-zone">
+      <div class="shell catalogue-toolbar">
+        <div id="categoryPills" class="category-pills"></div>
+        <div class="toolbar-note">
+          <span class="status-dot"></span>
+          Add quantities. Your order updates instantly.
+        </div>
+      </div>
+
+      <div class="shell catalogue-section">
+        <div class="catalogue-head">
+          <span>PRODUCT / STRENGTH</span>
+          <span>PRICE</span>
+          <span>QTY</span>
+        </div>
+
+        <div id="catalogue" class="catalogue"></div>
+
+        <div id="emptyState" class="empty-state" hidden>
+          <strong>No matches.</strong>
+          <span>Try another search term or category.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell research-note">
+      <span class="square"></span>
+      <p id="footerNotice"></p>
+    </section>
+  </main>
+
+  <div id="cartBar" class="cart-bar">
+    <div class="shell cart-bar-inner">
+      <div class="cart-copy">
+        <span><strong id="cartUnits">0</strong> vials</span>
+        <span class="cart-separator">/</span>
+        <strong id="cartSubtotal">€0.00</strong>
+      </div>
+
+      <button id="clearCart" class="cart-clear" type="button">Clear</button>
+
+      <button id="reviewOrder" class="cart-review" type="button">
+        Review order <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
+
+  <aside id="orderDrawer" class="order-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <p class="eyebrow">PURE20.</p>
+        <h2>Review order</h2>
+      </div>
+      <button id="closeDrawer" class="icon-btn large" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div class="drawer-scroll">
+      <section class="drawer-block first-block">
+        <div class="section-heading">
+          <span>01</span>
+          <h3>Selected items</h3>
+        </div>
+
+        <div id="orderLines"></div>
+        <div id="drawerEmpty" class="drawer-empty">Your order is still empty.</div>
+      </section>
+
+      <section class="drawer-block">
+        <div class="section-heading">
+          <span>02</span>
+          <h3>Details</h3>
+          <small>Saved on this device</small>
+        </div>
+
+        <div class="form-grid">
+          <label class="field field-wide">
+            Full name
+            <input id="fullName" type="text" autocomplete="name" placeholder="Full name" />
+          </label>
+
+          <label class="field field-wide">
+            Address
+            <input id="address" type="text" autocomplete="street-address" placeholder="Street and house number" />
+          </label>
+
+          <label class="field">
+            Postal code
+            <input id="zip" type="text" autocomplete="postal-code" placeholder="8400" />
+          </label>
+
+          <label class="field">
+            Country
+            <input id="country" type="text" autocomplete="country-name" placeholder="Belgium" />
+          </label>
+
+          <label class="field">
+            Email
+            <input id="email" type="email" autocomplete="email" placeholder="name@email.com" />
+          </label>
+
+          <label class="field">
+            Phone
+            <input id="phone" type="tel" autocomplete="tel" placeholder="+32 …" />
+          </label>
+        </div>
+      </section>
+
+      <section class="drawer-block">
+        <div class="section-heading">
+          <span>03</span>
+          <h3>Discount</h3>
+        </div>
+
+        <div class="coupon-row">
+          <input id="couponInput" type="text" placeholder="Discount code" />
+          <button id="applyCoupon" class="outline-btn" type="button">Apply</button>
+        </div>
+
+        <div id="couponMessage" class="coupon-message"></div>
+      </section>
+
+      <section class="totals-card">
+        <div>
+          <span>Subtotal</span>
+          <strong id="drawerSubtotal">€0.00</strong>
+        </div>
+
+        <div id="discountRow" hidden>
+          <span>Discount</span>
+          <strong id="drawerDiscount">-€0.00</strong>
+        </div>
+
+        <div>
+          <span>Shipping</span>
+          <strong id="drawerShipping"></strong>
+        </div>
+
+        <div class="grand-total">
+          <span>Current total <small>EUR</small></span>
+          <strong id="drawerTotal">€0.00</strong>
+        </div>
+      </section>
+
+      <label class="research-check">
+        <input id="researchConfirm" type="checkbox" />
+        <span>I understand availability, shipping and payment are confirmed separately.</span>
+      </label>
+    </div>
+
+    <div class="drawer-actions">
+      <button id="whatsappOrder" class="outline-btn action-btn" type="button">WhatsApp</button>
+      <button id="copyOrder" class="solid-btn action-btn" type="button">Copy order</button>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="fallback-data.js"></script>
+  <script src="api.js"></script>
+  <script src="app.js"></script>
+  <script src="order-recorder.js"></script>
+</body>
+</html>
