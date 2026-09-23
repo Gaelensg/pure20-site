@@ -45,18 +45,12 @@
     const marks = shell.querySelector('.syringe-marks');
     if (!marks || marks.dataset.ready) return;
     const values = [0,10,20,30,40,50,60,70,80,90,100];
-    values.forEach((value, index) => {
+    values.forEach((value) => {
       const mark = document.createElement('div');
       mark.className = 'syringe-mark' + ((value % 20) ? ' mid' : '');
-      if (value < 100) {
-        const label = document.createElement('small');
-        label.textContent = value;
-        mark.appendChild(label);
-      } else {
-        const label = document.createElement('small');
-        label.textContent = '100';
-        mark.appendChild(label);
-      }
+      const label = document.createElement('small');
+      label.textContent = String(value);
+      mark.appendChild(label);
       marks.appendChild(mark);
     });
     marks.dataset.ready = 'true';
@@ -72,6 +66,7 @@
     const fill = shell.querySelector('.syringe-fill');
     const plunger = shell.querySelector('.syringe-plunger');
     const percent = safeUnits;
+
     if (fill) fill.style.width = `${percent}%`;
 
     if (plunger) {
@@ -79,7 +74,8 @@
       if (body) {
         const bodyWidth = body.clientWidth;
         const leftBase = body.offsetLeft;
-        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - 9;
+        const plungerWidth = plunger.offsetWidth || 4;
+        const x = leftBase + Math.max(0, Math.min(bodyWidth, bodyWidth * (percent / 100))) - (plungerWidth / 2);
         plunger.style.left = `${x}px`;
       }
     }
@@ -239,14 +235,17 @@
     el.addEventListener('input', calculateDose);
     el.addEventListener('change', calculateDose);
   });
+
   document.querySelectorAll('#view-units input,#view-units select').forEach(el => {
     el.addEventListener('change', syncInputToSlider);
   });
+
   document.querySelectorAll('#view-units input').forEach(el => {
     if (el.id !== 'unitsMark') {
       el.addEventListener('input', calculateUnits);
     }
   });
+
   $('unitsMark').addEventListener('input', syncInputToSlider);
   $('unitsSlider').addEventListener('input', syncSliderToInput);
   $('unitsSlider').addEventListener('change', syncSliderToInput);

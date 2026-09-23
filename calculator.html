@@ -58,13 +58,30 @@
       background:linear-gradient(90deg,#f4f4f0 0%,#ddd9cf 100%);
       transition:width .25s ease;
     }
+
+    /* Cleaner, thinner plunger marker */
     .syringe-plunger{
-      position:absolute;top:11px;width:18px;height:72px;border:2px solid #fff;background:#111;
+      position:absolute;
+      top:13px;
+      width:4px;
+      height:68px;
+      background:#fff;
+      border:0;
       transition:left .25s ease;
+      box-shadow:0 0 0 1px rgba(255,255,255,.15);
     }
     .syringe-plunger:before{
-      content:"";position:absolute;left:-18px;top:25px;width:18px;height:18px;border:2px solid #fff;border-right:0
+      content:"";
+      position:absolute;
+      left:-14px;
+      top:26px;
+      width:12px;
+      height:14px;
+      border:2px solid #fff;
+      border-right:0;
+      background:#111;
     }
+
     .syringe-needle{
       position:absolute;right:8px;top:46px;width:48px;height:2px;background:#fff;
     }
@@ -82,7 +99,7 @@
     .syringe-mark.mid:before{height:12px;opacity:.65}
     .syringe-mark small{
       position:absolute;top:24px;left:50%;transform:translateX(-50%);
-      color:#aaa;font-size:9px;letter-spacing:.08em
+      color:#cfcfcf;font-size:9px;letter-spacing:.08em
     }
     .syringe-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
     .syringe-bottom p{margin:0;color:#aaa;font-size:11px;line-height:1.5}
@@ -300,7 +317,6 @@
             </aside>
           </div>
         </section>
-
       </div>
     </section>
 
