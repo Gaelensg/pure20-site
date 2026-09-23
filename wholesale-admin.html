@@ -1,22 +1,498 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PURE20. — Wholesale Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PURE20. — Wholesale Admin</title>
 <link rel="stylesheet" href="styles.css">
+
 <style>
-.wgrid{display:grid;grid-template-columns:1.5fr .9fr;gap:16px}.wcard{background:#fff;border:1px solid #d0cec8;padding:20px;margin-bottom:16px}.wcard h2{margin:0 0 14px}.wtable{width:100%;border-collapse:collapse;min-width:820px}.wtable th,.wtable td{padding:10px;border-bottom:1px solid #ddd;text-align:left;font-size:12px}.wtable th{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#666;background:#f4f3ef}.wtable input,.wtable select{padding:8px;border:1px solid #bbb}.pack{width:70px}.price{width:100px}.btn{border:1px solid #111;background:#111;color:#fff;padding:9px 11px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.btn.alt{background:#fff;color:#111}.btn.danger{background:#fff;color:#9d2e2e;border-color:#9d2e2e}.addrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}.addrow input{padding:10px;border:1px solid #bbb}.accessitem{display:grid;grid-template-columns:1.2fr .8fr auto;gap:8px;align-items:center;border-top:1px solid #ddd;padding:10px 0;font-size:12px}.settings{display:grid;grid-template-columns:1fr 1fr;gap:10px}.settings label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#666}.settings input,.settings textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #bbb}.settings .wide{grid-column:1/-1}@media(max-width:900px){.wgrid{grid-template-columns:1fr}.accessitem{grid-template-columns:1fr}.settings{grid-template-columns:1fr}.settings .wide{grid-column:auto}}
+.wgrid{
+  display:grid;
+  grid-template-columns:1.5fr .9fr;
+  gap:16px
+}
+
+.wcard{
+  background:#fff;
+  border:1px solid #d0cec8;
+  padding:20px;
+  margin-bottom:16px
+}
+
+.wcard h2{
+  margin:0 0 14px
+}
+
+.pricing-card{
+  overflow:auto
+}
+
+.wtable{
+  width:100%;
+  border-collapse:collapse;
+  min-width:820px
+}
+
+.wtable th,
+.wtable td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+  font-size:12px
+}
+
+.wtable th{
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#666;
+  background:#f4f3ef
+}
+
+.wtable input,
+.wtable select{
+  padding:8px;
+  border:1px solid #bbb;
+  background:#fff
+}
+
+.pack{
+  width:70px
+}
+
+.price{
+  width:100px
+}
+
+.btn{
+  border:1px solid #111;
+  background:#111;
+  color:#fff;
+  padding:9px 11px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em
+}
+
+.btn.alt{
+  background:#fff;
+  color:#111
+}
+
+.btn.danger{
+  background:#fff;
+  color:#9d2e2e;
+  border-color:#9d2e2e
+}
+
+.addrow{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:8px
+}
+
+.addrow input{
+  padding:10px;
+  border:1px solid #bbb
+}
+
+.accessitem{
+  display:grid;
+  grid-template-columns:1.2fr .8fr auto;
+  gap:8px;
+  align-items:center;
+  border-top:1px solid #ddd;
+  padding:10px 0;
+  font-size:12px
+}
+
+.settings{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+.settings label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#666
+}
+
+.settings input,
+.settings textarea{
+  display:block;
+  width:100%;
+  margin-top:6px;
+  padding:10px;
+  border:1px solid #bbb
+}
+
+.settings .wide{
+  grid-column:1/-1
+}
+
+@media(max-width:900px){
+  .wgrid{
+    grid-template-columns:1fr
+  }
+
+  .accessitem{
+    grid-template-columns:1fr
+  }
+
+  .settings{
+    grid-template-columns:1fr
+  }
+
+  .settings .wide{
+    grid-column:auto
+  }
+}
+
+@media(max-width:680px){
+  .admin-shell{
+    width:min(100% - 20px,1320px)
+  }
+
+  .admin-header-inner{
+    height:auto!important;
+    min-height:0;
+    padding:11px 0!important;
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:9px 10px;
+    align-items:center
+  }
+
+  .admin-header .admin-brand{
+    font-size:24px
+  }
+
+  .admin-header .admin-mode{
+    justify-self:end
+  }
+
+  .admin-header .admin-spacer{
+    display:none
+  }
+
+  .admin-header .admin-link{
+    font-size:9px;
+    letter-spacing:.07em;
+    border:1px solid #444;
+    padding:8px 9px;
+    text-align:center;
+    white-space:nowrap
+  }
+
+  .admin-header a.admin-link:first-of-type{
+    grid-column:1
+  }
+
+  .admin-header a.admin-link:nth-of-type(2){
+    grid-column:2
+  }
+
+  .admin-header button.admin-link{
+    grid-column:1/-1;
+    width:100%
+  }
+
+  .admin-hero{
+    margin-bottom:18px
+  }
+
+  .admin-hero h1{
+    font-size:42px;
+    line-height:.96
+  }
+
+  .admin-hero p{
+    font-size:14px;
+    line-height:1.5
+  }
+
+  .wcard{
+    padding:14px;
+    margin-bottom:12px
+  }
+
+  .wcard h2{
+    font-size:24px
+  }
+
+  .pricing-card{
+    overflow:visible
+  }
+
+  .wtable{
+    display:block;
+    min-width:0;
+    width:100%
+  }
+
+  .wtable thead{
+    display:none
+  }
+
+  .wtable tbody{
+    display:grid;
+    gap:12px
+  }
+
+  .wtable tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0 12px;
+    border:1px solid #d4d2cb;
+    background:#faf9f6;
+    padding:14px
+  }
+
+  .wtable td{
+    display:block;
+    border:0;
+    padding:8px 0;
+    min-width:0
+  }
+
+  .wtable td:first-child{
+    grid-column:1/-1;
+    border-bottom:1px solid #ddd;
+    padding-top:0;
+    padding-bottom:12px;
+    margin-bottom:3px
+  }
+
+  .wtable td:first-child strong{
+    display:block;
+    font-size:17px;
+    line-height:1.15
+  }
+
+  .wtable td:nth-child(2)::before{
+    content:"Variant"
+  }
+
+  .wtable td:nth-child(3)::before{
+    content:"Stock"
+  }
+
+  .wtable td:nth-child(4)::before{
+    content:"Pack size"
+  }
+
+  .wtable td:nth-child(5)::before{
+    content:"Wholesale price"
+  }
+
+  .wtable td:nth-child(6)::before{
+    content:"Status"
+  }
+
+  .wtable td:nth-child(n+2):nth-child(-n+6)::before{
+    display:block;
+    margin-bottom:6px;
+    color:#777;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.09em;
+    text-transform:uppercase
+  }
+
+  .wtable td:nth-child(2),
+  .wtable td:nth-child(3){
+    font-size:14px
+  }
+
+  .wtable td:nth-child(7){
+    grid-column:1/-1;
+    padding-bottom:0;
+    padding-top:10px
+  }
+
+  .wtable input,
+  .wtable select{
+    width:100%;
+    min-height:44px;
+    padding:10px;
+    font-size:16px;
+    border-radius:0
+  }
+
+  .pack,
+  .price{
+    width:100%
+  }
+
+  .wtable .btn{
+    width:100%;
+    min-height:46px;
+    font-size:11px
+  }
+
+  .addrow{
+    grid-template-columns:1fr
+  }
+
+  .addrow input{
+    min-height:44px;
+    font-size:16px
+  }
+
+  .addrow .btn{
+    min-height:44px
+  }
+
+  .accessitem{
+    border:1px solid #ddd;
+    margin-top:10px;
+    padding:12px;
+    gap:10px
+  }
+
+  .accessitem>div:last-child{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px
+  }
+
+  .accessitem .btn{
+    width:100%
+  }
+
+  .settings input,
+  .settings textarea{
+    font-size:16px;
+    min-height:44px
+  }
+
+  #saveSettings{
+    width:100%;
+    min-height:46px
+  }
+}
 </style>
 </head>
+
 <body class="admin-body">
-<div id="loginGate" class="login-gate"><div class="admin-auth-card"><div class="admin-brand">PURE20.</div><div class="auth-kicker">WHOLESALE ADMIN</div><h1>Wholesale manager.</h1><p>Use your existing PURE20 administrator account.</p><input id="emailInput" type="email" placeholder="Admin email"><input id="passwordInput" type="password" placeholder="Password"><button id="loginButton">Sign in</button><div id="loginError" class="login-error"></div></div></div>
-<header class="admin-header"><div class="admin-shell admin-header-inner" style="padding:0"><div class="admin-brand">PURE20.</div><span class="admin-mode">Wholesale</span><div class="admin-spacer"></div><a class="admin-link" href="wholesale.html" target="_blank">Open wholesale ↗</a><a class="admin-link" href="admin.html">Retail admin</a><button id="signOut" class="admin-link" style="background:transparent;border:0">Sign out</button></div></header>
+
+<div id="loginGate" class="login-gate">
+  <div class="admin-auth-card">
+    <div class="admin-brand">PURE20.</div>
+    <div class="auth-kicker">WHOLESALE ADMIN</div>
+    <h1>Wholesale manager.</h1>
+    <p>Use your existing PURE20 administrator account.</p>
+    <input id="emailInput" type="email" placeholder="Admin email">
+    <input id="passwordInput" type="password" placeholder="Password">
+    <button id="loginButton">Sign in</button>
+    <div id="loginError" class="login-error"></div>
+  </div>
+</div>
+
+<header class="admin-header">
+  <div class="admin-shell admin-header-inner" style="padding:0">
+    <div class="admin-brand">PURE20.</div>
+    <span class="admin-mode">Wholesale</span>
+    <div class="admin-spacer"></div>
+    <a class="admin-link" href="wholesale.html" target="_blank">Open wholesale ↗</a>
+    <a class="admin-link" href="admin.html">Retail admin</a>
+    <button id="signOut" class="admin-link" style="background:transparent;border:0">Sign out</button>
+  </div>
+</header>
+
 <main class="admin-shell">
-<section class="admin-hero"><div><p class="eyebrow">PRIVATE PRICING</p><h1>Wholesale control.</h1></div><div><p>Set the price per box, pack size and which customer emails are allowed to enter the private catalogue.</p></div></section>
-<div class="wgrid">
-<section class="wcard" style="overflow:auto"><h2>Wholesale pricing</h2><p class="admin-note">Products are hidden from Wholesale until Active is enabled.</p><table class="wtable"><thead><tr><th>Product</th><th>Variant</th><th>Stock</th><th>Pack</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody id="priceBody"></tbody></table></section>
-<div>
-<section class="wcard"><h2>Approved customers</h2><p class="admin-note">Approve the exact email address the customer uses to sign in.</p><div class="addrow"><input id="accessEmail" type="email" placeholder="customer@email.com"><input id="accessLabel" placeholder="Company / note"><button id="addAccess" class="btn">Add</button></div><div id="accessList"></div></section>
-<section class="wcard"><h2>Wholesale page</h2><div class="settings"><label class="wide">Title<input id="setTitle"></label><label class="wide">Subtitle<textarea id="setSubtitle"></textarea></label><label>Shipping (€)<input id="setShipping" type="number" min="0" step="0.01"></label><label>WhatsApp<input id="setWhatsapp"></label><label class="wide">Shipping text<input id="setShippingText"></label><label class="wide">Footer notice<textarea id="setFooter"></textarea></label></div><button id="saveSettings" class="btn" style="margin-top:14px">Save settings</button></section>
-</div></div></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="wholesale-admin.js"></script>
-</body></html>
+  <section class="admin-hero">
+    <div>
+      <p class="eyebrow">PRIVATE PRICING</p>
+      <h1>Wholesale control.</h1>
+    </div>
+    <div>
+      <p>Set the price per box, pack size and which customer emails are allowed to enter the private catalogue.</p>
+    </div>
+  </section>
+
+  <div class="wgrid">
+    <section class="wcard pricing-card">
+      <h2>Wholesale pricing</h2>
+      <p class="admin-note">Products are hidden from Wholesale until Active is enabled.</p>
+
+      <table class="wtable">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Variant</th>
+            <th>Stock</th>
+            <th>Pack</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="priceBody"></tbody>
+      </table>
+    </section>
+
+    <div>
+      <section class="wcard">
+        <h2>Approved customers</h2>
+        <p class="admin-note">Approve the exact email address the customer uses to sign in.</p>
+
+        <div class="addrow">
+          <input id="accessEmail" type="email" placeholder="customer@email.com">
+          <input id="accessLabel" placeholder="Company / note">
+          <button id="addAccess" class="btn">Add</button>
+        </div>
+
+        <div id="accessList"></div>
+      </section>
+
+      <section class="wcard">
+        <h2>Wholesale page</h2>
+
+        <div class="settings">
+          <label class="wide">
+            Title
+            <input id="setTitle">
+          </label>
+
+          <label class="wide">
+            Subtitle
+            <textarea id="setSubtitle"></textarea>
+          </label>
+
+          <label>
+            Shipping (€)
+            <input id="setShipping" type="number" min="0" step="0.01">
+          </label>
+
+          <label>
+            WhatsApp
+            <input id="setWhatsapp">
+          </label>
+
+          <label class="wide">
+            Shipping text
+            <input id="setShippingText">
+          </label>
+
+          <label class="wide">
+            Footer notice
+            <textarea id="setFooter"></textarea>
+          </label>
+        </div>
+
+        <button id="saveSettings" class="btn" style="margin-top:14px">Save settings</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="wholesale-admin.js"></script>
+
+</body>
+</html>
