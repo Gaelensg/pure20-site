@@ -6,3 +6,12 @@ window.PURE20_SUPABASE_CONFIG = {
   url: "https://wvprnzgzqyyecbqiroij.supabase.co",
   key: "sb_publishable_djQWgeLRZuCljskve0i8iA_rLabxtvS"
 };
+
+/* PURE20 global language loader */
+(() => {
+  if (document.querySelector('script[data-pure20-language]')) return;
+  const s = document.createElement('script');
+  s.src = '/language.js';
+  s.dataset.pure20Language = '1';
+  document.head.appendChild(s);
+})();

@@ -44,15 +44,11 @@
   function buildSyringeMarks(shell) {
     const marks = shell.querySelector('.syringe-marks');
     if (!marks || marks.dataset.ready) return;
-
-    // Needle is on the right. On a real insulin syringe, 0 is nearest
-    // the needle and the scale increases toward the plunger.
     const values = [100,90,80,70,60,50,40,30,20,10,0];
 
     values.forEach((value) => {
       const mark = document.createElement('div');
       mark.className = 'syringe-mark' + (value % 20 === 0 ? ' major' : '');
-
       const label = document.createElement('small');
       label.textContent = String(value);
       mark.appendChild(label);
@@ -74,16 +70,11 @@
     const stopper = shell.querySelector('.syringe-plunger');
     const body = shell.querySelector('.syringe-body');
 
-    if (fill) {
-      fill.style.width = `${safeUnits}%`;
-    }
+    if (fill) fill.style.width = `${safeUnits}%`;
 
     if (stopper && body) {
       const bodyWidth = body.clientWidth;
       const leftBase = body.offsetLeft;
-
-      // 0 U = stopper at needle end (right).
-      // 100 U = stopper at plunger end (left).
       const x = leftBase + bodyWidth * (1 - safeUnits / 100) - 1.5;
       stopper.style.left = `${x}px`;
     }
@@ -247,9 +238,7 @@
     el.addEventListener('change', syncInputToSlider);
   });
   document.querySelectorAll('#view-units input').forEach(el => {
-    if (el.id !== 'unitsMark') {
-      el.addEventListener('input', calculateUnits);
-    }
+    if (el.id !== 'unitsMark') el.addEventListener('input', calculateUnits);
   });
   $('unitsMark').addEventListener('input', syncInputToSlider);
   $('unitsSlider').addEventListener('input', syncSliderToInput);
@@ -271,4 +260,13 @@
   $('unitsMark').value = 0;
   calculateUnits();
   calculateBlend();
+})();
+
+/* PURE20 global NL / EN switcher */
+(() => {
+  if (document.querySelector('script[data-pure20-language]')) return;
+  const s = document.createElement('script');
+  s.src = '/language.js';
+  s.dataset.pure20Language = '1';
+  document.head.appendChild(s);
 })();

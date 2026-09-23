@@ -140,3 +140,13 @@
     if(last && !last.classList.contains('brand')) last.textContent='Ontdek de kennisbank ↗';
   }
 })();
+
+
+/* PURE20 global NL / EN switcher */
+(() => {
+  if (document.querySelector('script[data-pure20-language]')) return;
+  const s = document.createElement('script');
+  s.src = '/language.js';
+  s.dataset.pure20Language = '1';
+  document.head.appendChild(s);
+})();
