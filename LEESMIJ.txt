@@ -1,27 +1,38 @@
-PURE20 COA UPLOAD - KLAAR VOOR GEBRUIK
+PURE20 HOMEPAGE
 
-Supabase is al door ChatGPT ingesteld:
-- publieke Storage bucket: pure20-coa
-- max. bestandsgrootte: 10 MB
-- toegestaan: PDF, JPG, PNG, WEBP
-- alleen PURE20 admins mogen uploaden/verwijderen
-- bezoekers kunnen een COA via de publieke link bekijken
+Deze update maakt van de root '/' een echte homepage.
 
-Vervang in GitHub deze 6 bestanden:
-- api.js
-- admin.html
-- admin.js
-- app.js
-- styles.css
-- language.js
+Upload/overschrijf:
+- index.html
+- home.css
+- home.js
+- shop.html
+- navfix.js
 
-Daarna:
-1. Open Retail Admin.
-2. Open een product.
-3. Druk op Upload COA.
-4. Kies op iPhone een PDF of afbeelding.
-5. Druk op Save product.
-6. Upload + publieke link + koppeling aan het product gebeuren automatisch.
-7. In de prijslijst verschijnt COA ↗.
+BELANGRIJK
+De bestaande shop verhuist naar:
+https://pure20-site.vercel.app/shop
 
-Bij het vervangen van een COA probeert het systeem het oude Storage-bestand automatisch te verwijderen.
+De homepage linkt naar:
+- /shop
+- /knowledge
+- /calculator
+- /wholesale
+
+De homepagina:
+- is volledig responsive
+- heeft NL / EN met dezelfde localStorage-keuze als de rest van PURE20
+- is ontworpen in de bestaande minimalistische PURE20-stijl
+- bevat duidelijke CTA's en vier hoofdingangen
+- bevat een research-use disclaimer
+
+NAVIGATIE VAN BESTAANDE PAGINA'S
+Om bestaande knoppen met label 'Shop' automatisch naar /shop te sturen,
+kan navfix.js onderaan de bestaande publieke pagina's worden geladen.
+Dat is optioneel voor de eerste preview. De homepage zelf werkt zonder verdere wijzigingen.
+
+Aanbevolen test:
+1. Upload eerst de vijf bestanden.
+2. Open /
+3. Test Shop, Knowledge, Calculator en Wholesale.
+4. Test NL/EN op mobiel.

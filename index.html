@@ -1,298 +1,209 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f2f1ec" />
-  <meta name="description" content="PURE20 research catalogue and order builder" />
-  <title>PURE20. — Order</title>
-
-  <link rel="stylesheet" href="styles.css" />
-
-  <style>
-    /* Keep knowledge + calculator navigation visible on small screens. */
-    .header-nav > .knowledge-link,
-    .header-nav > .calculator-link {
-      display:inline-flex;
-      min-height:44px;
-      align-items:center;
-    }
-
-    /* Mobile header cleanup */
-    @media(max-width:640px){
-      .header-inner{
-        display:grid;
-        grid-template-columns:1fr;
-        gap:12px;
-        align-items:start;
-      }
-      .brand{
-        font-size:32px;
-        line-height:1;
-      }
-      .header-nav{
-        width:100%;
-        display:flex;
-        flex-wrap:wrap;
-        align-items:center;
-        gap:10px 14px;
-      }
-      .header-nav > a{
-        display:inline-flex !important;
-        min-height:40px;
-        align-items:center;
-        font-size:12px;
-        letter-spacing:.08em;
-      }
-      .header-cart{
-        margin-left:auto;
-        min-height:40px;
-        padding:10px 12px;
-        font-size:12px;
-        white-space:nowrap;
-      }
-    }
-    @media(max-width:420px){
-      .brand{font-size:28px}
-      .header-nav{gap:8px 12px}
-      .header-nav > a{font-size:11px}
-      .header-cart{font-size:11px;padding:9px 10px}
-    }
-
-    /* Search field override */
-    .search-wrap input{
-      font-size:17px;
-    }
-
-    /* Keep the status elements available for app.js, but invisible */
-    .cloud-status-hidden{
-      display:none !important;
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f2f1ec">
+  <meta name="description" content="PURE20. Research catalogue, knowledge library and calculation tools in one clear platform.">
+  <title>PURE20. — Research, clearly organized.</title>
+  <link rel="stylesheet" href="home.css">
 </head>
-
 <body>
-  <header class="site-header">
-    <div class="shell header-inner">
-      <a class="brand" href="#top" aria-label="PURE20 home">PURE20.</a>
-      <nav class="header-nav" aria-label="Page navigation">
-        <a href="#catalogueSection">Catalogue</a>
-        <a class="knowledge-link" href="knowledge.html">Knowledge</a>
-        <a class="calculator-link" href="calculator.html">Calculator</a>
-        <button id="headerCart" class="header-cart" type="button">
-          Order <span id="headerCartCount">0</span>
-        </button>
+  <header class="home-header">
+    <div class="home-shell header-grid">
+      <a class="home-brand" href="/" aria-label="PURE20 home">PURE20.</a>
+
+      <nav class="home-nav" aria-label="Hoofdnavigatie">
+        <a href="/shop" data-nl="Shop" data-en="Shop">Shop</a>
+        <a href="/knowledge" data-nl="Knowledge" data-en="Knowledge">Knowledge</a>
+        <a href="/calculator" data-nl="Calculator" data-en="Calculator">Calculator</a>
+        <a href="/wholesale" data-nl="Wholesale" data-en="Wholesale">Wholesale</a>
       </nav>
+
+      <div class="home-controls">
+        <span id="pure20LangSwitch" class="lang-switch" aria-label="Taal / Language">
+          <button type="button" data-lang="nl">NL</button>
+          <button type="button" data-lang="en">EN</button>
+        </span>
+      </div>
     </div>
   </header>
 
-  <div class="cloud-status-hidden" aria-hidden="true">
-    <span id="cloudDot" class="cloud-dot"></span>
-    <span id="cloudStatus" class="cloud-copy"></span>
-  </div>
+  <main>
+    <section class="home-shell hero">
+      <div class="hero-copy">
+        <p class="kicker" data-nl="PURE20 / RESEARCH PLATFORM" data-en="PURE20 / RESEARCH PLATFORM">PURE20 / RESEARCH PLATFORM</p>
+        <h1>
+          <span data-nl="Onderzoek." data-en="Research.">Onderzoek.</span><br>
+          <span class="hero-light" data-nl="Helder georganiseerd." data-en="Clearly organized.">Helder georganiseerd.</span>
+        </h1>
+        <p class="hero-intro"
+           data-nl="Eén rustige plek voor de catalogus, onafhankelijke achtergrondinformatie, rekentools en private wholesale toegang."
+           data-en="One focused place for the catalogue, independent background information, calculation tools and private wholesale access.">
+          Eén rustige plek voor de catalogus, onafhankelijke achtergrondinformatie, rekentools en private wholesale toegang.
+        </p>
 
-  <main id="top">
-    <div id="connectionError" class="shell connection-error" hidden></div>
-
-    <section class="hero shell">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p id="eyebrow" class="eyebrow"></p>
-          <h1 id="pageTitle"></h1>
-          <p id="pageSubtitle" class="lede"></p>
-        </div>
-
-        <div class="hero-aside">
-          <div class="hero-mark">20<span>.</span></div>
-          <p>Defined.<br>Minimal.<br>Precise.</p>
-        </div>
-      </div>
-
-      <div class="hero-tools">
-        <div class="search-wrap">
-          <label class="sr-only" for="search">Search catalogue</label>
-          <input
-            id="search"
-            type="search"
-            placeholder="Search product, strength or code"
-            autocomplete="off"
-          />
-          <button id="clearSearch" class="icon-btn" type="button" aria-label="Clear search">×</button>
-        </div>
-
-        <div class="hero-statline">
-          <span><strong id="productCount">0</strong> products</span>
-          <span><strong id="variantCount">0</strong> options</span>
-          <span>Prices per <strong>vial</strong></span>
-          <span id="shippingText"></span>
+        <div class="hero-actions">
+          <a class="button button-dark" href="/shop">
+            <span data-nl="Bekijk catalogus" data-en="View catalogue">Bekijk catalogus</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <a class="button button-light" href="/knowledge">
+            <span data-nl="Open knowledge" data-en="Open knowledge">Open knowledge</span>
+            <span aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
-    </section>
 
-    <section id="catalogueSection" class="catalogue-zone">
-      <div class="shell catalogue-toolbar">
-        <div id="categoryPills" class="category-pills"></div>
-        <div class="toolbar-note">
+      <aside class="hero-panel" aria-label="PURE20 platform">
+        <div class="hero-number">20<span>.</span></div>
+        <div class="panel-rule"></div>
+        <p data-nl="CATALOGUS / KENNIS / CALCULATOR / WHOLESALE"
+           data-en="CATALOGUE / KNOWLEDGE / CALCULATOR / WHOLESALE">
+          CATALOGUS / KENNIS / CALCULATOR / WHOLESALE
+        </p>
+        <div class="panel-status">
           <span class="status-dot"></span>
-          Add quantities. Your order updates instantly.
+          <span data-nl="Platform actief" data-en="Platform live">Platform actief</span>
         </div>
-      </div>
+      </aside>
+    </section>
 
-      <div class="shell catalogue-section">
-        <div class="catalogue-head">
-          <span>PRODUCT / STRENGTH</span>
-          <span>PRICE</span>
-          <span>QTY</span>
+    <section class="explore-zone">
+      <div class="home-shell">
+        <div class="section-head">
+          <p class="kicker" data-nl="ONTDEK PURE20" data-en="EXPLORE PURE20">ONTDEK PURE20</p>
+          <h2 data-nl="Vier ingangen. Eén systeem." data-en="Four doors. One system.">Vier ingangen. Eén systeem.</h2>
         </div>
 
-        <div id="catalogue" class="catalogue"></div>
+        <div class="feature-grid">
+          <a class="feature-card feature-dark" href="/shop">
+            <div class="feature-top"><span>01</span><span class="mini-tag" data-nl="PUBLIC" data-en="PUBLIC">PUBLIC</span></div>
+            <div>
+              <p class="feature-kicker" data-nl="LIVE CATALOGUS" data-en="LIVE CATALOGUE">LIVE CATALOGUS</p>
+              <h3 data-nl="Shop" data-en="Shop">Shop</h3>
+              <p data-nl="Bekijk producten, varianten, prijzen, voorraad en beschikbare COA-links in één overzicht."
+                 data-en="Browse products, variants, pricing, stock and available COA links in one clear catalogue.">
+                Bekijk producten, varianten, prijzen, voorraad en beschikbare COA-links in één overzicht.
+              </p>
+            </div>
+            <span class="feature-arrow">↗</span>
+          </a>
 
-        <div id="emptyState" class="empty-state" hidden>
-          <strong>No matches.</strong>
-          <span>Try another search term or category.</span>
+          <a class="feature-card" href="/knowledge">
+            <div class="feature-top"><span>02</span><span class="mini-tag" data-nl="EDUCATIE" data-en="EDUCATION">EDUCATIE</span></div>
+            <div>
+              <p class="feature-kicker" data-nl="RESEARCH CONTEXT" data-en="RESEARCH CONTEXT">RESEARCH CONTEXT</p>
+              <h3 data-nl="Knowledge" data-en="Knowledge">Knowledge</h3>
+              <p data-nl="Lees heldere profielen over werking, bewijs, beperkingen, veiligheid en productkwaliteit."
+                 data-en="Read clear profiles covering mechanisms, evidence, limitations, safety and product quality.">
+                Lees heldere profielen over werking, bewijs, beperkingen, veiligheid en productkwaliteit.
+              </p>
+            </div>
+            <span class="feature-arrow">↗</span>
+          </a>
+
+          <a class="feature-card" href="/calculator">
+            <div class="feature-top"><span>03</span><span class="mini-tag" data-nl="TOOL" data-en="TOOL">TOOL</span></div>
+            <div>
+              <p class="feature-kicker" data-nl="MATHEMATISCHE CONVERSIES" data-en="MATHEMATICAL CONVERSIONS">MATHEMATISCHE CONVERSIES</p>
+              <h3 data-nl="Calculator" data-en="Calculator">Calculator</h3>
+              <p data-nl="Zet concentratie, volume en U-100 markeringen overzichtelijk om zonder doseeradvies te geven."
+                 data-en="Convert concentration, volume and U-100 markings clearly without providing dosing recommendations.">
+                Zet concentratie, volume en U-100 markeringen overzichtelijk om zonder doseeradvies te geven.
+              </p>
+            </div>
+            <span class="feature-arrow">↗</span>
+          </a>
+
+          <a class="feature-card" href="/wholesale">
+            <div class="feature-top"><span>04</span><span class="mini-tag" data-nl="PRIVATE" data-en="PRIVATE">PRIVATE</span></div>
+            <div>
+              <p class="feature-kicker" data-nl="B2B TOEGANG" data-en="B2B ACCESS">B2B TOEGANG</p>
+              <h3 data-nl="Wholesale" data-en="Wholesale">Wholesale</h3>
+              <p data-nl="Een aparte, afgeschermde omgeving voor goedgekeurde wholesale-klanten en kitprijzen."
+                 data-en="A separate private environment for approved wholesale customers and kit pricing.">
+                Een aparte, afgeschermde omgeving voor goedgekeurde wholesale-klanten en kitprijzen.
+              </p>
+            </div>
+            <span class="feature-arrow">↗</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <section class="shell research-note">
-      <span class="square"></span>
-      <p id="footerNotice"></p>
+    <section class="home-shell clarity">
+      <div class="clarity-title">
+        <p class="kicker" data-nl="WAAR PURE20 OM DRAAIT" data-en="WHAT PURE20 IS BUILT AROUND">WAAR PURE20 OM DRAAIT</p>
+        <h2>
+          <span data-nl="Minder ruis." data-en="Less noise.">Minder ruis.</span><br>
+          <span class="hero-light" data-nl="Meer context." data-en="More context.">Meer context.</span>
+        </h2>
+      </div>
+
+      <div class="principles">
+        <article>
+          <span>01</span>
+          <h3 data-nl="Overzicht eerst" data-en="Clarity first">Overzicht eerst</h3>
+          <p data-nl="Geen drukke producttegels. Product, sterkte, prijs en relevante documentatie staan direct bij elkaar."
+             data-en="No cluttered product tiles. Product, strength, price and relevant documentation stay together.">
+            Geen drukke producttegels. Product, sterkte, prijs en relevante documentatie staan direct bij elkaar.
+          </p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3 data-nl="Onderzoek met context" data-en="Research with context">Onderzoek met context</h3>
+          <p data-nl="De knowledge library maakt onderscheid tussen humane gegevens, preklinisch onderzoek en onbewezen claims."
+             data-en="The knowledge library separates human evidence, preclinical research and unproven claims.">
+            De knowledge library maakt onderscheid tussen humane gegevens, preklinisch onderzoek en onbewezen claims.
+          </p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3 data-nl="Controleerbare informatie" data-en="Traceable information">Controleerbare informatie</h3>
+          <p data-nl="Waar beschikbaar kan een product rechtstreeks gekoppeld worden aan een COA of andere batchdocumentatie."
+             data-en="Where available, products can link directly to a COA or other batch documentation.">
+            Waar beschikbaar kan een product rechtstreeks gekoppeld worden aan een COA of andere batchdocumentatie.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cta-zone">
+      <div class="home-shell cta-grid">
+        <div>
+          <p class="kicker kicker-light" data-nl="BEGIN HIER" data-en="START HERE">BEGIN HIER</p>
+          <h2 data-nl="Van product naar context in enkele klikken." data-en="From product to context in a few clicks.">
+            Van product naar context in enkele klikken.
+          </h2>
+        </div>
+        <div class="cta-actions">
+          <a class="button button-white" href="/shop">
+            <span data-nl="Naar de shop" data-en="Go to shop">Naar de shop</span><span>↗</span>
+          </a>
+          <a class="text-link" href="/knowledge">
+            <span data-nl="Of start in Knowledge" data-en="Or start in Knowledge">Of start in Knowledge</span> →
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
-  <div id="cartBar" class="cart-bar">
-    <div class="shell cart-bar-inner">
-      <div class="cart-copy">
-        <span><strong id="cartUnits">0</strong> vials</span>
-        <span class="cart-separator">/</span>
-        <strong id="cartSubtotal">€0.00</strong>
+  <footer class="home-footer">
+    <div class="home-shell footer-grid">
+      <a class="home-brand" href="/">PURE20.</a>
+      <p data-nl="Research use only. Informatie op deze website is educatief en geen persoonlijk medisch of doseeradvies."
+         data-en="Research use only. Information on this website is educational and is not personal medical or dosing advice.">
+        Research use only. Informatie op deze website is educatief en geen persoonlijk medisch of doseeradvies.
+      </p>
+      <div class="footer-links">
+        <a href="/shop" data-nl="Shop" data-en="Shop">Shop</a>
+        <a href="/knowledge" data-nl="Knowledge" data-en="Knowledge">Knowledge</a>
+        <a href="/calculator" data-nl="Calculator" data-en="Calculator">Calculator</a>
       </div>
-
-      <button id="clearCart" class="cart-clear" type="button">Clear</button>
-
-      <button id="reviewOrder" class="cart-review" type="button">
-        Review order <span>→</span>
-      </button>
     </div>
-  </div>
+  </footer>
 
-  <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
-
-  <aside id="orderDrawer" class="order-drawer" aria-hidden="true">
-    <div class="drawer-header">
-      <div>
-        <p class="eyebrow">PURE20.</p>
-        <h2>Review order</h2>
-      </div>
-      <button id="closeDrawer" class="icon-btn large" type="button" aria-label="Close">×</button>
-    </div>
-
-    <div class="drawer-scroll">
-      <section class="drawer-block first-block">
-        <div class="section-heading">
-          <span>01</span>
-          <h3>Selected items</h3>
-        </div>
-
-        <div id="orderLines"></div>
-        <div id="drawerEmpty" class="drawer-empty">Your order is still empty.</div>
-      </section>
-
-      <section class="drawer-block">
-        <div class="section-heading">
-          <span>02</span>
-          <h3>Details</h3>
-          <small>Saved on this device</small>
-        </div>
-
-        <div class="form-grid">
-          <label class="field field-wide">
-            Full name
-            <input id="fullName" type="text" autocomplete="name" placeholder="Full name" />
-          </label>
-
-          <label class="field field-wide">
-            Address
-            <input id="address" type="text" autocomplete="street-address" placeholder="Street and house number" />
-          </label>
-
-          <label class="field">
-            Postal code
-            <input id="zip" type="text" autocomplete="postal-code" placeholder="8400" />
-          </label>
-
-          <label class="field">
-            Country
-            <input id="country" type="text" autocomplete="country-name" placeholder="Belgium" />
-          </label>
-
-          <label class="field">
-            Email
-            <input id="email" type="email" autocomplete="email" placeholder="name@email.com" />
-          </label>
-
-          <label class="field">
-            Phone
-            <input id="phone" type="tel" autocomplete="tel" placeholder="+32 …" />
-          </label>
-        </div>
-      </section>
-
-      <section class="drawer-block">
-        <div class="section-heading">
-          <span>03</span>
-          <h3>Discount</h3>
-        </div>
-
-        <div class="coupon-row">
-          <input id="couponInput" type="text" placeholder="Discount code" />
-          <button id="applyCoupon" class="outline-btn" type="button">Apply</button>
-        </div>
-
-        <div id="couponMessage" class="coupon-message"></div>
-      </section>
-
-      <section class="totals-card">
-        <div>
-          <span>Subtotal</span>
-          <strong id="drawerSubtotal">€0.00</strong>
-        </div>
-
-        <div id="discountRow" hidden>
-          <span>Discount</span>
-          <strong id="drawerDiscount">-€0.00</strong>
-        </div>
-
-        <div>
-          <span>Shipping</span>
-          <strong id="drawerShipping"></strong>
-        </div>
-
-        <div class="grand-total">
-          <span>Current total <small>EUR</small></span>
-          <strong id="drawerTotal">€0.00</strong>
-        </div>
-      </section>
-
-      <label class="research-check">
-        <input id="researchConfirm" type="checkbox" />
-        <span>I understand availability, shipping and payment are confirmed separately.</span>
-      </label>
-    </div>
-
-    <div class="drawer-actions">
-      <button id="whatsappOrder" class="outline-btn action-btn" type="button">WhatsApp</button>
-      <button id="copyOrder" class="solid-btn action-btn" type="button">Copy order</button>
-    </div>
-  </aside>
-
-  <div id="toast" class="toast"></div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="fallback-data.js"></script>
-  <script src="api.js"></script>
-  <script src="app.js"></script>
-  <script src="order-recorder.js"></script>
+  <script src="home.js"></script>
 </body>
 </html>
