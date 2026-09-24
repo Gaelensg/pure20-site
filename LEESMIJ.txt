@@ -1,38 +1,16 @@
-PURE20 HOMEPAGE
+PURE20 HOMEPAGE V2
 
-Deze update maakt van de root '/' een echte homepage.
-
-Upload/overschrijf:
+Vervang alleen:
 - index.html
 - home.css
-- home.js
-- shop.html
-- navfix.js
 
-BELANGRIJK
-De bestaande shop verhuist naar:
-https://pure20-site.vercel.app/shop
+Aangepast:
+- volledig blok met 20. verwijderd
+- 'Platform actief' en de extra categorie-regel uit dat blok verwijderd
+- volledige sectie 'Minder ruis. Meer context.' verwijderd
+- 'Overzicht eerst', 'Onderzoek met context' en 'Controleerbare informatie' verwijderd
+- hero compacter gemaakt
+- mobiele header iets lager/strakker
+- flow is nu: hero -> vier hoofdingangen -> CTA -> footer
 
-De homepage linkt naar:
-- /shop
-- /knowledge
-- /calculator
-- /wholesale
-
-De homepagina:
-- is volledig responsive
-- heeft NL / EN met dezelfde localStorage-keuze als de rest van PURE20
-- is ontworpen in de bestaande minimalistische PURE20-stijl
-- bevat duidelijke CTA's en vier hoofdingangen
-- bevat een research-use disclaimer
-
-NAVIGATIE VAN BESTAANDE PAGINA'S
-Om bestaande knoppen met label 'Shop' automatisch naar /shop te sturen,
-kan navfix.js onderaan de bestaande publieke pagina's worden geladen.
-Dat is optioneel voor de eerste preview. De homepage zelf werkt zonder verdere wijzigingen.
-
-Aanbevolen test:
-1. Upload eerst de vijf bestanden.
-2. Open /
-3. Test Shop, Knowledge, Calculator en Wholesale.
-4. Test NL/EN op mobiel.
+home.js en shop.html hoeven niet opnieuw geüpload te worden.
