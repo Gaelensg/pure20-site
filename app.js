@@ -5,6 +5,23 @@
     eyebrow:$('eyebrow'),pageTitle:$('pageTitle'),pageSubtitle:$('pageSubtitle'),search:$('search'),clearSearch:$('clearSearch'),categoryPills:$('categoryPills'),catalogue:$('catalogue'),emptyState:$('emptyState'),productCount:$('productCount'),variantCount:$('variantCount'),shippingText:$('shippingText'),footerNotice:$('footerNotice'),cartUnits:$('cartUnits'),cartSubtotal:$('cartSubtotal'),headerCartCount:$('headerCartCount'),clearCart:$('clearCart'),reviewOrder:$('reviewOrder'),headerCart:$('headerCart'),drawer:$('orderDrawer'),backdrop:$('drawerBackdrop'),closeDrawer:$('closeDrawer'),orderLines:$('orderLines'),drawerEmpty:$('drawerEmpty'),drawerSubtotal:$('drawerSubtotal'),discountRow:$('discountRow'),drawerDiscount:$('drawerDiscount'),drawerShipping:$('drawerShipping'),drawerTotal:$('drawerTotal'),couponInput:$('couponInput'),applyCoupon:$('applyCoupon'),couponMessage:$('couponMessage'),researchConfirm:$('researchConfirm'),copyOrder:$('copyOrder'),whatsappOrder:$('whatsappOrder'),toast:$('toast'),cloudDot:$('cloudDot'),cloudStatus:$('cloudStatus'),connectionError:$('connectionError')
   };
   const customerFields=['fullName','address','zip','country','email','phone'];
+
+  function setupHeaderCart(){
+    if(!els.headerCart) return;
+    const headerInner=document.querySelector('.site-header .header-inner');
+    if(headerInner){
+      let controls=headerInner.querySelector('.header-controls');
+      if(!controls){controls=document.createElement('div');controls.className='header-controls';headerInner.appendChild(controls);}
+      if(els.headerCart.parentElement!==controls) controls.prepend(els.headerCart);
+    }
+    if(!els.headerCart.dataset.iconized){
+      const currentCount=els.headerCartCount?els.headerCartCount.textContent:'0';
+      els.headerCart.innerHTML=`<svg class="cart-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 4H5.4L7.2 13H18.3L20.3 7H8.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.1" cy="18.2" r="1.45" fill="currentColor"/><circle cx="17.25" cy="18.2" r="1.45" fill="currentColor"/></svg><span id="headerCartCount">${currentCount}</span>`;
+      els.headerCartCount=document.getElementById('headerCartCount');
+      els.headerCart.setAttribute('aria-label','Open cart');
+      els.headerCart.dataset.iconized='1';
+    }
+  }
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const settings=()=>state.store.settings||{};
   const money=v=>`${settings().currencySymbol||'€'}${Number(v||0).toFixed(2)}`;
@@ -87,6 +104,7 @@
   els.orderLines.addEventListener('click',e=>{const line=e.target.closest('.order-line');const b=e.target.closest('[data-drawer-action]');if(!line||!b)return;const id=line.dataset.id,q=Number(state.cart[id]||0);setQty(id,q+(b.dataset.drawerAction==='plus'?1:-1))});
   els.clearCart.addEventListener('click',clearCart);[els.reviewOrder,els.headerCart].forEach(x=>x.addEventListener('click',openDrawer));[els.closeDrawer,els.backdrop].forEach(x=>x.addEventListener('click',closeDrawer));els.applyCoupon.addEventListener('click',applyCoupon);els.couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')applyCoupon()});customerFields.forEach(id=>$(id).addEventListener('change',saveCustomer));els.copyOrder.addEventListener('click',copy);els.whatsappOrder.addEventListener('click',whatsapp);
 
+  setupHeaderCart();
   loadCustomer();
   await reloadFromSource(false);
   window.PURE20_API.subscribePublic(()=>reloadFromSource(true));

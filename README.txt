@@ -1,12 +1,10 @@
-PURE20 syringe redesign based on the Peptide Koning / classic insulin-syringe visual.
+Vervang deze 3 bestanden in je repository:
+- styles.css
+- app.js
+- language.js
 
-Changes:
-- needle stays on the right but is shorter
-- separate hub between barrel and needle
-- 0 is nearest the needle; 100 nearest the plunger
-- liquid fills from the needle side
-- one thin stopper line shows the exact draw mark
-- no black block inside the syringe
-- original PURE20 black result-card styling retained
-
-Replace calculator.html and calculator.js.
+Dit doet:
+- winkelkar-icoon rechtsboven op de shop
+- mooie, uitgelijnde header op mobiel
+- navigatielinks blijven zichtbaar en lopen niet buiten het scherm
+- NL/EN-switch staat netjes rechtsboven in dezelfde headerzone
