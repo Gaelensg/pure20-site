@@ -8,6 +8,26 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const uid=prefix=>`${prefix}-${(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2))}`;
   const money=v=>`${store.settings.currencySymbol||'€'}${Number(v||0).toFixed(2)}`;
+  let selectedCoaFile=null;
+  let originalCoaUrl='';
+
+  function renderCoaControls(){
+    const url=$('prodCoaUrl').value.trim();
+    const status=$('coaFileStatus');
+    const open=$('openCoaFile');
+    const remove=$('removeCoaFile');
+    if(selectedCoaFile){
+      status.textContent=`Selected: ${selectedCoaFile.name}`;
+    }else if(url){
+      status.textContent='COA linked to this product.';
+    }else{
+      status.textContent='No COA linked.';
+    }
+    open.hidden=!url;
+    if(url)open.href=url;
+    else open.removeAttribute('href');
+    remove.hidden=!url&&!selectedCoaFile;
+  }
 
   function setSync(kind,text){els.syncNote.className=`sync-note ${kind==='pending'?'pending':kind==='error'?'error':''}`;els.syncNote.innerHTML=`<span class="cloud-dot"></span><span>${esc(text)}</span>`;}
   function setModeUI(){
@@ -35,10 +55,39 @@
   function closeModals(){els.modalBackdrop.classList.remove('open');els.productModal.classList.remove('open');els.couponModal.classList.remove('open')}
   document.querySelectorAll('[data-close-modal]').forEach(x=>x.addEventListener('click',closeModals));els.modalBackdrop.addEventListener('click',closeModals);
 
-  function productToForm(p){$('prodId').value=p?.id||'';$('prodName').value=p?.product||'';$('prodVariant').value=p?.variant||'';$('prodCode').value=p?.code||'';$('prodCategory').value=p?.category||'';$('prodUnit').value=p?.unit||'vial';$('prodPrice').value=p?.price??'';$('prodStock').value=p?.stock??20;$('prodOrder').value=p?.order??Math.max(0,...store.products.map(x=>Number(x.order)||0))+1;$('prodBadge').value=p?.badge||'';$('prodNote').value=p?.note||'';$('prodCoaUrl').value=p?.coaUrl||'';$('prodActive').value=String(p?.active!==false);$('productModalTitle').textContent=p?'Edit product':'Add product'}
+  function productToForm(p){$('prodId').value=p?.id||'';$('prodName').value=p?.product||'';$('prodVariant').value=p?.variant||'';$('prodCode').value=p?.code||'';$('prodCategory').value=p?.category||'';$('prodUnit').value=p?.unit||'vial';$('prodPrice').value=p?.price??'';$('prodStock').value=p?.stock??20;$('prodOrder').value=p?.order??Math.max(0,...store.products.map(x=>Number(x.order)||0))+1;$('prodBadge').value=p?.badge||'';$('prodNote').value=p?.note||'';$('prodCoaUrl').value=p?.coaUrl||'';$('prodCoaFile').value='';selectedCoaFile=null;originalCoaUrl=p?.coaUrl||'';$('prodActive').value=String(p?.active!==false);$('productModalTitle').textContent=p?'Edit product':'Add product';renderCoaControls()}
   $('addProduct').addEventListener('click',()=>{productToForm(null);openModal(els.productModal)});
+  $('chooseCoaFile').addEventListener('click',()=>$('prodCoaFile').click());
+  $('prodCoaFile').addEventListener('change',()=>{
+    const file=$('prodCoaFile').files?.[0]||null;
+    if(!file){selectedCoaFile=null;renderCoaControls();return;}
+    const allowed=['application/pdf','image/jpeg','image/png','image/webp'];
+    if(!allowed.includes(file.type)){alert('Choose a PDF, JPG, PNG or WEBP file.');$('prodCoaFile').value='';selectedCoaFile=null;renderCoaControls();return;}
+    if(file.size>10*1024*1024){alert('The COA file must be 10 MB or smaller.');$('prodCoaFile').value='';selectedCoaFile=null;renderCoaControls();return;}
+    selectedCoaFile=file;renderCoaControls();
+  });
+  $('removeCoaFile').addEventListener('click',()=>{
+    selectedCoaFile=null;$('prodCoaFile').value='';$('prodCoaUrl').value='';renderCoaControls();
+  });
   els.productsBody.addEventListener('click',e=>{const tr=e.target.closest('tr[data-id]'),b=e.target.closest('[data-act]');if(!tr||!b)return;const p=store.products.find(x=>x.id===tr.dataset.id);if(!p)return;if(b.dataset.act==='edit'){productToForm(p);openModal(els.productModal)}else if(b.dataset.act==='toggle'){mutate(p.active?'Hiding product…':'Showing product…',()=>window.PURE20_API.adminUpsertProduct({...p,active:!p.active}))}else if(b.dataset.act==='delete'&&confirm(`Delete ${p.product} ${p.variant}?`)){mutate('Deleting product…',()=>window.PURE20_API.adminDeleteProduct(p.id))}});
-  $('saveProduct').addEventListener('click',()=>{const id=$('prodId').value;const p={id:id||uid('product'),product:$('prodName').value.trim(),variant:$('prodVariant').value.trim(),code:$('prodCode').value.trim(),category:$('prodCategory').value.trim()||'Other',unit:$('prodUnit').value.trim()||'vial',price:Math.max(0,Number($('prodPrice').value)||0),stock:Math.max(0,Math.floor(Number($('prodStock').value)||0)),order:Number($('prodOrder').value)||1,badge:$('prodBadge').value.trim(),note:$('prodNote').value.trim(),coaUrl:$('prodCoaUrl').value.trim(),active:$('prodActive').value==='true'};if(!p.product){alert('Product name is required.');return}closeModals();mutate('Saving product…',()=>window.PURE20_API.adminUpsertProduct(p));});
+  $('saveProduct').addEventListener('click',()=>{
+    const id=$('prodId').value;
+    const p={id:id||uid('product'),product:$('prodName').value.trim(),variant:$('prodVariant').value.trim(),code:$('prodCode').value.trim(),category:$('prodCategory').value.trim()||'Other',unit:$('prodUnit').value.trim()||'vial',price:Math.max(0,Number($('prodPrice').value)||0),stock:Math.max(0,Math.floor(Number($('prodStock').value)||0)),order:Number($('prodOrder').value)||1,badge:$('prodBadge').value.trim(),note:$('prodNote').value.trim(),coaUrl:$('prodCoaUrl').value.trim(),active:$('prodActive').value==='true'};
+    if(!p.product){alert('Product name is required.');return}
+    const coaFile=selectedCoaFile;
+    const oldCoa=originalCoaUrl;
+    closeModals();
+    mutate(coaFile?'Uploading COA & saving product…':'Saving product…',async()=>{
+      if(coaFile){
+        const uploaded=await window.PURE20_API.adminUploadCoa(p,coaFile);
+        p.coaUrl=uploaded.publicUrl;
+      }
+      await window.PURE20_API.adminUpsertProduct(p);
+      if(oldCoa&&oldCoa!==p.coaUrl){
+        try{await window.PURE20_API.adminDeleteCoa(oldCoa)}catch(err){console.warn('Old COA could not be removed',err)}
+      }
+    });
+  });
 
   function couponToForm(c){$('couponId').value=c?.id||'';$('couponCode').value=c?.code||'';$('couponType').value=c?.type||'percent';$('couponValue').value=c?.value??10;$('couponMin').value=c?.minSubtotal??0;$('couponActive').value=String(c?.active!==false);$('couponModalTitle').textContent=c?'Edit coupon':'Add coupon'}
   $('addCoupon').addEventListener('click',()=>{couponToForm(null);openModal(els.couponModal)});

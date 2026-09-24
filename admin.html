@@ -338,6 +338,16 @@
         font-size:16px;
       }
     }
+  
+    .coa-admin-field{border-top:1px solid #ddd;padding-top:14px}
+    .coa-admin-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+    .coa-open-link{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .coa-admin-status{margin-top:8px;font-size:11px;color:#666;text-transform:none;letter-spacing:0;overflow-wrap:anywhere}
+    @media(max-width:680px){
+      .coa-admin-actions{display:grid;grid-template-columns:1fr 1fr}
+      .coa-admin-actions #chooseCoaFile{grid-column:1/-1}
+      .coa-admin-actions .admin-btn{min-height:44px}
+    }
   </style>
 </head>
 
@@ -593,10 +603,18 @@
         <input id="prodNote" />
       </label>
 
-      <label class="admin-field wide">
-        COA link
-        <input id="prodCoaUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://.../certificate.pdf" />
-      </label>
+      <div class="admin-field wide coa-admin-field">
+        <span>COA</span>
+        <input id="prodCoaUrl" type="hidden" />
+        <input id="prodCoaFile" class="hidden" type="file" accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" />
+        <div class="coa-admin-actions">
+          <button id="chooseCoaFile" class="admin-btn" type="button">Upload COA</button>
+          <a id="openCoaFile" class="admin-btn coa-open-link" href="#" target="_blank" rel="noopener noreferrer" hidden>View current COA ↗</a>
+          <button id="removeCoaFile" class="admin-btn danger" type="button" hidden>Remove COA</button>
+        </div>
+        <div id="coaFileStatus" class="coa-admin-status">No COA linked.</div>
+        <small class="admin-note">PDF, JPG, PNG or WEBP · max. 10 MB. The public COA link is created automatically.</small>
+      </div>
 
       <label class="admin-field">
         <span>Visible</span>

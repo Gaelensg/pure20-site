@@ -20,7 +20,8 @@
       stock: Math.max(0, Math.floor(Number(p.stock ?? 0) || 0)),
       active: p.active !== false && String(p.active).toLowerCase() !== 'false',
       badge: String(p.badge || ''),
-      note: String(p.note || '')
+      note: String(p.note || ''),
+      coaUrl: String(p.coa_url ?? p.coaUrl ?? '')
     };
   }
 
@@ -110,20 +111,6 @@
     return data;
   }
 
-  async function signUp(email, password) {
-    if (!configured) return { demo: true, user: { email: 'demo@pure20.local' }, session: { user: { email: 'demo@pure20.local' } } };
-    const { data, error } = await client.auth.signUp({ email, password });
-    if (error) throw error;
-    return data;
-  }
-
-  async function claimFirstAdmin(token) {
-    if (!configured) return true;
-    const { data, error } = await client.rpc('pure20_claim_first_admin', { p_token: String(token || '').trim() });
-    if (error) throw error;
-    return data === true;
-  }
-
   async function signOut() {
     if (!configured) return;
     const { error } = await client.auth.signOut();
@@ -168,7 +155,8 @@
       stock: Math.max(0, Math.floor(Number(p.stock || 0))),
       active: p.active !== false,
       badge: p.badge || '',
-      note: p.note || ''
+      note: p.note || '',
+      coa_url: p.coaUrl || ''
     };
   }
 
@@ -197,6 +185,64 @@
   async function adminDeleteProduct(id) {
     if (!configured) { const s = demoGet(); s.products = s.products.filter(x => x.id !== id); demoSave(s); return; }
     const { error } = await client.from('pure20_products').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+
+  function coaSlug(value) {
+    return String(value || 'file')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'file';
+  }
+
+  async function adminUploadCoa(product, file) {
+    if (!configured) throw new Error('COA uploads require cloud mode.');
+    if (!file) throw new Error('Choose a COA file first.');
+
+    const allowed = new Set(['application/pdf', 'image/jpeg', 'image/png', 'image/webp']);
+    const type = String(file.type || '').toLowerCase();
+    if (!allowed.has(type)) throw new Error('Use a PDF, JPG, PNG or WEBP file.');
+    if (Number(file.size || 0) > 10 * 1024 * 1024) throw new Error('The COA file must be 10 MB or smaller.');
+
+    const folder = coaSlug(product?.code || `${product?.product || 'product'}-${product?.variant || ''}`);
+    const fileName = `${Date.now()}-${coaSlug(file.name || 'coa.pdf')}`;
+    const path = `${folder}/${fileName}`;
+
+    const { error } = await client.storage
+      .from('pure20-coa')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: type
+      });
+    if (error) throw error;
+
+    const { data } = client.storage.from('pure20-coa').getPublicUrl(path);
+    if (!data?.publicUrl) throw new Error('The COA was uploaded but no public link could be generated.');
+    return { publicUrl: data.publicUrl, path };
+  }
+
+  function coaPathFromUrl(value) {
+    try {
+      const url = new URL(String(value || ''));
+      const marker = '/storage/v1/object/public/pure20-coa/';
+      const index = url.pathname.indexOf(marker);
+      if (index < 0) return '';
+      return decodeURIComponent(url.pathname.slice(index + marker.length));
+    } catch (_) {
+      return '';
+    }
+  }
+
+  async function adminDeleteCoa(url) {
+    if (!configured) return;
+    const path = coaPathFromUrl(url);
+    if (!path) return;
+    const { error } = await client.storage.from('pure20-coa').remove([path]);
     if (error) throw error;
   }
 
@@ -236,8 +282,8 @@
 
   window.PURE20_API = {
     configured, client, loadPublicStore, validateCoupon, subscribePublic,
-    signIn, signUp, claimFirstAdmin, signOut, getSession, isAdmin, adminLoadAll,
-    adminUpsertProduct, adminDeleteProduct, adminUpsertCoupon, adminDeleteCoupon,
-    adminSaveSettings, adminReplaceProducts, normalizeStore
+    signIn, signOut, getSession, isAdmin, adminLoadAll,
+    adminUpsertProduct, adminDeleteProduct, adminUploadCoa, adminDeleteCoa,
+    adminUpsertCoupon, adminDeleteCoupon, adminSaveSettings, adminReplaceProducts, normalizeStore
   };
 })();
