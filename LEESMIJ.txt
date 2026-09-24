@@ -1,14 +1,22 @@
-PURE20 HOTFIX
+PURE20 COA-UPGRADE
 
-Vervang alleen deze 2 bestanden in de root van GitHub:
-- language.js
-- supabase-config.js
+De Supabase-database is al aangepast:
+- pure20_products heeft nu een veld coa_url.
 
-Wat dit oplost:
-1. Op mobiel komt NL | EN naast het PURE20-logo in plaats van onder het menu.
-2. De taalkeuze overlapt de rode database-melding niet meer.
-3. De openbare shop gebruikt een aparte anonieme Supabase-client voor productdata.
-   Daardoor kan een opgeslagen adminsessie niet meer tijdens token-refresh een 401 veroorzaken.
-4. De database-foutmelding is ook vertaald wanneer Nederlands actief is.
+Vervang in de root van GitHub alleen:
+- api.js
+- app.js
+- admin.html
+- admin.js
+- styles.css
 
-Geen andere bestanden aanpassen.
+Gebruik:
+1. Open Retail Admin.
+2. Open een product/variant.
+3. Vul bij COA link de URL van het certificaat in.
+4. Sla op.
+5. In de openbare prijslijst verschijnt automatisch COA ↗.
+6. Zonder COA-link verschijnt geen knop.
+
+Elke variant kan een eigen COA-link krijgen.
+CSV export/import bevat voortaan ook coa_url.

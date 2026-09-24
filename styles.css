@@ -15,3 +15,19 @@ a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(24
 @media(max-width:640px){.header-inner{row-gap:12px}.header-nav{gap:10px 14px}.header-nav a{font-size:11px}.pure20-lang-switch button{padding:7px 6px;font-size:9px}}
 @media(max-width:850px){.setup-grid{grid-template-columns:1fr}.admin-session{gap:6px}.admin-user{display:none}}
 @media(max-width:520px){.cloud-strip-inner{height:auto;min-height:36px;padding:7px 0}.admin-status{display:none}.auth-row{grid-template-columns:1fr}}
+
+
+/* PURE20 COA links */
+.product-meta-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:5px}
+.product-meta-row .product-code{margin-top:0}
+.coa-link{
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid #aaa8a0;background:transparent;color:var(--ink);
+  padding:5px 8px;text-decoration:none;font-size:9px;font-weight:700;
+  line-height:1;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap
+}
+.coa-link:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+@media(max-width:520px){
+  .product-meta-row{gap:7px}
+  .coa-link{padding:5px 7px;font-size:8px}
+}
