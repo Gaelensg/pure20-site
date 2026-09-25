@@ -59,7 +59,7 @@ button{font:inherit}
   border-bottom:1px solid transparent;
 }
 .home-nav a:hover{border-bottom-color:var(--ink)}
-.home-controls{display:flex;justify-content:flex-end}
+.home-controls{display:flex;justify-content:flex-end;align-items:center;gap:8px}.home-account-link{display:inline-grid;place-items:center;width:40px;height:40px;border:1px solid var(--ink);color:var(--ink);text-decoration:none}.home-account-link svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .lang-switch{
   display:inline-flex;
   border:1px solid var(--ink);

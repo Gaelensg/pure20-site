@@ -58,9 +58,12 @@
       <div class="order-items">${itemsHtml(o)||'No item snapshot'}</div>
       <div class="order-actions">
         <select data-order-status>
-          ${['new','processing','completed','cancelled'].map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('')}
+          ${['placed','accepted','paid','packed','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('')}
         </select>
-        <button class="save-btn" data-save-order type="button">Save status</button>
+        <input data-tracking-number value="${esc(o.tracking_number||'')}" placeholder="Tracking number">
+        <input data-tracking-carrier value="${esc(o.tracking_carrier||'')}" placeholder="Carrier">
+        <input data-status-note value="${esc(o.status_note||'')}" placeholder="Customer status message">
+        <button class="save-btn" data-save-order type="button">Save order</button>
       </div>
     </article>`;
   }
@@ -138,8 +141,11 @@
 
   async function saveOrder(button){
     const card=button.closest('[data-order]'),id=card.dataset.order,status=card.querySelector('[data-order-status]').value;
+    const tracking_number=card.querySelector('[data-tracking-number]').value.trim();
+    const tracking_carrier=card.querySelector('[data-tracking-carrier]').value.trim();
+    const status_note=card.querySelector('[data-status-note]').value.trim();
     button.disabled=true;
-    const {error}=await client.from('pure20_orders').update({status}).eq('id',id);
+    const {error}=await client.from('pure20_orders').update({status,tracking_number,tracking_carrier,status_note}).eq('id',id);
     button.disabled=false;
     if(error)return alert(error.message);
     await load();

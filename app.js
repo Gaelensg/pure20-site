@@ -1,5 +1,5 @@
 (async () => {
-  const state = { store: window.PURE20_FALLBACK_STORE, selectedCategory: 'All', query: '', cart: {}, coupon: null, source: 'demo' };
+  const state = { store: window.PURE20_FALLBACK_STORE, selectedCategory: 'All', query: '', cart: {}, coupon: null, source: 'demo', member:{loggedIn:false,discountPct:0,creditBalance:0,useCredit:false} };
   const $ = id => document.getElementById(id);
   const els = {
     eyebrow:$('eyebrow'),pageTitle:$('pageTitle'),pageSubtitle:$('pageSubtitle'),search:$('search'),clearSearch:$('clearSearch'),categoryPills:$('categoryPills'),catalogue:$('catalogue'),emptyState:$('emptyState'),productCount:$('productCount'),variantCount:$('variantCount'),shippingText:$('shippingText'),footerNotice:$('footerNotice'),cartUnits:$('cartUnits'),cartSubtotal:$('cartSubtotal'),headerCartCount:$('headerCartCount'),clearCart:$('clearCart'),reviewOrder:$('reviewOrder'),headerCart:$('headerCart'),drawer:$('orderDrawer'),backdrop:$('drawerBackdrop'),closeDrawer:$('closeDrawer'),orderLines:$('orderLines'),drawerEmpty:$('drawerEmpty'),drawerSubtotal:$('drawerSubtotal'),discountRow:$('discountRow'),drawerDiscount:$('drawerDiscount'),drawerShipping:$('drawerShipping'),drawerTotal:$('drawerTotal'),couponInput:$('couponInput'),applyCoupon:$('applyCoupon'),couponMessage:$('couponMessage'),researchConfirm:$('researchConfirm'),copyOrder:$('copyOrder'),whatsappOrder:$('whatsappOrder'),toast:$('toast'),cloudDot:$('cloudDot'),cloudStatus:$('cloudStatus'),connectionError:$('connectionError')
@@ -22,6 +22,102 @@
       els.headerCart.dataset.iconized='1';
     }
   }
+
+  function setupAccountLink(){
+    const headerInner=document.querySelector('.site-header .header-inner');
+    if(!headerInner)return;
+    let controls=headerInner.querySelector('.header-controls');
+    if(!controls){controls=document.createElement('div');controls.className='header-controls';headerInner.appendChild(controls);}
+    if(controls.querySelector('.account-icon-link'))return;
+    const a=document.createElement('a');
+    a.href='/account';
+    a.className='account-icon-link';
+    a.setAttribute('aria-label','Account');
+    a.title='Account';
+    a.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 19c.8-4 3-6 6.5-6s5.7 2 6.5 6"></path></svg>';
+    controls.appendChild(a);
+  }
+
+  function setupMemberBenefitsUI(){
+    const couponBlock=els.couponInput?.closest('.drawer-block');
+    const totalsCard=document.querySelector('.totals-card');
+    if(couponBlock&&!document.getElementById('memberBenefitsBlock')){
+      const section=document.createElement('section');
+      section.id='memberBenefitsBlock';
+      section.className='drawer-block member-benefits';
+      section.hidden=true;
+      section.innerHTML=`
+        <div class="section-heading"><span>04</span><h3>Account benefits</h3></div>
+        <div class="member-benefit-copy" id="memberBenefitCopy"></div>
+        <label class="credit-toggle" id="creditToggleWrap" hidden>
+          <input id="useReferralCredit" type="checkbox">
+          <span>Use available referral credit on this order</span>
+          <strong id="creditAvailable">€0.00</strong>
+        </label>
+        <a class="member-account-link" href="/account">View account & referral dashboard →</a>`;
+      couponBlock.insertAdjacentElement('afterend',section);
+      els.memberBenefitsBlock=section;
+      els.memberBenefitCopy=document.getElementById('memberBenefitCopy');
+      els.creditToggleWrap=document.getElementById('creditToggleWrap');
+      els.useReferralCredit=document.getElementById('useReferralCredit');
+      els.creditAvailable=document.getElementById('creditAvailable');
+      els.useReferralCredit?.addEventListener('change',()=>{
+        state.member.useCredit=Boolean(els.useReferralCredit.checked);
+        renderCart();
+      });
+    }
+    if(totalsCard&&!document.getElementById('memberDiscountRow')){
+      const shippingRow=[...totalsCard.children].find(x=>x.textContent.includes('Shipping'));
+      const memberRow=document.createElement('div');
+      memberRow.id='memberDiscountRow';
+      memberRow.hidden=true;
+      memberRow.innerHTML='<span>Referral discount</span><strong id="drawerMemberDiscount">-€0.00</strong>';
+      const creditRow=document.createElement('div');
+      creditRow.id='creditUsedRow';
+      creditRow.hidden=true;
+      creditRow.innerHTML='<span>Referral credit</span><strong id="drawerCreditUsed">-€0.00</strong>';
+      if(shippingRow){
+        totalsCard.insertBefore(memberRow,shippingRow);
+        totalsCard.insertBefore(creditRow,shippingRow);
+      }else{
+        totalsCard.append(memberRow,creditRow);
+      }
+      els.memberDiscountRow=memberRow;
+      els.drawerMemberDiscount=document.getElementById('drawerMemberDiscount');
+      els.creditUsedRow=creditRow;
+      els.drawerCreditUsed=document.getElementById('drawerCreditUsed');
+    }
+  }
+
+  async function loadMemberBenefits(){
+    try{
+      const b=await window.PURE20_API.getCheckoutBenefits();
+      state.member.loggedIn=Boolean(b?.logged_in);
+      state.member.discountPct=Math.max(0,Number(b?.referral_discount_pct||0));
+      state.member.creditBalance=Math.max(0,Number(b?.credit_balance_eur||0));
+      if(!state.member.loggedIn)state.member.useCredit=false;
+    }catch(err){
+      console.warn('PURE20 member benefits:',err?.message||err);
+      state.member={loggedIn:false,discountPct:0,creditBalance:0,useCredit:false};
+    }
+    if(els.memberBenefitsBlock){
+      const hasBenefits=state.member.loggedIn&&(state.member.discountPct>0||state.member.creditBalance>0);
+      els.memberBenefitsBlock.hidden=!hasBenefits;
+      if(els.memberBenefitCopy){
+        const bits=[];
+        if(state.member.discountPct>0)bits.push(`${state.member.discountPct}% referral discount is automatically applied.`);
+        if(state.member.creditBalance>0)bits.push(`${money(state.member.creditBalance)} referral credit is available.`);
+        els.memberBenefitCopy.textContent=bits.join(' ');
+      }
+      if(els.creditToggleWrap){
+        els.creditToggleWrap.hidden=state.member.creditBalance<=0;
+        if(els.creditAvailable)els.creditAvailable.textContent=money(state.member.creditBalance);
+        if(els.useReferralCredit)els.useReferralCredit.checked=state.member.useCredit&&state.member.creditBalance>0;
+      }
+    }
+    renderCart();
+  }
+
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const settings=()=>state.store.settings||{};
   const money=v=>`${settings().currencySymbol||'€'}${Number(v||0).toFixed(2)}`;
@@ -57,9 +153,57 @@
   function stockLabel(p){const n=Number(p.stock||0),low=Number(settings().lowStockThreshold||5);return n<=0?'Out of stock':n<=low?`${n} left`:'In stock'}
   function renderCatalogue(){const rows=selectedRows();const groups=new Map();rows.forEach(r=>{if(!groups.has(r.category))groups.set(r.category,[]);groups.get(r.category).push(r)});els.catalogue.innerHTML=[...groups.entries()].map(([category,items])=>`<section class="category-block"><div class="category-heading"><h2>${esc(category)}</h2><span>${items.length} ${items.length===1?'option':'options'}</span></div>${items.map((r,idx)=>{const qty=Number(state.cart[r.id]||0),out=r.stock<=0;return `<article class="product-card ${out?'out':''}"><div class="product-row variant-row" data-id="${esc(r.id)}"><div class="product-main"><div class="product-index">${String(idx+1).padStart(2,'0')}</div><div class="product-text"><div class="product-name-line"><span class="product-name">${esc(r.product)}</span><span class="product-variant">${esc(r.variant)}</span>${r.badge?`<span class="badge">${esc(r.badge)}</span>`:''}</div><div class="product-meta-row"><div class="product-code">${esc(r.code)}${r.note?` / ${esc(r.note)}`:''}</div>${safeCoaUrl(r.coaUrl)?`<a class="coa-link" href="${esc(safeCoaUrl(r.coaUrl))}" target="_blank" rel="noopener noreferrer" aria-label="COA for ${esc(r.product)} ${esc(r.variant)}">COA ↗</a>`:''}</div><div class="stockline ${stockClass(r)}">${stockLabel(r)}</div></div></div><div class="product-price"><strong>${money(r.price)}</strong><span>per ${esc(r.unit)}</span></div><div class="qty-control"><button type="button" data-action="minus" ${qty<=0?'disabled':''}>−</button><input type="number" min="0" max="${r.stock}" value="${qty}" inputmode="numeric" ${out?'disabled':''}/><button type="button" data-action="plus" ${out||qty>=r.stock?'disabled':''}>+</button></div></div></article>`}).join('')}</section>`).join('');els.emptyState.hidden=rows.length>0;els.productCount.textContent=new Set(activeProducts().map(r=>r.product)).size;els.variantCount.textContent=activeProducts().length;}
   function cartRows(){return activeProducts().filter(r=>Number(state.cart[r.id]||0)>0)}
-  function totals(){const rows=cartRows();const units=rows.reduce((s,r)=>s+Number(state.cart[r.id]||0),0);const subtotal=rows.reduce((s,r)=>s+Number(state.cart[r.id]||0)*r.price,0);const c=state.coupon;let discount=0;if(c&&subtotal>=Number(c.minSubtotal||0)){discount=c.type==='fixed'?Math.min(subtotal,c.value):subtotal*(c.value/100)}const after=Math.max(0,subtotal-discount);const s=settings();let shipping=units?Number(s.shippingFlat||0):0;if(Number(s.freeShippingThreshold||0)>0&&after>=Number(s.freeShippingThreshold))shipping=0;return{rows,units,subtotal,discount,shipping,total:after+shipping,c};}
+  function totals(){
+    const rows=cartRows();
+    const units=rows.reduce((s,r)=>s+Number(state.cart[r.id]||0),0);
+    const subtotal=rows.reduce((s,r)=>s+Number(state.cart[r.id]||0)*r.price,0);
+    const c=state.coupon;
+    let couponDiscount=0;
+    if(c&&subtotal>=Number(c.minSubtotal||0)){
+      couponDiscount=c.type==='fixed'?Math.min(subtotal,c.value):subtotal*(c.value/100);
+    }
+    const afterCoupon=Math.max(0,subtotal-couponDiscount);
+    const referralDiscount=state.member.loggedIn?afterCoupon*(Math.max(0,state.member.discountPct)/100):0;
+    const afterDiscounts=Math.max(0,afterCoupon-referralDiscount);
+    const creditUsed=state.member.loggedIn&&state.member.useCredit
+      ?Math.min(afterDiscounts,Math.max(0,state.member.creditBalance))
+      :0;
+    const afterCredit=Math.max(0,afterDiscounts-creditUsed);
+    const s=settings();
+    let shipping=units?Number(s.shippingFlat||0):0;
+    if(Number(s.freeShippingThreshold||0)>0&&afterCredit>=Number(s.freeShippingThreshold))shipping=0;
+    return{
+      rows,units,subtotal,
+      couponDiscount,referralDiscount,creditUsed,
+      discount:couponDiscount+referralDiscount,
+      shipping,total:afterCredit+shipping,c
+    };
+  }
   function shippingDisplay(subtotal=0,hasItems=true){const s=settings();if(Number(s.freeShippingThreshold||0)>0&&subtotal>=Number(s.freeShippingThreshold))return'Free';if(Number(s.shippingFlat||0)>0)return money(s.shippingFlat);return s.shippingText||'Confirmed separately';}
-  function renderCart(){const t=totals();els.cartUnits.textContent=t.units;els.headerCartCount.textContent=t.units;els.cartSubtotal.textContent=money(t.subtotal-t.discount);els.drawerSubtotal.textContent=money(t.subtotal);els.drawerDiscount.textContent=`-${money(t.discount)}`;els.discountRow.hidden=t.discount<=0;els.drawerShipping.textContent=t.units?shippingDisplay(t.subtotal-t.discount,true):shippingDisplay(0,false);els.drawerTotal.textContent=money(t.total);els.drawerEmpty.hidden=t.rows.length>0;els.orderLines.innerHTML=t.rows.map(r=>{const q=Number(state.cart[r.id]||0);return `<div class="order-line" data-id="${esc(r.id)}"><div><div class="order-line-name">${esc(r.product)} / ${esc(r.variant)}</div><div class="order-line-meta">${esc(r.code)} · ${q} × ${money(r.price)}</div></div><div class="order-line-right"><div class="order-line-total">${money(q*r.price)}</div><div class="order-line-actions"><button class="mini-btn" data-drawer-action="minus" type="button">−</button><button class="mini-btn" data-drawer-action="plus" type="button" ${q>=r.stock?'disabled':''}>+</button></div></div></div>`}).join('');}
+  function renderCart(){
+    const t=totals();
+    els.cartUnits.textContent=t.units;
+    els.headerCartCount.textContent=t.units;
+    els.cartSubtotal.textContent=money(t.subtotal-t.couponDiscount-t.referralDiscount-t.creditUsed);
+    els.drawerSubtotal.textContent=money(t.subtotal);
+    els.drawerDiscount.textContent=`-${money(t.couponDiscount)}`;
+    els.discountRow.hidden=t.couponDiscount<=0;
+    if(els.memberDiscountRow){
+      els.memberDiscountRow.hidden=t.referralDiscount<=0;
+      els.drawerMemberDiscount.textContent=`-${money(t.referralDiscount)}`;
+    }
+    if(els.creditUsedRow){
+      els.creditUsedRow.hidden=t.creditUsed<=0;
+      els.drawerCreditUsed.textContent=`-${money(t.creditUsed)}`;
+    }
+    els.drawerShipping.textContent=t.units?shippingDisplay(t.subtotal-t.discount-t.creditUsed,true):shippingDisplay(0,false);
+    els.drawerTotal.textContent=money(t.total);
+    els.drawerEmpty.hidden=t.rows.length>0;
+    els.orderLines.innerHTML=t.rows.map(r=>{
+      const q=Number(state.cart[r.id]||0);
+      return `<div class="order-line" data-id="${esc(r.id)}"><div><div class="order-line-name">${esc(r.product)} / ${esc(r.variant)}</div><div class="order-line-meta">${esc(r.code)} · ${q} × ${money(r.price)}</div></div><div class="order-line-right"><div class="order-line-total">${money(q*r.price)}</div><div class="order-line-actions"><button class="mini-btn" data-drawer-action="minus" type="button">−</button><button class="mini-btn" data-drawer-action="plus" type="button" ${q>=r.stock?'disabled':''}>+</button></div></div></div>`;
+    }).join('');
+  }
   function setQty(id,qty){const p=(state.store.products||[]).find(x=>x.id===id);if(!p)return;qty=Math.max(0,Math.min(Math.floor(Number(qty)||0),Number(p.stock||0)));if(qty===0)delete state.cart[id];else state.cart[id]=qty;renderCatalogue();renderCart();}
   function clampCartToStock(){for(const [id,q] of Object.entries(state.cart)){const p=(state.store.products||[]).find(x=>x.id===id&&x.active);if(!p){delete state.cart[id];continue}state.cart[id]=Math.min(Number(q||0),Number(p.stock||0));if(state.cart[id]<=0)delete state.cart[id];}}
   function clearCart(){state.cart={};state.coupon=null;els.couponInput.value='';els.couponMessage.textContent='';els.researchConfirm.checked=false;renderCatalogue();renderCart();}
@@ -83,7 +227,30 @@
     finally{els.applyCoupon.disabled=false;els.applyCoupon.textContent='Apply';}
   }
 
-  function buildOrderText(){const t=totals(),s=settings(),cust=Object.fromEntries(customerFields.map(id=>[id,$(id).value.trim()]));return [`${s.brandName||'PURE20.'} ORDER REQUEST`,'',...t.rows.map(r=>{const q=Number(state.cart[r.id]||0);return `${q} × ${r.product} ${r.variant} (${r.code}) — ${money(q*r.price)}`}),'',`Subtotal: ${money(t.subtotal)}`,...(t.discount>0?[`Discount (${state.coupon?.code||''}): -${money(t.discount)}`]:[]),`Shipping: ${t.units?shippingDisplay(t.subtotal-t.discount,true):shippingDisplay(0,false)}`,`Current total ${s.currency||'EUR'}: ${money(t.total)}`,'','CUSTOMER DETAILS',`Name: ${cust.fullName||'-'}`,`Address: ${cust.address||'-'}`,`Postal code: ${cust.zip||'-'}`,`Country: ${cust.country||'-'}`,`Email: ${cust.email||'-'}`,`Phone: ${cust.phone||'-'}`,'','Availability, shipping and payment to be confirmed separately.'].join('\n')}
+  function buildOrderText(){
+    const t=totals(),s=settings(),cust=Object.fromEntries(customerFields.map(id=>[id,$(id).value.trim()]));
+    return [
+      `${s.brandName||'PURE20.'} ORDER REQUEST`,'',
+      ...t.rows.map(r=>{const q=Number(state.cart[r.id]||0);return `${q} × ${r.product} ${r.variant} (${r.code}) — ${money(q*r.price)}`}),
+      '',
+      `Subtotal: ${money(t.subtotal)}`,
+      ...(t.couponDiscount>0?[`Coupon (${state.coupon?.code||''}): -${money(t.couponDiscount)}`]:[]),
+      ...(t.referralDiscount>0?[`Referral discount: -${money(t.referralDiscount)}`]:[]),
+      ...(t.creditUsed>0?[`Referral credit used: -${money(t.creditUsed)}`]:[]),
+      `Shipping: ${t.units?shippingDisplay(t.subtotal-t.discount-t.creditUsed,true):shippingDisplay(0,false)}`,
+      `Current total ${s.currency||'EUR'}: ${money(t.total)}`,
+      '',
+      'CUSTOMER DETAILS',
+      `Name: ${cust.fullName||'-'}`,
+      `Address: ${cust.address||'-'}`,
+      `Postal code: ${cust.zip||'-'}`,
+      `Country: ${cust.country||'-'}`,
+      `Email: ${cust.email||'-'}`,
+      `Phone: ${cust.phone||'-'}`,
+      '',
+      'Availability, shipping and payment to be confirmed separately.'
+    ].join('\n');
+  }
   function canShare(){if(!totals().rows.length){toast('Add at least one item first.');return false}if(!els.researchConfirm.checked){toast('Confirm the notice first.');return false}saveCustomer();return true}
   async function copy(){if(!canShare())return;const text=buildOrderText();try{await navigator.clipboard.writeText(text)}catch(_){const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}toast('Order copied.')}
   function whatsapp(){if(!canShare())return;const text=encodeURIComponent(buildOrderText());const n=String(settings().whatsappNumber||'').replace(/\D/g,'');window.open(n?`https://wa.me/${n}?text=${text}`:`https://wa.me/?text=${text}`,'_blank','noopener')}
@@ -115,8 +282,11 @@
   els.clearCart.addEventListener('click',clearCart);[els.reviewOrder,els.headerCart].forEach(x=>x.addEventListener('click',openDrawer));[els.closeDrawer,els.backdrop].forEach(x=>x.addEventListener('click',closeDrawer));els.applyCoupon.addEventListener('click',applyCoupon);els.couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')applyCoupon()});customerFields.forEach(id=>$(id).addEventListener('change',saveCustomer));els.copyOrder.addEventListener('click',copy);els.whatsappOrder.addEventListener('click',whatsapp);
 
   setupHeaderCart();
+  setupAccountLink();
+  setupMemberBenefitsUI();
   loadCustomer();
   await reloadFromSource(false);
+  await loadMemberBenefits();
   window.PURE20_API.subscribePublic(()=>reloadFromSource(true));
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&window.PURE20_API.configured)reloadFromSource(false)});
+  document.addEventListener('visibilitychange',async()=>{if(!document.hidden&&window.PURE20_API.configured){await reloadFromSource(false);await loadMemberBenefits();}});
 })();

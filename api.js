@@ -269,6 +269,17 @@
     if (error) throw error;
   }
 
+
+  async function getCheckoutBenefits() {
+    if (!configured) return { logged_in: false, referral_discount_pct: 0, credit_balance_eur: 0 };
+    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    if (sessionError) throw sessionError;
+    if (!sessionData?.session) return { logged_in: false, referral_discount_pct: 0, credit_balance_eur: 0 };
+    const { data, error } = await client.rpc('pure20_checkout_benefits');
+    if (error) throw error;
+    return data || { logged_in: true, referral_discount_pct: 0, credit_balance_eur: 0 };
+  }
+
   async function adminReplaceProducts(products) {
     if (!configured) { const s = demoGet(); s.products = products.map(normalizeProduct); demoSave(s); return; }
     const rows = products.map(productDb);
@@ -284,6 +295,6 @@
     configured, client, loadPublicStore, validateCoupon, subscribePublic,
     signIn, signOut, getSession, isAdmin, adminLoadAll,
     adminUpsertProduct, adminDeleteProduct, adminUploadCoa, adminDeleteCoa,
-    adminUpsertCoupon, adminDeleteCoupon, adminSaveSettings, adminReplaceProducts, normalizeStore
+    adminUpsertCoupon, adminDeleteCoupon, adminSaveSettings, adminReplaceProducts, getCheckoutBenefits, normalizeStore
   };
 })();

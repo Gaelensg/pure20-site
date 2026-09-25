@@ -1,16 +1,53 @@
-PURE20 HOMEPAGE V2
+PURE20 CUSTOMER PORTAL + REFERRAL + ORDER TRACKING
 
-Vervang alleen:
+Supabase is already configured for this update.
+
+NEW:
+- /account customer registration/login
+- customer order dashboard
+- status timeline: Placed > Accepted > Paid > Packed > Shipped > Delivered
+- personalised referral link
+- confirmed referral registration counter
+- referred customers automatically receive 2% retail discount
+- referral owner receives 3% credit when the referred order reaches Paid (or a later status)
+- credit can be used on a next retail order
+- cancellation reverses earned referral credit and refunds credit used on the cancelled order
+- tracking number and carrier can be saved per order
+- customer can track an order or paste any tracking code in the account tracking tab
+- general tracking is powered by the official 17TRACK widget
+
+UPLOAD / OVERWRITE:
+- account.html          NEW
+- account.css           NEW
+- account.js            NEW
+- api.js
+- app.js
+- order-recorder.js
+- styles.css
+- dashboard.html
+- dashboard.js
 - index.html
 - home.css
 
-Aangepast:
-- volledig blok met 20. verwijderd
-- 'Platform actief' en de extra categorie-regel uit dat blok verwijderd
-- volledige sectie 'Minder ruis. Meer context.' verwijderd
-- 'Overzicht eerst', 'Onderzoek met context' en 'Controleerbare informatie' verwijderd
-- hero compacter gemaakt
-- mobiele header iets lager/strakker
-- flow is nu: hero -> vier hoofdingangen -> CTA -> footer
+SHOP:
+No shop.html replacement is required for this version.
+app.js automatically adds the account icon and account-benefit UI to the existing /shop.
 
-home.js en shop.html hoeven niet opnieuw geüpload te worden.
+ADMIN WORKFLOW:
+Dashboard > Orders:
+- choose order status
+- enter tracking number
+- optionally enter carrier
+- optionally enter a customer-facing status message
+- Save order
+
+REFERRAL LOGIC:
+- A referral link looks like /account?ref=XXXXXXXXXX
+- The referral relationship is fixed at registration.
+- The new customer gets 2% automatically while logged in.
+- The owner earns 3% only after status becomes Paid/Packed/Shipped/Delivered.
+  This prevents unpaid/fake orders from creating spendable credit.
+- Credit use appears in the cart and is deducted server-side.
+
+IMPORTANT:
+The retail customer must be logged in while placing the order for referral discount and referral credit to apply.

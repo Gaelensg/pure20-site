@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f2f1ec">
+  <meta name="description" content="PURE20 customer account, order status, referrals and tracking.">
+  <title>PURE20. — Account</title>
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+  <header class="account-header">
+    <div class="shell account-header-inner">
+      <a class="brand" href="/">PURE20.</a>
+      <a class="back-link" href="/shop">← <span data-i18n="backShop">Terug naar shop</span></a>
+      <div class="language">
+        <button type="button" data-lang="nl">NL</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="authGate" class="auth-gate">
+    <div class="auth-card">
+      <a class="brand auth-brand" href="/">PURE20.</a>
+      <p class="eyebrow">CUSTOMER ACCOUNT</p>
+      <h1 data-i18n="accountTitle">Je PURE20-account.</h1>
+      <p class="auth-intro" data-i18n="accountIntro">Bekijk bestellingen, volg hun status en beheer je persoonlijke referral-link.</p>
+
+      <div id="referralNotice" class="referral-notice" hidden>
+        <strong data-i18n="refActive">Referral actief</strong>
+        <span data-i18n="refActiveText">Na registratie krijg je automatisch 2% korting op retailbestellingen.</span>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-view="login" type="button" data-i18n="login">Inloggen</button>
+        <button class="auth-tab" data-auth-view="register" type="button" data-i18n="register">Registreren</button>
+      </div>
+
+      <section id="authLogin" class="auth-view active">
+        <label><span data-i18n="email">E-mail</span><input id="loginEmail" type="email" autocomplete="username"></label>
+        <label><span data-i18n="password">Wachtwoord</span><input id="loginPassword" type="password" autocomplete="current-password"></label>
+        <button id="loginButton" class="primary" type="button" data-i18n="login">Inloggen</button>
+      </section>
+
+      <section id="authRegister" class="auth-view">
+        <label><span data-i18n="name">Naam</span><input id="registerName" autocomplete="name"></label>
+        <label><span data-i18n="email">E-mail</span><input id="registerEmail" type="email" autocomplete="email"></label>
+        <label><span data-i18n="password">Wachtwoord</span><input id="registerPassword" type="password" minlength="8" autocomplete="new-password"></label>
+        <button id="registerButton" class="primary" type="button" data-i18n="createAccount">Account aanmaken</button>
+      </section>
+
+      <div id="authMessage" class="auth-message"></div>
+    </div>
+  </div>
+
+  <main id="accountMain" class="shell account-main" hidden>
+    <section class="account-hero">
+      <div>
+        <p class="eyebrow">PURE20 / ACCOUNT</p>
+        <h1><span data-i18n="welcome">Welkom terug.</span><br><span id="customerName"></span></h1>
+      </div>
+      <div class="account-hero-actions">
+        <span id="customerEmail"></span>
+        <button id="signOut" type="button" data-i18n="logout">Uitloggen</button>
+      </div>
+    </section>
+
+    <nav class="account-tabs">
+      <button class="account-tab active" data-view="orders" type="button" data-i18n="orders">Bestellingen</button>
+      <button class="account-tab" data-view="refer" type="button" data-i18n="refer">Referral</button>
+      <button class="account-tab" data-view="tracking" type="button" data-i18n="tracking">Tracking</button>
+    </nav>
+
+    <section id="view-orders" class="view active">
+      <div class="section-title">
+        <div><p class="eyebrow" data-i18n="orderHistoryKicker">ORDER HISTORY</p><h2 data-i18n="yourOrders">Jouw bestellingen.</h2></div>
+        <p data-i18n="orderHistoryText">De status wordt aangepast zodra je bestelling verdergaat in het proces.</p>
+      </div>
+      <div id="ordersList" class="orders-list"></div>
+    </section>
+
+    <section id="view-refer" class="view">
+      <div class="referral-grid">
+        <article class="ref-card ref-main">
+          <p class="eyebrow" data-i18n="yourReferral">JOUW REFERRAL</p>
+          <h2 data-i18n="shareEarn">Deel. Bouw krediet op.</h2>
+          <p data-i18n="refExplain">Wie via jouw persoonlijke link registreert, krijgt standaard 2% korting. Zodra een referral-bestelling betaald is, ontvang jij 3% van de betaalde orderwaarde als krediet.</p>
+          <div class="ref-link-row">
+            <input id="referralLink" readonly>
+            <button id="copyReferral" type="button" data-i18n="copy">Kopieer</button>
+          </div>
+        </article>
+
+        <article class="ref-card stat-card">
+          <span class="stat-label" data-i18n="registrations">Registraties</span>
+          <strong id="referralCount">0</strong>
+          <p data-i18n="registrationHelp">Bevestigde accounts die via jouw link geregistreerd zijn.</p>
+        </article>
+
+        <article class="ref-card stat-card">
+          <span class="stat-label" data-i18n="credit">Beschikbaar krediet</span>
+          <strong id="creditBalance">€0.00</strong>
+          <p data-i18n="creditHelp">Kan in de winkelmand van een volgende retailbestelling worden gebruikt.</p>
+        </article>
+
+        <article id="memberDiscountCard" class="ref-card stat-card" hidden>
+          <span class="stat-label" data-i18n="yourDiscount">Jouw referral-korting</span>
+          <strong id="memberDiscount">2%</strong>
+          <p data-i18n="discountHelp">Deze korting wordt automatisch toegepast wanneer je bent ingelogd.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="view-tracking" class="view">
+      <div class="tracking-card">
+        <p class="eyebrow">TRACKING</p>
+        <h2 data-i18n="trackPackage">Volg een pakket.</h2>
+        <p data-i18n="trackHelp">Voer een trackingcode in. De vervoerder wordt automatisch geprobeerd te herkennen.</p>
+        <div class="track-input-row">
+          <input id="trackingInput" maxlength="50" autocomplete="off" placeholder="Tracking code">
+          <button id="trackButton" type="button" data-i18n="track">Track</button>
+        </div>
+        <div id="YQContainer" class="tracking-result"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="account.js"></script>
+</body>
+</html>

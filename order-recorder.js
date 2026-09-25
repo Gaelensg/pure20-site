@@ -30,6 +30,7 @@
       const m = meta.match(/(\d+)\s*×/);
       const quantity = m ? Number(m[1]) : 1;
       return {
+        product_id: line.dataset.id || '',
         name,
         quantity,
         meta,
@@ -62,6 +63,8 @@
 
   async function record(source) {
     try {
+      const confirmBox = document.getElementById('researchConfirm');
+      if (confirmBox && !confirmBox.checked) return;
       const items = collectItems();
       if (!items.length) return;
 
@@ -75,7 +78,8 @@
         p_total: num(txt("drawerTotal")),
         p_currency: "EUR",
         p_coupon_code: val("couponInput").toUpperCase(),
-        p_source: source
+        p_source: source,
+        p_use_credit: Boolean(document.getElementById('useReferralCredit')?.checked)
       };
 
       const fp = fingerprint(payload);
@@ -97,5 +101,5 @@
     const button = e.target.closest("#copyOrder, #whatsappOrder");
     if (!button) return;
     record(button.id === "whatsappOrder" ? "whatsapp" : "copy");
-  }, true);
+  });
 })();
