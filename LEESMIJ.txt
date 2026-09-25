@@ -1,53 +1,41 @@
-PURE20 CUSTOMER PORTAL + REFERRAL + ORDER TRACKING
+PURE20 STACK BUILDER
 
-Supabase is already configured for this update.
+Nieuwe module:
+https://pure20-site.vercel.app/stack-builder
 
-NEW:
-- /account customer registration/login
-- customer order dashboard
-- status timeline: Placed > Accepted > Paid > Packed > Shipped > Delivered
-- personalised referral link
-- confirmed referral registration counter
-- referred customers automatically receive 2% retail discount
-- referral owner receives 3% credit when the referred order reaches Paid (or a later status)
-- credit can be used on a next retail order
-- cancellation reverses earned referral credit and refunds credit used on the cancelled order
-- tracking number and carrier can be saved per order
-- customer can track an order or paste any tracking code in the account tracking tab
-- general tracking is powered by the official 17TRACK widget
+Upload deze 3 bestanden naar de root van de GitHub-repository:
+- stack-builder.html
+- stack-builder.css
+- stack-builder.js
 
-UPLOAD / OVERWRITE:
-- account.html          NEW
-- account.css           NEW
-- account.js            NEW
-- api.js
-- app.js
-- order-recorder.js
-- styles.css
-- dashboard.html
-- dashboard.js
-- index.html
-- home.css
+Vercel cleanUrls maakt /stack-builder automatisch beschikbaar vanuit stack-builder.html.
 
-SHOP:
-No shop.html replacement is required for this version.
-app.js automatically adds the account icon and account-benefit UI to the existing /shop.
+WAT DE MODULE DOET
+- haalt de actieve PURE20-catalogus live uit Supabase
+- meerdere compounds aan één stack toevoegen
+- vialsterkte wordt waar mogelijk automatisch uit de productvariant ingevuld
+- handmatige compound-invoer is ook mogelijk
+- eigen vloeistofvolume invoeren
+- eigen onderzoekswaarde per gepland moment invoeren
+- transparante rekenkundige conversie naar U-100 units
+- concentratie, volume en theoretische porties per vial
+- weekdagen aanklikken
+- timing/notities per compound
+- startdatum, duur, stacknaam en eigen onderzoeksnotitie
+- COA-link tonen wanneer beschikbaar
+- Knowledge-link tonen voor ondersteunde compounds
+- automatisch lokaal bewaren op het apparaat
+- nette A4-printweergave
+- op iPhone: via Print ook als PDF bewaren/delen
+- NL/EN
 
-ADMIN WORKFLOW:
-Dashboard > Orders:
-- choose order status
-- enter tracking number
-- optionally enter carrier
-- optionally enter a customer-facing status message
-- Save order
+BELANGRIJKE GRENS
+De module genereert geen aanbevolen compounds, doses, frequenties, routes of combinaties.
+Alle planning- en hoeveelheidvelden worden door de gebruiker ingevuld.
+De tool rekent alleen de ingevoerde waarden om.
 
-REFERRAL LOGIC:
-- A referral link looks like /account?ref=XXXXXXXXXX
-- The referral relationship is fixed at registration.
-- The new customer gets 2% automatically while logged in.
-- The owner earns 3% only after status becomes Paid/Packed/Shipped/Delivered.
-  This prevents unpaid/fake orders from creating spendable credit.
-- Credit use appears in the cart and is deducted server-side.
-
-IMPORTANT:
-The retail customer must be logged in while placing the order for referral discount and referral credit to apply.
+Optioneel voor later:
+- link toevoegen op homepage
+- link toevoegen in Calculator
+- stack opslaan in een ingelogd klantenaccount i.p.v. alleen localStorage
+- eigen stack-templates bewaren zonder automatische medische aanbevelingen

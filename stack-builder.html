@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f2f1ec">
+  <meta name="description" content="PURE20 stack builder for organizing user-supplied research plans and transparent concentration calculations.">
+  <title>PURE20. — Stack Builder</title>
+  <link rel="stylesheet" href="stack-builder.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/" aria-label="PURE20 home">PURE20.</a>
+      <nav class="header-nav" aria-label="Page navigation">
+        <a href="/shop">Shop</a>
+        <a href="/knowledge">Knowledge</a>
+        <a href="/calculator">Calculator</a>
+        <a href="/stack-builder" aria-current="page">Stack Builder</a>
+      </nav>
+      <div class="header-controls">
+        <span class="lang-switch" id="langSwitch">
+          <button type="button" data-lang="nl">NL</button>
+          <button type="button" data-lang="en">EN</button>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="shell hero">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="eyebrow">PURE20 / STACK BUILDER</p>
+        <h1><span data-i18n="heroA">Build it.</span><br><span class="light" data-i18n="heroB">Keep it clear.</span></h1>
+        <p class="lede" data-i18n="heroText">Stel meerdere compounds samen in één overzicht, voer je eigen onderzoekswaarden en planning in, controleer de rekenkundige conversies en print het resultaat.</p>
+      </div>
+      <aside class="hero-aside">
+        <strong id="stackCount">0</strong>
+        <p data-i18n="compounds">COMPOUNDS<br>IN DEZE STACK</p>
+      </aside>
+    </section>
+
+    <section class="builder-zone">
+      <div class="shell builder-shell">
+        <section class="stack-meta">
+          <div class="section-kicker">01 / <span data-i18n="stackDetails">STACK DETAILS</span></div>
+          <div class="meta-grid">
+            <label><span data-i18n="stackName">Naam van de stack</span><input id="stackName" placeholder="e.g. Recovery research"></label>
+            <label><span data-i18n="reference">Naam / referentie</span><input id="stackReference" placeholder="Optional"></label>
+            <label><span data-i18n="startDate">Startdatum</span><input id="startDate" type="date"></label>
+            <label><span data-i18n="duration">Duur</span><div class="input-suffix"><input id="durationWeeks" inputmode="numeric" type="number" min="1" max="104" step="1" placeholder="8"><span data-i18n="weeks">weken</span></div></label>
+            <label class="wide"><span data-i18n="purpose">Onderzoeksdoel / notitie</span><textarea id="stackPurpose" rows="3" placeholder="Write your own research context or notes"></textarea></label>
+          </div>
+        </section>
+
+        <section class="stack-workspace">
+          <div class="workspace-head">
+            <div><div class="section-kicker">02 / <span data-i18n="builder">BUILDER</span></div><h2 data-i18n="compose">Stel je stack samen.</h2></div>
+            <div class="workspace-actions">
+              <button id="addCompound" class="button dark" type="button"><span>＋</span> <span data-i18n="addCompound">Compound toevoegen</span></button>
+              <button id="clearStack" class="button" type="button" data-i18n="clear">Wissen</button>
+            </div>
+          </div>
+
+          <div id="catalogueStatus" class="catalogue-status"><span class="status-dot"></span><span data-i18n="loadingCatalogue">Catalogus laden…</span></div>
+          <div id="compoundList" class="compound-list"></div>
+
+          <div id="emptyState" class="empty-state">
+            <strong data-i18n="emptyTitle">Nog geen compounds.</strong>
+            <span data-i18n="emptyText">Voeg een compound toe om je research stack op te bouwen.</span>
+            <button id="emptyAdd" class="button dark" type="button"><span>＋</span> <span data-i18n="addFirst">Eerste compound toevoegen</span></button>
+          </div>
+        </section>
+
+        <section class="schedule-summary">
+          <div class="section-kicker">03 / <span data-i18n="overview">OVERZICHT</span></div>
+          <div class="summary-grid">
+            <div><span data-i18n="totalCompounds">Compounds</span><strong id="summaryCompounds">0</strong></div>
+            <div><span data-i18n="scheduledMoments">Geplande momenten / week</span><strong id="summaryMoments">0</strong></div>
+            <div><span data-i18n="savedLocally">Opslag</span><strong data-i18n="local">Lokaal</strong></div>
+          </div>
+        </section>
+
+        <section class="print-actions">
+          <div>
+            <p class="eyebrow" data-i18n="ready">KLAAR OM TE BEWAREN</p>
+            <h2 data-i18n="printTitle">Print of bewaar als PDF.</h2>
+            <p data-i18n="printText">Op iPhone kun je via de printweergave ook als PDF bewaren of delen.</p>
+          </div>
+          <div class="print-buttons">
+            <button id="saveStack" class="button" type="button" data-i18n="save">Lokaal bewaren</button>
+            <button id="printStack" class="button dark" type="button"><span data-i18n="print">Print / PDF</span> <span>↗</span></button>
+          </div>
+        </section>
+
+        <section class="boundary">
+          <span class="square"></span>
+          <p data-i18n="boundary">Deze tool organiseert waarden die je zelf invoert en voert uitsluitend rekenkundige conversies uit. Hij kiest geen compounds, stack, dosis, frequentie, toedieningswijze of behandeling en controleert geen interacties. Combineer experimentele stoffen niet op basis van deze planner alleen.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <template id="compoundTemplate">
+    <article class="compound-card">
+      <div class="compound-head">
+        <div><span class="compound-index">01</span><h3 class="compound-heading" data-role="heading">Compound</h3></div>
+        <button class="remove-button" data-action="remove" type="button" aria-label="Remove">×</button>
+      </div>
+
+      <div class="compound-grid">
+        <label class="wide"><span data-i18n="product">Product / variant</span><select data-field="productId"></select></label>
+        <label class="wide custom-name-wrap"><span data-i18n="customName">Naam bij handmatige invoer</span><input data-field="customName" placeholder="e.g. Custom compound"></label>
+
+        <label><span data-i18n="vialAmount">Hoeveelheid in vial</span>
+          <div class="two-input"><input data-field="vialAmount" inputmode="decimal" placeholder="10"><select data-field="vialUnit"><option value="mg">mg</option><option value="mcg">mcg</option><option value="iu">IU</option></select></div>
+        </label>
+
+        <label><span data-i18n="liquidVolume">Totale vloeistof</span>
+          <div class="input-suffix"><input data-field="liquidMl" inputmode="decimal" placeholder="2"><span>mL</span></div>
+        </label>
+
+        <label><span data-i18n="plannedAmount">Zelf ingevoerde hoeveelheid / moment</span>
+          <div class="two-input"><input data-field="targetAmount" inputmode="decimal" placeholder="250"><select data-field="targetUnit"><option value="mcg">mcg</option><option value="mg">mg</option><option value="iu">IU</option></select></div>
+        </label>
+
+        <label><span data-i18n="timeNote">Moment / korte notitie</span><input data-field="timeNote" placeholder="e.g. morning"></label>
+
+        <fieldset class="days wide">
+          <legend data-i18n="days">Dagen</legend>
+          <div class="day-grid">
+            <label><input type="checkbox" data-day="1"><span data-day-label="1">Ma</span></label>
+            <label><input type="checkbox" data-day="2"><span data-day-label="2">Di</span></label>
+            <label><input type="checkbox" data-day="3"><span data-day-label="3">Wo</span></label>
+            <label><input type="checkbox" data-day="4"><span data-day-label="4">Do</span></label>
+            <label><input type="checkbox" data-day="5"><span data-day-label="5">Vr</span></label>
+            <label><input type="checkbox" data-day="6"><span data-day-label="6">Za</span></label>
+            <label><input type="checkbox" data-day="0"><span data-day-label="0">Zo</span></label>
+          </div>
+        </fieldset>
+
+        <label class="wide"><span data-i18n="notes">Notities</span><textarea data-field="notes" rows="2" placeholder="Optional notes"></textarea></label>
+      </div>
+
+      <div class="math-panel">
+        <div class="math-result primary-result"><span data-i18n="u100">U-100 markering</span><strong data-output="units">—</strong></div>
+        <div class="math-result"><span data-i18n="concentration">Concentratie</span><strong data-output="concentration">—</strong></div>
+        <div class="math-result"><span data-i18n="volume">Volume / moment</span><strong data-output="volume">—</strong></div>
+        <div class="math-result"><span data-i18n="portions">Theoretische porties / vial</span><strong data-output="portions">—</strong></div>
+      </div>
+
+      <div class="compound-links">
+        <a data-role="knowledge" href="#" hidden target="_blank" rel="noopener">Knowledge ↗</a>
+        <a data-role="coa" href="#" hidden target="_blank" rel="noopener">COA ↗</a>
+      </div>
+
+      <div class="math-warning" data-role="warning"></div>
+    </article>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="fallback-data.js"></script>
+  <script src="api.js"></script>
+  <script src="stack-builder.js"></script>
+</body>
+</html>
