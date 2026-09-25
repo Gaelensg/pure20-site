@@ -1,41 +1,36 @@
-PURE20 STACK BUILDER
+PURE20 STACKS IN CUSTOMER ACCOUNT
 
-Nieuwe module:
-https://pure20-site.vercel.app/stack-builder
+Supabase is already configured. A protected table 'pure20_saved_stacks' has been created.
 
-Upload deze 3 bestanden naar de root van de GitHub-repository:
+Replace only these 6 files in the root of the GitHub repository:
+- account.html
+- account.css
+- account.js
 - stack-builder.html
 - stack-builder.css
 - stack-builder.js
 
-Vercel cleanUrls maakt /stack-builder automatisch beschikbaar vanuit stack-builder.html.
+WHAT CHANGES
 
-WAT DE MODULE DOET
-- haalt de actieve PURE20-catalogus live uit Supabase
-- meerdere compounds aan één stack toevoegen
-- vialsterkte wordt waar mogelijk automatisch uit de productvariant ingevuld
-- handmatige compound-invoer is ook mogelijk
-- eigen vloeistofvolume invoeren
-- eigen onderzoekswaarde per gepland moment invoeren
-- transparante rekenkundige conversie naar U-100 units
-- concentratie, volume en theoretische porties per vial
-- weekdagen aanklikken
-- timing/notities per compound
-- startdatum, duur, stacknaam en eigen onderzoeksnotitie
-- COA-link tonen wanneer beschikbaar
-- Knowledge-link tonen voor ondersteunde compounds
-- automatisch lokaal bewaren op het apparaat
-- nette A4-printweergave
-- op iPhone: via Print ook als PDF bewaren/delen
-- NL/EN
+STACK BUILDER
+- keeps local autosave
+- adds 'Save to account'
+- adds 'My stacks'
+- if not signed in, the customer is sent to /account and returned to the Stack Builder after login
+- when an account stack is opened, /stack-builder?stack=<id> loads it from Supabase
+- saving again updates the same cloud stack
+- Print / PDF still works as before
 
-BELANGRIJKE GRENS
-De module genereert geen aanbevolen compounds, doses, frequenties, routes of combinaties.
-Alle planning- en hoeveelheidvelden worden door de gebruiker ingevuld.
-De tool rekent alleen de ingevoerde waarden om.
+CUSTOMER ACCOUNT
+- new 'Stacks' tab
+- lists saved stacks
+- shows title, last update, number of compounds and duration when available
+- Open reopens the exact stack in the Stack Builder
+- Delete removes it from the customer's account
+- each customer can only access their own saved stacks through Supabase RLS
 
-Optioneel voor later:
-- link toevoegen op homepage
-- link toevoegen in Calculator
-- stack opslaan in een ingelogd klantenaccount i.p.v. alleen localStorage
-- eigen stack-templates bewaren zonder automatische medische aanbevelingen
+SECURITY / FUNCTION
+- saved stacks are tied to Supabase Auth user_id
+- RLS allows authenticated users to select/insert/update/delete their own stacks only
+- PURE20 admins can also access rows through the existing admin check
+- the stack data is organizational data only; the builder does not generate recommended compounds, doses, routes or schedules

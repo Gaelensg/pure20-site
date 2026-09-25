@@ -68,6 +68,7 @@
 
     <nav class="account-tabs">
       <button class="account-tab active" data-view="orders" type="button" data-i18n="orders">Bestellingen</button>
+      <button class="account-tab" data-view="stacks" type="button" data-i18n="stacks">Stacks</button>
       <button class="account-tab" data-view="refer" type="button" data-i18n="refer">Referral</button>
       <button class="account-tab" data-view="tracking" type="button" data-i18n="tracking">Tracking</button>
     </nav>
@@ -78,6 +79,17 @@
         <p data-i18n="orderHistoryText">De status wordt aangepast zodra je bestelling verdergaat in het proces.</p>
       </div>
       <div id="ordersList" class="orders-list"></div>
+    </section>
+
+    <section id="view-stacks" class="view">
+      <div class="section-title">
+        <div><p class="eyebrow" data-i18n="stackKicker">STACK BUILDER</p><h2 data-i18n="savedStacks">Jouw opgeslagen stacks.</h2></div>
+        <p data-i18n="savedStacksText">Bewaar je eigen researchplanning in je account en open ze later opnieuw in de Stack Builder.</p>
+      </div>
+      <div class="stack-toolbar">
+        <a class="stack-new" href="/stack-builder" data-i18n="newStack">Nieuwe stack maken ↗</a>
+      </div>
+      <div id="savedStacksList" class="saved-stacks-list"></div>
     </section>
 
     <section id="view-refer" class="view">

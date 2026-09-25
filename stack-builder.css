@@ -22,7 +22,7 @@ textarea{resize:vertical;line-height:1.5}input:focus,select:focus,textarea:focus
 
 .workspace-head{display:flex;justify-content:space-between;gap:24px;align-items:end;padding-bottom:18px;border-bottom:1px solid var(--line)}.workspace-head h2{margin:0;font-size:35px;letter-spacing:-.04em}
 .workspace-actions,.print-buttons{display:flex;gap:8px;flex-wrap:wrap}.button{border:1px solid var(--ink);background:transparent;min-height:44px;padding:0 14px;text-transform:uppercase;font-size:9px;letter-spacing:.08em;font-weight:700;display:inline-flex;gap:8px;align-items:center;justify-content:center;cursor:pointer}
-.button.dark{background:var(--ink);color:#fff}.catalogue-status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px;letter-spacing:.06em;padding:14px 0}
+.button.dark{background:var(--ink);color:#fff}.button[href]{text-decoration:none}.catalogue-status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:10px;letter-spacing:.06em;padding:14px 0}
 .status-dot{width:7px;height:7px;border-radius:50%;background:#8a8a85}.catalogue-status.live .status-dot{background:var(--ok)}.catalogue-status.error .status-dot{background:#9d2e2e}
 
 .compound-list{display:grid;gap:14px}.compound-card{border:1px solid #c9c7c0;background:var(--bg);padding:22px}.compound-head{display:flex;justify-content:space-between;gap:16px;align-items:start;margin-bottom:20px}
@@ -61,3 +61,5 @@ textarea{resize:vertical;line-height:1.5}input:focus,select:focus,textarea:focus
  .day-grid span{min-height:7mm}.day-grid input:not(:checked)+span{color:#aaa;border-color:#ddd}.math-panel{grid-template-columns:repeat(4,1fr);margin-top:4mm}.math-result,.primary-result{background:#fff!important;color:#000!important}.schedule-summary{margin-top:8mm}
  .summary-grid{grid-template-columns:repeat(3,1fr)}.summary-grid>div{background:#fff}
 }
+
+.account-save-status{min-height:18px;margin-top:12px;color:var(--muted);font-size:10px;line-height:1.5;text-align:right}.account-save-status.success{color:var(--ok)}.account-save-status.error{color:#9d2e2e}

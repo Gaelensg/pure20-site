@@ -8,19 +8,20 @@
   const date=v=>new Intl.DateTimeFormat(document.documentElement.lang==='en'?'en-GB':'nl-BE',{dateStyle:'medium'}).format(new Date(v));
   const KEY='pure20_language';
   const REFKEY='pure20_pending_referral';
+  const NEXTKEY='pure20_account_next';
 
   const copy={
     nl:{
       backShop:'Terug naar shop',accountTitle:'Je PURE20-account.',accountIntro:'Bekijk bestellingen, volg hun status en beheer je persoonlijke referral-link.',
       refActive:'Referral actief',refActiveText:'Na registratie krijg je automatisch 2% korting op retailbestellingen.',
       login:'Inloggen',register:'Registreren',email:'E-mail',password:'Wachtwoord',name:'Naam',createAccount:'Account aanmaken',
-      welcome:'Welkom terug.',logout:'Uitloggen',orders:'Bestellingen',refer:'Referral',tracking:'Tracking',
+      welcome:'Welkom terug.',logout:'Uitloggen',orders:'Bestellingen',stacks:'Stacks',refer:'Referral',tracking:'Tracking',
       orderHistoryKicker:'ORDER HISTORY',yourOrders:'Jouw bestellingen.',orderHistoryText:'De status wordt aangepast zodra je bestelling verdergaat in het proces.',
       yourReferral:'JOUW REFERRAL',shareEarn:'Deel. Bouw krediet op.',refExplain:'Wie via jouw persoonlijke link registreert, krijgt standaard 2% korting. Zodra een referral-bestelling betaald is, ontvang jij 3% van de betaalde orderwaarde als krediet.',
       copy:'Kopieer',registrations:'Registraties',registrationHelp:'Bevestigde accounts die via jouw link geregistreerd zijn.',
       credit:'Beschikbaar krediet',creditHelp:'Kan in de winkelmand van een volgende retailbestelling worden gebruikt.',
       yourDiscount:'Jouw referral-korting',discountHelp:'Deze korting wordt automatisch toegepast wanneer je bent ingelogd.',
-      trackPackage:'Volg een pakket.',trackHelp:'Voer een trackingcode in. De vervoerder wordt automatisch geprobeerd te herkennen.',track:'Track',
+      stackKicker:'STACK BUILDER',savedStacks:'Jouw opgeslagen stacks.',savedStacksText:'Bewaar je eigen researchplanning in je account en open ze later opnieuw in de Stack Builder.',newStack:'Nieuwe stack maken ↗',openStack:'Openen',deleteStack:'Verwijderen',noStacks:'Nog geen stacks opgeslagen in je account.',compoundCount:'compounds',updated:'Bijgewerkt',trackPackage:'Volg een pakket.',trackHelp:'Voer een trackingcode in. De vervoerder wordt automatisch geprobeerd te herkennen.',track:'Track',
       noOrders:'Nog geen bestellingen gekoppeld aan dit account.',placed:'Geplaatst',accepted:'Aanvaard',paid:'Betaald',packed:'Verpakt',shipped:'Verzonden',delivered:'Geleverd',
       cancelled:'Geannuleerd',subtotal:'Subtotaal',discount:'Korting',creditUsed:'Krediet gebruikt',shipping:'Verzending',total:'Totaal',trackOrder:'Volg deze zending',
       msgs:{placed:'We hebben je bestelling ontvangen.',accepted:'Je bestelling is bevestigd.',paid:'Betaling ontvangen. Je bestelling wordt voorbereid.',packed:'Je bestelling is verpakt.',shipped:'Je pakket is verzonden.',delivered:'Je bestelling is geleverd.',cancelled:'Deze bestelling is geannuleerd.'}
@@ -29,13 +30,13 @@
       backShop:'Back to shop',accountTitle:'Your PURE20 account.',accountIntro:'View orders, follow their progress and manage your personal referral link.',
       refActive:'Referral active',refActiveText:'After registration you automatically receive 2% off retail orders.',
       login:'Sign in',register:'Register',email:'Email',password:'Password',name:'Name',createAccount:'Create account',
-      welcome:'Welcome back.',logout:'Log out',orders:'Orders',refer:'Refer',tracking:'Tracking',
+      welcome:'Welcome back.',logout:'Log out',orders:'Orders',stacks:'Stacks',refer:'Refer',tracking:'Tracking',
       orderHistoryKicker:'ORDER HISTORY',yourOrders:'Your orders.',orderHistoryText:'The status updates as your order moves through the process.',
       yourReferral:'YOUR REFERRAL',shareEarn:'Share. Build credit.',refExplain:'People who register through your personal link receive 2% off. Once a referral order is paid, you receive 3% of the paid order value as credit.',
       copy:'Copy',registrations:'Registrations',registrationHelp:'Confirmed accounts registered through your link.',
       credit:'Available credit',creditHelp:'Can be used in the cart on a future retail order.',
       yourDiscount:'Your referral discount',discountHelp:'This discount is automatically applied while you are signed in.',
-      trackPackage:'Track a package.',trackHelp:'Enter a tracking number. The carrier will be auto-detected where possible.',track:'Track',
+      stackKicker:'STACK BUILDER',savedStacks:'Your saved stacks.',savedStacksText:'Save your own research plans to your account and reopen them later in the Stack Builder.',newStack:'Create new stack ↗',openStack:'Open',deleteStack:'Delete',noStacks:'No stacks have been saved to your account yet.',compoundCount:'compounds',updated:'Updated',trackPackage:'Track a package.',trackHelp:'Enter a tracking number. The carrier will be auto-detected where possible.',track:'Track',
       noOrders:'No orders are linked to this account yet.',placed:'Placed',accepted:'Accepted',paid:'Paid',packed:'Packed',shipped:'Shipped',delivered:'Delivered',
       cancelled:'Cancelled',subtotal:'Subtotal',discount:'Discount',creditUsed:'Credit used',shipping:'Shipping',total:'Total',trackOrder:'Track this shipment',
       msgs:{placed:'We received your order.',accepted:'Your order has been confirmed.',paid:'Payment received. Your order is being prepared.',packed:'Your order has been packed.',shipped:'Your package has shipped.',delivered:'Your order has been delivered.',cancelled:'This order has been cancelled.'}
@@ -45,6 +46,7 @@
   let lang=localStorage.getItem(KEY)==='en'?'en':'nl';
   let accountData=null;
   let trackingReady=null;
+  let savedStacks=[];
 
   function t(k){return copy[lang][k]??k}
   function applyLanguage(next){
@@ -56,6 +58,7 @@
     });
     document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
     if(accountData)renderAccount(accountData);
+    renderStacks();
   }
   document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>applyLanguage(b.dataset.lang)));
 
@@ -65,6 +68,10 @@
   if(incomingRef)localStorage.setItem(REFKEY,incomingRef);
   const pendingRef=()=>localStorage.getItem(REFKEY)||'';
   if(pendingRef())$('referralNotice').hidden=false;
+
+  const requestedNext=(new URLSearchParams(location.search).get('next')||'').trim();
+  if(requestedNext.startsWith('/')&&!requestedNext.startsWith('//'))localStorage.setItem(NEXTKEY,requestedNext);
+  const consumeNext=()=>{const next=localStorage.getItem(NEXTKEY)||'';if(next)localStorage.removeItem(NEXTKEY);return next};
 
   document.querySelectorAll('[data-auth-view]').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('[data-auth-view]').forEach(x=>x.classList.toggle('active',x===btn));
@@ -146,6 +153,32 @@
     </article>`;
   }
 
+  function renderStacks(){
+    const host=$('savedStacksList');
+    if(!host)return;
+    host.innerHTML=savedStacks.length?savedStacks.map((row,index)=>{
+      const payload=row.data&&typeof row.data==='object'?row.data:{};
+      const count=Array.isArray(payload.stack)?payload.stack.length:0;
+      const title=row.title||payload.meta?.name||(lang==='en'?'Untitled stack':'Naamloze stack');
+      return `<article class="saved-stack-card" data-stack-id="${esc(row.id)}">
+        <div class="saved-stack-top"><span class="saved-stack-num">${String(index+1).padStart(2,'0')}</span><span class="saved-stack-meta">${esc(t('updated'))} ${date(row.updated_at)}</span></div>
+        <h3>${esc(title)}</h3>
+        <div class="saved-stack-meta">${count} ${esc(t('compoundCount'))}${payload.meta?.durationWeeks?` · ${esc(payload.meta.durationWeeks)} ${lang==='en'?'weeks':'weken'}`:''}</div>
+        <div class="saved-stack-actions">
+          <a href="/stack-builder?stack=${encodeURIComponent(row.id)}">${esc(t('openStack'))} ↗</a>
+          <button type="button" data-delete-stack="${esc(row.id)}">${esc(t('deleteStack'))}</button>
+        </div>
+      </article>`;
+    }).join(''):`<div class="stack-empty">${esc(t('noStacks'))}</div>`;
+  }
+
+  async function loadStacks(){
+    const {data,error}=await client.from('pure20_saved_stacks').select('id,title,data,created_at,updated_at').order('updated_at',{ascending:false});
+    if(error)throw error;
+    savedStacks=data||[];
+    renderStacks();
+  }
+
   function renderAccount(data){
     accountData=data;
     const c=data.customer||{};
@@ -171,7 +204,9 @@
   async function enter(){
     $('authGate').style.display='none';
     $('accountMain').hidden=false;
-    await loadAccount();
+    await Promise.all([loadAccount(),loadStacks()]);
+    const next=consumeNext();
+    if(next&&next!=='/account'&&!next.startsWith('/account?'))location.href=next;
   }
 
   $('signOut').addEventListener('click',async()=>{await client.auth.signOut();location.reload()});
@@ -184,6 +219,23 @@
     document.querySelectorAll('.account-tab').forEach(x=>x.classList.toggle('active',x===btn));
     document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${btn.dataset.view}`));
   }));
+
+  document.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-delete-stack]');
+    if(!btn)return;
+    const id=btn.dataset.deleteStack;
+    if(!confirm(lang==='en'?'Delete this saved stack?':'Deze opgeslagen stack verwijderen?'))return;
+    btn.disabled=true;
+    const {error}=await client.from('pure20_saved_stacks').delete().eq('id',id);
+    if(error){btn.disabled=false;toast(error.message);return}
+    await loadStacks();
+    toast(lang==='en'?'Stack deleted.':'Stack verwijderd.');
+  });
+
+  const requestedView=(new URLSearchParams(location.search).get('view')||'').trim();
+  if(['orders','stacks','refer','tracking'].includes(requestedView)){
+    document.querySelector(`[data-view="${requestedView}"]`)?.click();
+  }
 
   function loadTrackingScript(){
     if(trackingReady)return trackingReady;
