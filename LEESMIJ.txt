@@ -1,36 +1,39 @@
-PURE20 STACKS IN CUSTOMER ACCOUNT
+PURE20 STACK BUILDER NAVIGATION + ACCOUNT-ONLY SAVING
 
-Supabase is already configured. A protected table 'pure20_saved_stacks' has been created.
-
-Replace only these 6 files in the root of the GitHub repository:
-- account.html
-- account.css
-- account.js
+Upload/overwrite:
+- stack-nav.js                 NEW
+- supabase-config.js
+- calculator.js
+- knowledge.js
+- home.js
 - stack-builder.html
-- stack-builder.css
 - stack-builder.js
+- stack-builder.css
 
-WHAT CHANGES
+NAVIGATION
+The Stack Builder link is automatically shown on the customer-facing:
+- homepage
+- retail shop
+- wholesale shop
+- account page
+- calculator
+- knowledge overview
+- all peptide knowledge detail pages
+- Stack Builder itself
 
-STACK BUILDER
-- keeps local autosave
-- adds 'Save to account'
-- adds 'My stacks'
-- if not signed in, the customer is sent to /account and returned to the Stack Builder after login
-- when an account stack is opened, /stack-builder?stack=<id> loads it from Supabase
-- saving again updates the same cloud stack
-- Print / PDF still works as before
+Private admin/dashboard/portal pages are intentionally left unchanged.
 
-CUSTOMER ACCOUNT
-- new 'Stacks' tab
-- lists saved stacks
-- shows title, last update, number of compounds and duration when available
-- Open reopens the exact stack in the Stack Builder
-- Delete removes it from the customer's account
-- each customer can only access their own saved stacks through Supabase RLS
+SAVING RULE
+Visitors may build a stack and use Print/PDF without an account.
+Persistent saving is now account-only.
 
-SECURITY / FUNCTION
-- saved stacks are tied to Supabase Auth user_id
-- RLS allows authenticated users to select/insert/update/delete their own stacks only
-- PURE20 admins can also access rows through the existing admin check
-- the stack data is organizational data only; the builder does not generate recommended compounds, doses, routes or schedules
+If a logged-out visitor presses "Opslaan in account":
+1. the current form is held temporarily in sessionStorage only for the login hand-off;
+2. the visitor is sent to /account to register/sign in;
+3. after returning, that temporary draft is restored;
+4. the visitor can save it to their protected PURE20 account.
+
+The old "Lokaal bewaren" button and persistent localStorage stack autosave are removed.
+
+Existing cloud stacks and /account > Stacks continue to work.
+No new database migration is required.

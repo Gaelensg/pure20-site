@@ -99,6 +99,15 @@ window.PURE20_SUPABASE_CONFIG = {
     });
   }
 
+
+  /* Global Stack Builder navigation */
+  if (!document.querySelector("script[data-pure20-stack-nav]")) {
+    const navScript = document.createElement("script");
+    navScript.src = "/stack-nav.js";
+    navScript.dataset.pure20StackNav = "1";
+    document.head.appendChild(navScript);
+  }
+
   /* Global NL / EN switcher */
   if (!document.querySelector("script[data-pure20-language]")) {
     const s = document.createElement("script");

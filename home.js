@@ -33,3 +33,13 @@
 
   apply(getLanguage());
 })();
+
+
+/* PURE20 global Stack Builder navigation */
+(() => {
+  if (document.querySelector('script[data-pure20-stack-nav]')) return;
+  const s = document.createElement('script');
+  s.src = '/stack-nav.js';
+  s.dataset.pure20StackNav = '1';
+  document.head.appendChild(s);
+})();

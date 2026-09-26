@@ -1,6 +1,6 @@
 (() => {
   const $=id=>document.getElementById(id);
-  const KEY='pure20_stack_builder_v1', LANGKEY='pure20_language';
+  const PENDING_KEY='pure20_stack_pending_login_v1', LANGKEY='pure20_language';
   let lang=localStorage.getItem(LANGKEY)==='en'?'en':'nl';
   let products=[], stack=[];
   let cloudStackId='';
@@ -12,8 +12,8 @@
       compounds:'COMPOUNDS IN DEZE STACK',stackDetails:'STACK DETAILS',stackName:'Naam van de stack',reference:'Naam / referentie',startDate:'Startdatum',duration:'Duur',weeks:'weken',
       purpose:'Onderzoeksdoel / notitie',builder:'BUILDER',compose:'Stel je stack samen.',addCompound:'Compound toevoegen',clear:'Wissen',loadingCatalogue:'Catalogus laden…',
       emptyTitle:'Nog geen compounds.',emptyText:'Voeg een compound toe om je research stack op te bouwen.',addFirst:'Eerste compound toevoegen',overview:'OVERZICHT',
-      totalCompounds:'Compounds',scheduledMoments:'Geplande momenten / week',savedLocally:'Opslag',local:'Lokaal',ready:'KLAAR OM TE BEWAREN',
-      printTitle:'Print of bewaar als PDF.',saveAccount:'Opslaan in account',myStacks:'Mijn stacks',accountSaved:'Opgeslagen in je account.',accountUpdated:'Stack in je account bijgewerkt.',loginToSave:'Log eerst in om in je account te bewaren.',cloudLoaded:'Opgeslagen stack geladen.',printText:'Op iPhone kun je via de printweergave ook als PDF bewaren of delen.',save:'Lokaal bewaren',print:'Print / PDF',
+      totalCompounds:'Compounds',scheduledMoments:'Geplande momenten / week',savedLocally:'Opslaan',local:'Account',ready:'KLAAR OM TE BEWAREN',
+      printTitle:'Bewaar in je account of print als PDF.',saveAccount:'Opslaan in account',myStacks:'Mijn stacks',accountSaved:'Opgeslagen in je account.',accountUpdated:'Stack in je account bijgewerkt.',loginToSave:'Log eerst in om in je account te bewaren.',cloudLoaded:'Opgeslagen stack geladen.',printText:'Op iPhone kun je via de printweergave ook als PDF bewaren of delen.',save:'Lokaal bewaren',print:'Print / PDF',
       boundary:'Deze tool organiseert waarden die je zelf invoert en voert uitsluitend rekenkundige conversies uit. Hij kiest geen compounds, stack, dosis, frequentie, toedieningswijze of behandeling en controleert geen interacties. Combineer experimentele stoffen niet op basis van deze planner alleen.',
       product:'Product / variant',customName:'Naam bij handmatige invoer',vialAmount:'Hoeveelheid in vial',liquidVolume:'Totale vloeistof',
       plannedAmount:'Zelf ingevoerde hoeveelheid / moment',timeNote:'Moment / korte notitie',days:'Dagen',notes:'Notities',
@@ -29,8 +29,8 @@
       compounds:'COMPOUNDS IN THIS STACK',stackDetails:'STACK DETAILS',stackName:'Stack name',reference:'Name / reference',startDate:'Start date',duration:'Duration',weeks:'weeks',
       purpose:'Research purpose / note',builder:'BUILDER',compose:'Compose your stack.',addCompound:'Add compound',clear:'Clear',loadingCatalogue:'Loading catalogue…',
       emptyTitle:'No compounds yet.',emptyText:'Add a compound to start building your research stack.',addFirst:'Add first compound',overview:'OVERVIEW',
-      totalCompounds:'Compounds',scheduledMoments:'Scheduled moments / week',savedLocally:'Storage',local:'Local',ready:'READY TO SAVE',
-      printTitle:'Print or save as PDF.',saveAccount:'Save to account',myStacks:'My stacks',accountSaved:'Saved to your account.',accountUpdated:'Stack updated in your account.',loginToSave:'Sign in first to save to your account.',cloudLoaded:'Saved stack loaded.',printText:'On iPhone, the print sheet can also be used to save or share a PDF.',save:'Save locally',print:'Print / PDF',
+      totalCompounds:'Compounds',scheduledMoments:'Scheduled moments / week',savedLocally:'Save',local:'Account',ready:'READY TO SAVE',
+      printTitle:'Save to your account or print as PDF.',saveAccount:'Save to account',myStacks:'My stacks',accountSaved:'Saved to your account.',accountUpdated:'Stack updated in your account.',loginToSave:'Sign in first to save to your account.',cloudLoaded:'Saved stack loaded.',printText:'On iPhone, the print sheet can also be used to save or share a PDF.',save:'Save locally',print:'Print / PDF',
       boundary:'This tool organizes values you enter yourself and performs arithmetic conversions only. It does not choose compounds, a stack, dose, frequency, route or treatment and it does not check interactions. Do not combine experimental compounds based on this planner alone.',
       product:'Product / variant',customName:'Name for manual entry',vialAmount:'Amount in vial',liquidVolume:'Total liquid volume',
       plannedAmount:'User-entered amount / moment',timeNote:'Timing / short note',days:'Days',notes:'Notes',
@@ -99,13 +99,13 @@
     const client=apiClient();
     const {data,error}=await client.from('pure20_saved_stacks').select('id,title,data').eq('id',id).single();
     if(error)throw error;
-    cloudStackId=data.id;applySnapshot(data.data||{});save();setCloudStatus(t('cloudLoaded'),'success');return true;
+    cloudStackId=data.id;applySnapshot(data.data||{});setCloudStatus(t('cloudLoaded'),'success');return true;
   }
   async function saveToAccount(){
     try{
-      save();
       const sess=await session();
       if(!sess){
+        try{sessionStorage.setItem(PENDING_KEY,JSON.stringify(snapshot()))}catch(_){}
         localStorage.setItem('pure20_account_next',location.pathname+location.search);
         setCloudStatus(t('loginToSave'),'error');
         setTimeout(()=>location.href=`/account?next=${encodeURIComponent(location.pathname+location.search)}`,450);
@@ -226,14 +226,14 @@
       card.addEventListener('input',e=>{
         if(!e.target.matches('[data-field],[data-day]'))return;
         const productChange=e.target.dataset.field==='productId';
-        sync(item,card);applyProduct(item,card,productChange);calculate(item,card);update();save();
+        sync(item,card);applyProduct(item,card,productChange);calculate(item,card);update();
       });
       card.addEventListener('change',e=>{
         if(!e.target.matches('[data-field],[data-day]'))return;
         const productChange=e.target.dataset.field==='productId';
-        sync(item,card);applyProduct(item,card,productChange);calculate(item,card);update();save();
+        sync(item,card);applyProduct(item,card,productChange);calculate(item,card);update();
       });
-      card.querySelector('[data-action=remove]').addEventListener('click',()=>{stack=stack.filter(x=>x.id!==item.id);render();save()});
+      card.querySelector('[data-action=remove]').addEventListener('click',()=>{stack=stack.filter(x=>x.id!==item.id);render()});
       list.appendChild(frag);
     });
     translate();update();
@@ -245,12 +245,17 @@
     $('summaryMoments').textContent=stack.reduce((s,x)=>s+(x.days?.length||0),0);
   }
   function snapshot(){return{version:1,meta:{name:$('stackName').value,reference:$('stackReference').value,startDate:$('startDate').value,durationWeeks:$('durationWeeks').value,purpose:$('stackPurpose').value},stack}}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(snapshot()))}catch(_){}}
-  function loadSaved(){
-    try{const raw=JSON.parse(localStorage.getItem(KEY)||'null');if(raw)applySnapshot(raw)}catch(_){}
+  function loadPendingDraft(){
+    try{
+      const raw=JSON.parse(sessionStorage.getItem(PENDING_KEY)||'null');
+      if(raw){
+        applySnapshot(raw);
+        sessionStorage.removeItem(PENDING_KEY);
+      }
+    }catch(_){}
   }
   function add(){
-    stack.push(fresh());render();save();
+    stack.push(fresh());render();
     requestAnimationFrame(()=>document.querySelector(`[data-id="${stack.at(-1).id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'}));
   }
   function translate(){
@@ -263,17 +268,12 @@
     lang=next==='en'?'en':'nl';localStorage.setItem(LANGKEY,lang);document.documentElement.lang=lang;
     document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));translate();
   }
-  function flash(msg){
-    const b=$('saveStack'),old=b.textContent;b.textContent=msg;setTimeout(()=>b.textContent=t('save'),1100);
-  }
 
   $('langSwitch').addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang)});
   $('addCompound').addEventListener('click',add);$('emptyAdd').addEventListener('click',add);
-  $('clearStack').addEventListener('click',()=>{if(stack.length&&confirm(lang==='en'?'Clear this entire stack?':'Volledige stack wissen?')){stack=[];render();save();flash(t('cleared'))}});
-  $('saveStack').addEventListener('click',()=>{save();flash(t('saved'))});
+  $('clearStack').addEventListener('click',()=>{if(stack.length&&confirm(lang==='en'?'Clear this entire stack?':'Volledige stack wissen?')){stack=[];render();flash(t('cleared'))}});
   $('saveAccount').addEventListener('click',saveToAccount);
-  $('printStack').addEventListener('click',()=>{save();window.print()});
-  ['stackName','stackReference','startDate','durationWeeks','stackPurpose'].forEach(id=>$(id).addEventListener('input',save));
+  $('printStack').addEventListener('click',()=>window.print());
 
-  (async()=>{loadSaved();await loadProducts();try{await loadCloudStack()}catch(err){setCloudStatus(err?.message||'Could not load saved stack.','error')}render();setLang(lang)})();
+  (async()=>{loadPendingDraft();await loadProducts();try{await loadCloudStack()}catch(err){setCloudStatus(err?.message||'Could not load saved stack.','error')}render();setLang(lang)})();
 })();
