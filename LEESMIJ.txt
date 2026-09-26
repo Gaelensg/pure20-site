@@ -1,37 +1,12 @@
-PURE20 UNIVERSAL HEADER + JETBRAINS MONO
+PURE20 HEADER HORIZONTAL FIX
 
-Deze update voert het goedgekeurde headerconcept uit.
+Vervang alleen:
+- site-theme.css
 
-UPLOAD / OVERSCHRIJF:
-- site-header.js        NEW
-- site-theme.css        NEW
-- supabase-config.js
-- home.js
-- knowledge.js
-- calculator.js
+Dit corrigeert specifiek de Shop- en Calculator-header op mobiel:
+- navigatie blijft altijd één horizontale rij
+- oude pagina-specifieke flex-wrap/grid-regels worden overschreven
+- niets springt nog naar een tweede of derde rij
+- als de vijf links niet passen, kan de navigatierij horizontaal worden geswipet
 
-WAT ER VERANDERT
-- dezelfde header op alle klantgerichte pagina's
-- PURE20-logo links bovenaan
-- compacte utility buttons rechts
-- taalkeuze blijft behouden
-- zoekknop is functioneel en opent/focust Knowledge search
-- accountknop naar /account
-- winkelwagenknop blijft functioneel op Shop en Wholesale
-- op andere pagina's brengt het winkelwagenicoon je naar de Shop
-- tweede navigatierij:
-  Shop / Knowledge / Calculator / Stack Builder / Wholesale
-- actieve pagina krijgt een subtiele onderlijning
-- mobiele navigatie blijft op één horizontale rij en kan horizontaal scrollen
-- admin/dashboard/portal behouden hun bestaande headerstructuur
-
-TYPOGRAFIE
-- alle UI-, body- en headingtekst gebruikt JetBrains Mono
-- het PURE20-logo/woordmerk blijft bewust zijn eigen zware sans-stijl houden
-- JetBrains Mono wordt via Google Fonts geladen met een veilige monospace fallback
-
-PAGINA'S
-De loader dekt homepage, Shop, Wholesale, Account, Calculator, Stack Builder,
-Knowledge-overzicht en alle individuele Knowledge-pagina's.
-
-Oude stack-nav.js mag in de repository blijven staan, maar wordt door deze update niet meer geladen.
+Geen andere bestanden hoeven gewijzigd te worden.
