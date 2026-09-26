@@ -409,3 +409,172 @@ html body h3{
   content:"";
   flex:0 0 10px;
 }
+
+
+/* =========================================================
+   PURE20 LIGHT / DARK MODE
+   ========================================================= */
+html[data-p20-theme="light"]{color-scheme:light}
+
+html[data-p20-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1210;
+  --paper:#151916;
+  --ink:#f4f3ee;
+  --muted:#9ca29d;
+  --line:#303632;
+  --ok:#69c79d;
+  --warn:#d3a04d;
+  --bad:#e28282;
+}
+
+html[data-p20-theme="dark"] body{
+  background:#0f1210!important;
+  color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] .p20-global-header{
+  background:rgba(15,18,16,.97)!important;
+  color:#f4f3ee!important;
+  border-bottom-color:#303632!important;
+}
+
+html[data-p20-theme="dark"] .p20-global-header .p20-brand,
+html[data-p20-theme="dark"] .p20-header-nav a,
+html[data-p20-theme="dark"] .p20-icon-button,
+html[data-p20-theme="dark"] .p20-language-control,
+html[data-p20-theme="dark"] .p20-global-header #pure20LangSwitch,
+html[data-p20-theme="dark"] .p20-global-header #langSwitch,
+html[data-p20-theme="dark"] .p20-global-header .language,
+html[data-p20-theme="dark"] .p20-global-header .pure20-lang-switch{
+  color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] .p20-header-nav,
+html[data-p20-theme="dark"] .p20-icon-button,
+html[data-p20-theme="dark"] .p20-language-control,
+html[data-p20-theme="dark"] .p20-global-header #pure20LangSwitch,
+html[data-p20-theme="dark"] .p20-global-header #langSwitch,
+html[data-p20-theme="dark"] .p20-global-header .language,
+html[data-p20-theme="dark"] .p20-global-header .pure20-lang-switch{
+  border-color:#3b423e!important;
+}
+
+html[data-p20-theme="dark"] .p20-header-nav a[aria-current="page"]{
+  border-bottom-color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] .p20-language-control button,
+html[data-p20-theme="dark"] .p20-global-header #pure20LangSwitch button,
+html[data-p20-theme="dark"] .p20-global-header #langSwitch button,
+html[data-p20-theme="dark"] .p20-global-header .language button,
+html[data-p20-theme="dark"] .p20-global-header .pure20-lang-switch button{
+  color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] .p20-language-control button[aria-pressed="true"],
+html[data-p20-theme="dark"] .p20-global-header #pure20LangSwitch button[aria-pressed="true"],
+html[data-p20-theme="dark"] .p20-global-header #langSwitch button[aria-pressed="true"],
+html[data-p20-theme="dark"] .p20-global-header .language button[aria-pressed="true"],
+html[data-p20-theme="dark"] .p20-global-header .pure20-lang-switch button[aria-pressed="true"]{
+  background:#f4f3ee!important;
+  color:#0f1210!important;
+}
+
+html[data-p20-theme="dark"] .p20-cart-button #headerCartCount{
+  background:#f4f3ee!important;
+  color:#0f1210!important;
+}
+
+/* Common customer-facing surfaces */
+html[data-p20-theme="dark"] :is(
+  .explore-zone,.catalogue-zone,.builder-zone,.feature-card,.compound-card,
+  .order-card,.ref-card,.tracking-card,.calc-card,.calc-panel,.calculator-card,
+  .result-card,.tools,.card,.knowledge-card,.product-card,.order-drawer,
+  .drawer-actions,.totals-card,.summary-grid>div,.math-result,.empty-state,
+  .stack-meta,.schedule-summary
+){
+  background:#151916!important;
+  color:#f4f3ee!important;
+  border-color:#303632!important;
+}
+
+html[data-p20-theme="dark"] :is(input,select,textarea,.search-wrap input,.field input,.field select,.field textarea,.coupon-row input){
+  background:#111512!important;
+  color:#f4f3ee!important;
+  border-color:#3a403c!important;
+}
+
+html[data-p20-theme="dark"] :is(input,textarea)::placeholder{
+  color:#737a75!important;
+}
+
+html[data-p20-theme="dark"] :is(
+  .hero-intro,.lede,.eyebrow,.kicker,.feature-card p,.product-code,.stockline,
+  .toolbar-note,.research-note,.section-kicker,.math-result span,.boundary,
+  .order-meta,.summary-row,.stat-label,.tracking-card>p,.ref-main p,.stat-card p,
+  .auth-intro
+){
+  color:#9ca29d!important;
+}
+
+html[data-p20-theme="dark"] :is(.button-light,.outline-btn,.mini-btn,.pill,.qty-control,.day-grid span,.account-tab,.auth-tab,.back-link){
+  border-color:#555d58!important;
+  color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] :is(.pill.active,.day-grid input:checked+span,.primary-result,.button-dark,.solid-btn){
+  background:#f4f3ee!important;
+  color:#0f1210!important;
+  border-color:#f4f3ee!important;
+}
+
+html[data-p20-theme="dark"] .home-footer,
+html[data-p20-theme="dark"] .cta-zone,
+html[data-p20-theme="dark"] .cart-bar{
+  background:#090b0a!important;
+  color:#f4f3ee!important;
+  border-color:#303632!important;
+}
+
+.p20-theme-toggle svg{transition:transform .18s ease}
+.p20-theme-toggle:active svg{transform:scale(.88)}
+
+@media(max-width:560px){
+  .p20-header-actions{
+    gap:4px!important;
+    flex-wrap:nowrap!important;
+  }
+  .p20-icon-button,.p20-signout-button{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    border-radius:8px!important;
+  }
+  .p20-icon-button svg{
+    width:17px!important;
+    height:17px!important;
+  }
+  .p20-language-control,
+  .p20-global-header #pure20LangSwitch,
+  .p20-global-header #langSwitch,
+  .p20-global-header .language,
+  .p20-global-header .pure20-lang-switch{
+    min-height:36px!important;
+    border-radius:8px!important;
+  }
+  .p20-language-control button,
+  .p20-global-header #pure20LangSwitch button,
+  .p20-global-header #langSwitch button,
+  .p20-global-header .language button,
+  .p20-global-header .pure20-lang-switch button{
+    min-width:25px!important;
+    height:30px!important;
+    padding:0 4px!important;
+    font-size:8px!important;
+  }
+  .p20-global-header .p20-brand{
+    font-size:24px!important;
+  }
+}

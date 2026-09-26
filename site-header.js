@@ -14,6 +14,48 @@
   const path = location.pathname.replace(/\/+$/, '') || '/';
   const isPrivate = /^\/(admin|wholesale-admin|dashboard|portal)(\/|$)/i.test(path);
 
+  const THEME_KEY = 'pure20_theme';
+
+  function currentTheme() {
+    return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+  }
+
+  function applyTheme(theme, button) {
+    const next = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.dataset.p20Theme = next;
+    document.documentElement.style.colorScheme = next;
+    localStorage.setItem(THEME_KEY, next);
+
+    if (button) {
+      const isDark = next === 'dark';
+      button.innerHTML = icon(isDark ? 'moon' : 'sun');
+      button.setAttribute(
+        'aria-label',
+        isDark
+          ? 'Donkere modus actief. Schakel naar lichte modus.'
+          : 'Lichte modus actief. Schakel naar donkere modus.'
+      );
+      button.title = isDark ? 'Donkere modus' : 'Lichte modus';
+      button.setAttribute('aria-pressed', String(isDark));
+    }
+
+    window.dispatchEvent(new CustomEvent('pure20:themechange', {detail:{theme:next}}));
+  }
+
+  function makeThemeButton() {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'p20-icon-button p20-theme-toggle';
+    button.dataset.p20ThemeToggle = '1';
+    button.addEventListener('click', () => {
+      applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', button);
+    });
+    applyTheme(currentTheme(), button);
+    return button;
+  }
+
+  if (!isPrivate) applyTheme(currentTheme());
+
   function isKnowledgePage() {
     if (path === '/knowledge' || path === '/knowledge.html') return true;
     const known = ['/','/shop','/calculator','/stack-builder','/wholesale','/account'];
@@ -35,6 +77,8 @@
     if (type === 'search') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.6"></circle><path d="M16 16l4.2 4.2"></path></svg>';
     if (type === 'account') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 19c.8-4 3-6 6.5-6s5.7 2 6.5 6"></path></svg>';
     if (type === 'cart') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5h2l1.7 9.2h9.7l2-6.5H7"></path><circle cx="9" cy="18.5" r="1"></circle><circle cx="17" cy="18.5" r="1"></circle></svg>';
+    if (type === 'sun') return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"></path></svg>';
+    if (type === 'moon') return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.2 15.1A7.6 7.6 0 0 1 8.9 4.8 8 8 0 1 0 19.2 15.1z"></path></svg>';
     return '';
   }
 
@@ -183,8 +227,10 @@
     searchBtn.addEventListener('click', focusKnowledgeSearch);
 
     const account = makeIconLink('/account','Account','account');
+    const themeButton = makeThemeButton();
 
     top.appendChild(brand);
+    actions.appendChild(themeButton);
     actions.appendChild(searchBtn);
     actions.appendChild(account);
 

@@ -1,14 +1,16 @@
-PURE20 HEADER - ALTIJD HORIZONTAAL SWIPEBAAR
+PURE20 LIGHT / DARK MODE
 
 Vervang alleen:
+- site-header.js
 - site-theme.css
 
-Resultaat:
-- navigatie blijft altijd 1 horizontale rij
-- nooit meer wrap naar een tweede regel
-- horizontaal swipen/scrollen blijft altijd mogelijk
-- scrollbar blijft verborgen
-- touch scrolling werkt soepel op iPhone
-- elk menu-item blijft volledig zichtbaar wanneer je ernaartoe swipet
+Werking:
+- zonnetje = lichte achtergrond + donkere tekst
+- maantje = donkere achtergrond + lichte tekst
+- tik op het icoon om te wisselen
+- de keuze wordt opgeslagen en blijft behouden op andere PURE20-pagina's
+- standaard blijft lichte modus
+- JetBrains Mono blijft overal actief behalve op het PURE20-logo
+- horizontaal swipebare navigatie blijft behouden
 
-Geen andere bestanden aanpassen.
+De schakelaar wordt niet toegevoegd aan admin/dashboard/portal.
