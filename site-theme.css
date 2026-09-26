@@ -367,3 +367,45 @@ html body h3{
     font-size:9.5px!important;
   }
 }
+
+
+/* =========================================================
+   PURE20 navigation: always horizontally swipeable
+   ========================================================= */
+.p20-global-header .p20-header-nav.header-nav{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+  scrollbar-width:none!important;
+  white-space:nowrap!important;
+  scroll-snap-type:x proximity!important;
+  scroll-padding-inline:10px!important;
+}
+
+.p20-global-header .p20-header-nav.header-nav::-webkit-scrollbar{
+  display:none!important;
+}
+
+.p20-global-header .p20-header-nav.header-nav > a{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:max-content!important;
+  white-space:nowrap!important;
+  scroll-snap-align:start!important;
+}
+
+/* Add a tiny bit of breathing room so the last item can be swiped fully into view. */
+.p20-global-header .p20-header-nav.header-nav::after{
+  content:"";
+  flex:0 0 10px;
+}

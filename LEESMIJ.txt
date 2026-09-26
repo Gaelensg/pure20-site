@@ -1,12 +1,14 @@
-PURE20 HEADER HORIZONTAL FIX
+PURE20 HEADER - ALTIJD HORIZONTAAL SWIPEBAAR
 
 Vervang alleen:
 - site-theme.css
 
-Dit corrigeert specifiek de Shop- en Calculator-header op mobiel:
-- navigatie blijft altijd één horizontale rij
-- oude pagina-specifieke flex-wrap/grid-regels worden overschreven
-- niets springt nog naar een tweede of derde rij
-- als de vijf links niet passen, kan de navigatierij horizontaal worden geswipet
+Resultaat:
+- navigatie blijft altijd 1 horizontale rij
+- nooit meer wrap naar een tweede regel
+- horizontaal swipen/scrollen blijft altijd mogelijk
+- scrollbar blijft verborgen
+- touch scrolling werkt soepel op iPhone
+- elk menu-item blijft volledig zichtbaar wanneer je ernaartoe swipet
 
-Geen andere bestanden hoeven gewijzigd te worden.
+Geen andere bestanden aanpassen.
