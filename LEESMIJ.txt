@@ -1,16 +1,56 @@
-PURE20 LIGHT / DARK MODE
+PURE20 ADMIN → CUSTOMER SHARED PLANS
 
-Vervang alleen:
-- site-header.js
-- site-theme.css
+Supabase is already configured.
 
-Werking:
-- zonnetje = lichte achtergrond + donkere tekst
-- maantje = donkere achtergrond + lichte tekst
-- tik op het icoon om te wisselen
-- de keuze wordt opgeslagen en blijft behouden op andere PURE20-pagina's
-- standaard blijft lichte modus
-- JetBrains Mono blijft overal actief behalve op het PURE20-logo
-- horizontaal swipebare navigatie blijft behouden
+Upload/overwrite only:
+- dashboard.html
+- dashboard.js
+- account.html
+- account.js
+- account.css
 
-De schakelaar wordt niet toegevoegd aan admin/dashboard/portal.
+ADMIN
+Business Dashboard > Customers:
+- customer must have a registered PURE20 account
+- customers without an account show "No account yet"
+- customers with an account get a "Send plan" button
+
+The send form supports:
+- plan title
+- goal/context
+- multiple compounds
+- amount / dose text
+- frequency text
+- timing text
+- route text
+- duration text
+- compound note
+- general note
+- source/reference
+
+PURE20 does not calculate, recommend or validate those values. The form only transmits the text entered by the admin.
+
+Business Dashboard > Shared plans:
+- see every sent plan
+- see recipient
+- see whether it has been viewed
+- archive plans
+
+CUSTOMER PROFILE
+A new "Plans" tab appears in /account.
+Unread plans show:
+- a notification banner
+- a numeric badge on the Plans tab
+- a NEW label on the plan card
+
+When the customer opens the plan:
+- title, context and all compounds appear
+- amount, frequency, timing, route and duration are displayed
+- the plan becomes "viewed" in the admin dashboard
+- general notes and source/reference are shown
+
+SECURITY
+- only a PURE20 admin can send/archive plans
+- only the authenticated customer linked to that customer_id can read their plans
+- customer cannot edit admin-sent plans
+- plan data is protected by Supabase RLS

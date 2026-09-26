@@ -56,6 +56,41 @@
       .toolbar{display:grid;grid-template-columns:1fr 1fr}
       .toolbar input{grid-column:1/-1;width:100%}
     }
+
+    .customer-plan-row{display:flex;justify-content:flex-end;margin-top:10px}
+    .send-plan-btn{border:1px solid #111;background:transparent;padding:9px 11px;text-transform:uppercase;letter-spacing:.08em;font-size:9px}
+    .send-plan-btn:disabled{opacity:.35;cursor:not-allowed}
+    .plan-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:110}
+    .plan-modal{position:fixed;top:0;right:0;bottom:0;z-index:111;width:min(760px,100%);background:#f7f6f2;transform:translateX(100%);transition:.22s ease;display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.18)}
+    .plan-modal.open{transform:none}
+    .plan-modal-head{display:flex;justify-content:space-between;gap:20px;padding:22px 24px;border-bottom:1px solid #d0cec8}
+    .plan-modal-head h2{margin:0;font-size:28px}
+    .plan-recipient{margin-top:6px;color:#666;font-size:11px}
+    .plan-close{border:0;background:transparent;font-size:30px}
+    .plan-modal-scroll{overflow:auto;padding:22px 24px}
+    .plan-field-admin{display:grid;gap:6px;margin-bottom:14px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#666}
+    .plan-field-admin input,.plan-field-admin textarea{width:100%;padding:11px;border:1px solid #bbb;background:#fff;font-size:14px;text-transform:none;letter-spacing:0}
+    .plan-items-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin:24px 0 10px;padding-top:18px;border-top:1px solid #ccc}
+    .plan-items-head span{display:block;color:#777;font-size:10px;margin-top:3px}
+    .admin-plan-item{border:1px solid #ccc;background:#fff;padding:14px;margin-bottom:10px}
+    .admin-plan-item-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+    .admin-plan-item-head strong{font-size:12px}
+    .admin-plan-item-head button{border:0;background:transparent;font-size:22px}
+    .admin-plan-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px}
+    .admin-plan-grid input,.admin-plan-grid textarea{width:100%;padding:10px;border:1px solid #bbb;background:#fff;font-size:13px}
+    .admin-plan-grid textarea{grid-column:1/-1;resize:vertical}
+    .plan-safety-note{margin-top:16px;padding:12px;border:1px solid #c9b983;background:#fff9e8;color:#6e5c22;font-size:10px;line-height:1.5}
+    .plan-modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 24px;border-top:1px solid #d0cec8;background:#f7f6f2}
+    .plan-modal-actions button{min-height:44px;border:1px solid #111;background:transparent}
+    .plan-admin-card{border:1px solid #d4d2cb;background:#faf9f6;padding:14px;margin-bottom:10px}
+    .plan-admin-head{display:grid;grid-template-columns:1fr auto;gap:12px}
+    .plan-admin-title{font-size:16px;font-weight:800;margin-top:4px}
+    .plan-admin-meta{font-size:10px;color:#666;line-height:1.5;margin-top:4px}
+    .plan-admin-status{font-size:9px;text-transform:uppercase;letter-spacing:.08em;border:1px solid #aaa;padding:5px 7px;align-self:start}
+    .plan-admin-items{margin-top:10px;padding-top:10px;border-top:1px solid #ddd;font-size:11px;line-height:1.6;color:#555}
+    .plan-admin-actions{margin-top:10px;text-align:right}
+    @media(max-width:700px){.admin-plan-grid{grid-template-columns:1fr}.plan-items-head{align-items:flex-start;flex-direction:column}}
+
   </style>
 </head>
 <body class="admin-body">
@@ -100,6 +135,7 @@
       <button class="subtab active" data-view="overview">Overview</button>
       <button class="subtab" data-view="orders">Orders</button>
       <button class="subtab" data-view="customers">Customers</button>
+      <button class="subtab" data-view="plans">Shared plans</button>
     </nav>
 
     <section id="view-overview" class="view active">
@@ -140,7 +176,69 @@
         <div id="customersList"></div>
       </div>
     </section>
+
+    <section id="view-plans" class="view">
+      <div class="panel">
+        <h2>Shared plans</h2>
+        <div class="toolbar"><input id="planSearch" type="search" placeholder="Search customer or plan title…"></div>
+        <div id="plansList"></div>
+      </div>
+    </section>
   </main>
+
+
+  <div id="planModalBackdrop" class="plan-modal-backdrop" hidden></div>
+  <aside id="planModal" class="plan-modal" aria-hidden="true">
+    <div class="plan-modal-head">
+      <div>
+        <p class="eyebrow">CUSTOMER / SHARED PLAN</p>
+        <h2>Send plan</h2>
+        <div id="planRecipient" class="plan-recipient"></div>
+      </div>
+      <button id="closePlanModal" class="plan-close" type="button">×</button>
+    </div>
+
+    <div class="plan-modal-scroll">
+      <input id="planCustomerId" type="hidden">
+
+      <label class="plan-field-admin">
+        Plan title
+        <input id="planTitle" type="text" maxlength="180" placeholder="e.g. Recovery research plan">
+      </label>
+
+      <label class="plan-field-admin">
+        Goal / context
+        <textarea id="planGoal" rows="3" maxlength="1200" placeholder="Context for this plan"></textarea>
+      </label>
+
+      <div class="plan-items-head">
+        <div><strong>Compounds</strong><span>Values are entered manually and are not calculated or validated by PURE20.</span></div>
+        <button id="addPlanItem" class="save-btn" type="button">+ Add compound</button>
+      </div>
+
+      <div id="planItems"></div>
+
+      <label class="plan-field-admin">
+        General note
+        <textarea id="planGeneralNote" rows="3" maxlength="4000" placeholder="Optional overall note"></textarea>
+      </label>
+
+      <label class="plan-field-admin">
+        Source / reference
+        <textarea id="planSourceReference" rows="2" maxlength="1200" placeholder="Optional study, document or clinician reference"></textarea>
+      </label>
+
+      <div class="plan-safety-note">
+        PURE20 does not generate or validate individualized doses, frequencies, routes or treatment decisions. This form only transmits the values you enter.
+      </div>
+    </div>
+
+    <div class="plan-modal-actions">
+      <button id="cancelPlan" type="button">Cancel</button>
+      <button id="sendPlan" class="save-btn" type="button">Send to customer</button>
+    </div>
+  </aside>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>

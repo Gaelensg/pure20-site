@@ -66,9 +66,19 @@
       </div>
     </section>
 
+    <section id="planNotice" class="plan-notice" hidden>
+      <div>
+        <span class="plan-notice-dot"></span>
+        <strong id="planNoticeTitle" data-i18n="newPlan">Nieuwe stack ontvangen</strong>
+        <span id="planNoticeText" data-i18n="newPlanText">Er staat een nieuw gedeeld plan klaar in je profiel.</span>
+      </div>
+      <button id="openPlansNotice" type="button" data-i18n="openPlans">Open plannen</button>
+    </section>
+
     <nav class="account-tabs">
       <button class="account-tab active" data-view="orders" type="button" data-i18n="orders">Bestellingen</button>
       <button class="account-tab" data-view="stacks" type="button" data-i18n="stacks">Stacks</button>
+      <button class="account-tab" data-view="plans" type="button"><span data-i18n="plans">Plannen</span><span id="planBadge" class="tab-badge" hidden>0</span></button>
       <button class="account-tab" data-view="refer" type="button" data-i18n="refer">Referral</button>
       <button class="account-tab" data-view="tracking" type="button" data-i18n="tracking">Tracking</button>
     </nav>
@@ -90,6 +100,20 @@
         <a class="stack-new" href="/stack-builder" data-i18n="newStack">Nieuwe stack maken ↗</a>
       </div>
       <div id="savedStacksList" class="saved-stacks-list"></div>
+    </section>
+
+    <section id="view-plans" class="view">
+      <div class="section-title">
+        <div>
+          <p class="eyebrow" data-i18n="sharedPlanKicker">GEDEELDE PLANNEN</p>
+          <h2 data-i18n="sharedPlans">Plannen voor jou.</h2>
+        </div>
+        <p data-i18n="sharedPlansText">Hier verschijnen plannen die rechtstreeks vanuit PURE20 met jouw account gedeeld zijn.</p>
+      </div>
+      <div id="sharedPlansList" class="shared-plans-list"></div>
+      <p class="shared-plan-disclaimer" data-i18n="planDisclaimer">
+        PURE20 genereert of valideert geen persoonlijke dosering of behandeling. De inhoud hieronder is door de afzender ingevoerd en moet zelfstandig worden gecontroleerd.
+      </p>
     </section>
 
     <section id="view-refer" class="view">

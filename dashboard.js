@@ -6,9 +6,10 @@
     gate:$('loginGate'),email:$('loginEmail'),pass:$('loginPassword'),login:$('loginButton'),err:$('loginError'),signOut:$('signOut'),
     statOrders:$('statOrders'),statRevenue:$('statRevenue'),statCustomers:$('statCustomers'),statAverage:$('statAverage'),
     recent:$('recentOrders'),popular:$('popularProducts'),channels:$('channelStats'),orders:$('ordersList'),customers:$('customersList'),
-    orderSearch:$('orderSearch'),orderChannel:$('orderChannel'),orderStatus:$('orderStatus'),customerSearch:$('customerSearch')
+    orderSearch:$('orderSearch'),orderChannel:$('orderChannel'),orderStatus:$('orderStatus'),customerSearch:$('customerSearch'),planSearch:$('planSearch'),plansList:$('plansList'),planModal:$('planModal'),planModalBackdrop:$('planModalBackdrop'),closePlanModal:$('closePlanModal'),cancelPlan:$('cancelPlan'),sendPlan:$('sendPlan'),addPlanItem:$('addPlanItem'),planItems:$('planItems'),planCustomerId:$('planCustomerId'),planRecipient:$('planRecipient'),planTitle:$('planTitle'),planGoal:$('planGoal'),planGeneralNote:$('planGeneralNote'),planSourceReference:$('planSourceReference')
   };
-  let orders=[],customers=[];
+  let orders=[],customers=[],plans=[];
+  let planItemSeq=0;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=v=>`€${Number(v||0).toFixed(2)}`;
   const date=v=>new Intl.DateTimeFormat('nl-BE',{dateStyle:'short',timeStyle:'short'}).format(new Date(v));
@@ -21,12 +22,13 @@
 
   async function load(){
     await isAdmin();
-    const [o,c]=await Promise.all([
+    const [o,c,p]=await Promise.all([
       client.from('pure20_orders').select('*').order('created_at',{ascending:false}).limit(1000),
-      client.from('pure20_customers').select('*').order('updated_at',{ascending:false}).limit(1000)
+      client.from('pure20_customers').select('*').order('updated_at',{ascending:false}).limit(1000),
+      client.from('pure20_customer_plans').select('*').order('sent_at',{ascending:false}).limit(1000)
     ]);
-    if(o.error)throw o.error;if(c.error)throw c.error;
-    orders=o.data||[];customers=c.data||[];
+    if(o.error)throw o.error;if(c.error)throw c.error;if(p.error)throw p.error;
+    orders=o.data||[];customers=c.data||[];plans=p.data||[];
     renderAll();
   }
 
@@ -125,11 +127,129 @@
           <textarea data-customer-notes placeholder="Notes">${esc(c.notes||'')}</textarea>
           <button class="save-btn" data-save-customer type="button">Save</button>
         </div>
+        <div class="customer-plan-row">
+          <button class="send-plan-btn" data-send-plan="${c.id}" type="button" ${c.auth_user_id?'':'disabled'} title="${c.auth_user_id?'Send shared plan':'Customer must create an account first'}">
+            ${c.auth_user_id?'Send plan':'No account yet'}
+          </button>
+        </div>
       </article>`;
     }).join(''):'<div class="empty">No customers yet.</div>';
   }
 
-  function renderAll(){renderStats();renderOrders();renderPopular();renderCustomers()}
+  function customerLabel(id){
+    const c=customers.find(x=>x.id===id);
+    return c?.company||c?.name||c?.email||'Customer';
+  }
+
+  function renderPlans(){
+    if(!E.plansList)return;
+    const q=(E.planSearch?.value||'').trim().toLowerCase();
+    const rows=plans.filter(p=>!q||`${p.title||''} ${customerLabel(p.customer_id)}`.toLowerCase().includes(q));
+    E.plansList.innerHTML=rows.length?rows.map(p=>{
+      const items=Array.isArray(p.items)?p.items:[];
+      return `<article class="plan-admin-card" data-plan="${p.id}">
+        <div class="plan-admin-head">
+          <div>
+            <div class="order-id">${date(p.sent_at||p.created_at)} · ${esc(customerLabel(p.customer_id))}</div>
+            <div class="plan-admin-title">${esc(p.title||'Plan')}</div>
+            <div class="plan-admin-meta">${p.viewed_at?`Viewed ${date(p.viewed_at)}`:'Not viewed yet'}</div>
+          </div>
+          <span class="plan-admin-status">${esc(p.status||'sent')}</span>
+        </div>
+        ${p.goal?`<div class="order-meta" style="margin-top:10px">${esc(p.goal)}</div>`:''}
+        <div class="plan-admin-items">${items.map((i,idx)=>`${idx+1}. <strong>${esc(i.compound||'Compound')}</strong>${i.amount?` · ${esc(i.amount)}`:''}${i.frequency?` · ${esc(i.frequency)}`:''}`).join('<br>')}</div>
+        ${p.status!=='archived'?`<div class="plan-admin-actions"><button class="send-plan-btn" data-archive-plan="${p.id}" type="button">Archive</button></div>`:''}
+      </article>`;
+    }).join(''):'<div class="empty">No shared plans match.</div>';
+  }
+
+  function addPlanItem(data={}){
+    const id=++planItemSeq;
+    const row=document.createElement('div');
+    row.className='admin-plan-item';
+    row.dataset.planItem=id;
+    row.innerHTML=`
+      <div class="admin-plan-item-head"><strong>Compound ${id}</strong><button type="button" data-remove-plan-item>×</button></div>
+      <div class="admin-plan-grid">
+        <input data-pf="compound" placeholder="Compound / peptide" value="${esc(data.compound||'')}">
+        <input data-pf="amount" placeholder="Amount / dose" value="${esc(data.amount||'')}">
+        <input data-pf="frequency" placeholder="Frequency" value="${esc(data.frequency||'')}">
+        <input data-pf="timing" placeholder="Timing" value="${esc(data.timing||'')}">
+        <input data-pf="route" placeholder="Route" value="${esc(data.route||'')}">
+        <input data-pf="duration" placeholder="Duration" value="${esc(data.duration||'')}">
+        <textarea data-pf="note" rows="2" placeholder="Compound-specific note">${esc(data.note||'')}</textarea>
+      </div>`;
+    E.planItems.appendChild(row);
+  }
+
+  function openPlanModal(customerId){
+    const c=customers.find(x=>x.id===customerId);
+    if(!c||!c.auth_user_id)return alert('Customer must create an account first.');
+    E.planCustomerId.value=customerId;
+    E.planRecipient.textContent=`Recipient: ${c.company||c.name||c.email||customerId}`;
+    E.planTitle.value='';
+    E.planGoal.value='';
+    E.planGeneralNote.value='';
+    E.planSourceReference.value='';
+    E.planItems.innerHTML='';
+    planItemSeq=0;
+    addPlanItem();
+    E.planModalBackdrop.hidden=false;
+    requestAnimationFrame(()=>E.planModal.classList.add('open'));
+    E.planModal.setAttribute('aria-hidden','false');
+  }
+
+  function closePlanModal(){
+    E.planModal.classList.remove('open');
+    E.planModal.setAttribute('aria-hidden','true');
+    setTimeout(()=>E.planModalBackdrop.hidden=true,220);
+  }
+
+  function collectPlanItems(){
+    return [...E.planItems.querySelectorAll('.admin-plan-item')].map(row=>{
+      const get=k=>row.querySelector(`[data-pf="${k}"]`)?.value.trim()||'';
+      return {
+        compound:get('compound'),
+        amount:get('amount'),
+        frequency:get('frequency'),
+        timing:get('timing'),
+        route:get('route'),
+        duration:get('duration'),
+        note:get('note')
+      };
+    }).filter(x=>x.compound);
+  }
+
+  async function sendPlan(){
+    const customerId=E.planCustomerId.value;
+    const title=E.planTitle.value.trim();
+    const items=collectPlanItems();
+    if(!title)return alert('Add a plan title.');
+    if(!items.length)return alert('Add at least one compound.');
+    E.sendPlan.disabled=true;
+    const {data,error}=await client.rpc('pure20_admin_send_customer_plan',{
+      p_customer_id:customerId,
+      p_title:title,
+      p_goal:E.planGoal.value.trim(),
+      p_items:items,
+      p_general_note:E.planGeneralNote.value.trim(),
+      p_source_reference:E.planSourceReference.value.trim()
+    });
+    E.sendPlan.disabled=false;
+    if(error)return alert(error.message);
+    closePlanModal();
+    await load();
+    document.querySelector('[data-view="plans"]')?.click();
+  }
+
+  async function archivePlan(id){
+    if(!confirm('Archive this shared plan?'))return;
+    const {error}=await client.rpc('pure20_admin_archive_customer_plan',{p_plan_id:id});
+    if(error)return alert(error.message);
+    await load();
+  }
+
+  function renderAll(){renderStats();renderOrders();renderPopular();renderCustomers();renderPlans()}
 
   document.querySelectorAll('.subtab').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('.subtab').forEach(x=>x.classList.toggle('active',x===b));
@@ -138,6 +258,7 @@
 
   [E.orderSearch,E.orderChannel,E.orderStatus].forEach(x=>x.addEventListener('input',renderOrders));
   E.customerSearch.addEventListener('input',renderCustomers);
+  E.planSearch?.addEventListener('input',renderPlans);
 
   async function saveOrder(button){
     const card=button.closest('[data-order]'),id=card.dataset.order,status=card.querySelector('[data-order-status]').value;
@@ -164,7 +285,16 @@
   document.addEventListener('click',e=>{
     const ob=e.target.closest('[data-save-order]');if(ob)saveOrder(ob);
     const cb=e.target.closest('[data-save-customer]');if(cb)saveCustomer(cb);
+    const sp=e.target.closest('[data-send-plan]');if(sp&&!sp.disabled)openPlanModal(sp.dataset.sendPlan);
+    const rp=e.target.closest('[data-remove-plan-item]');if(rp)rp.closest('.admin-plan-item')?.remove();
+    const ap=e.target.closest('[data-archive-plan]');if(ap)archivePlan(ap.dataset.archivePlan);
   });
+
+  E.addPlanItem?.addEventListener('click',()=>addPlanItem());
+  E.closePlanModal?.addEventListener('click',closePlanModal);
+  E.cancelPlan?.addEventListener('click',closePlanModal);
+  E.planModalBackdrop?.addEventListener('click',closePlanModal);
+  E.sendPlan?.addEventListener('click',sendPlan);
 
   E.login.addEventListener('click',async()=>{
     E.err.textContent='';

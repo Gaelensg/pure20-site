@@ -15,13 +15,13 @@
       backShop:'Terug naar shop',accountTitle:'Je PURE20-account.',accountIntro:'Bekijk bestellingen, volg hun status en beheer je persoonlijke referral-link.',
       refActive:'Referral actief',refActiveText:'Na registratie krijg je automatisch 2% korting op retailbestellingen.',
       login:'Inloggen',register:'Registreren',email:'E-mail',password:'Wachtwoord',name:'Naam',createAccount:'Account aanmaken',
-      welcome:'Welkom terug.',logout:'Uitloggen',orders:'Bestellingen',stacks:'Stacks',refer:'Referral',tracking:'Tracking',
+      welcome:'Welkom terug.',logout:'Uitloggen',orders:'Bestellingen',stacks:'Stacks',plans:'Plannen',refer:'Referral',tracking:'Tracking',
       orderHistoryKicker:'ORDER HISTORY',yourOrders:'Jouw bestellingen.',orderHistoryText:'De status wordt aangepast zodra je bestelling verdergaat in het proces.',
       yourReferral:'JOUW REFERRAL',shareEarn:'Deel. Bouw krediet op.',refExplain:'Wie via jouw persoonlijke link registreert, krijgt standaard 2% korting. Zodra een referral-bestelling betaald is, ontvang jij 3% van de betaalde orderwaarde als krediet.',
       copy:'Kopieer',registrations:'Registraties',registrationHelp:'Bevestigde accounts die via jouw link geregistreerd zijn.',
       credit:'Beschikbaar krediet',creditHelp:'Kan in de winkelmand van een volgende retailbestelling worden gebruikt.',
       yourDiscount:'Jouw referral-korting',discountHelp:'Deze korting wordt automatisch toegepast wanneer je bent ingelogd.',
-      stackKicker:'STACK BUILDER',savedStacks:'Jouw opgeslagen stacks.',savedStacksText:'Bewaar je eigen researchplanning in je account en open ze later opnieuw in de Stack Builder.',newStack:'Nieuwe stack maken ↗',openStack:'Openen',deleteStack:'Verwijderen',noStacks:'Nog geen stacks opgeslagen in je account.',compoundCount:'compounds',updated:'Bijgewerkt',trackPackage:'Volg een pakket.',trackHelp:'Voer een trackingcode in. De vervoerder wordt automatisch geprobeerd te herkennen.',track:'Track',
+      stackKicker:'STACK BUILDER',savedStacks:'Jouw opgeslagen stacks.',savedStacksText:'Bewaar je eigen researchplanning in je account en open ze later opnieuw in de Stack Builder.',newStack:'Nieuwe stack maken ↗',openStack:'Openen',deleteStack:'Verwijderen',noStacks:'Nog geen stacks opgeslagen in je account.',compoundCount:'compounds',updated:'Bijgewerkt',sharedPlanKicker:'GEDEELDE PLANNEN',sharedPlans:'Plannen voor jou.',sharedPlansText:'Hier verschijnen plannen die rechtstreeks vanuit PURE20 met jouw account gedeeld zijn.',newPlan:'Nieuwe stack ontvangen',newPlanText:'Er staat een nieuw gedeeld plan klaar in je profiel.',openPlans:'Open plannen',planDisclaimer:'PURE20 genereert of valideert geen persoonlijke dosering of behandeling. De inhoud hieronder is door de afzender ingevoerd en moet zelfstandig worden gecontroleerd.',viewPlan:'Openen',closePlan:'Sluiten',noPlans:'Er zijn nog geen gedeelde plannen.',dose:'Hoeveelheid',frequency:'Frequentie',timing:'Timing',route:'Route',durationPlan:'Duur',note:'Notitie',source:'Bron / referentie',generalNote:'Algemene notitie',trackPackage:'Volg een pakket.',trackHelp:'Voer een trackingcode in. De vervoerder wordt automatisch geprobeerd te herkennen.',track:'Track',
       noOrders:'Nog geen bestellingen gekoppeld aan dit account.',placed:'Geplaatst',accepted:'Aanvaard',paid:'Betaald',packed:'Verpakt',shipped:'Verzonden',delivered:'Geleverd',
       cancelled:'Geannuleerd',subtotal:'Subtotaal',discount:'Korting',creditUsed:'Krediet gebruikt',shipping:'Verzending',total:'Totaal',trackOrder:'Volg deze zending',
       msgs:{placed:'We hebben je bestelling ontvangen.',accepted:'Je bestelling is bevestigd.',paid:'Betaling ontvangen. Je bestelling wordt voorbereid.',packed:'Je bestelling is verpakt.',shipped:'Je pakket is verzonden.',delivered:'Je bestelling is geleverd.',cancelled:'Deze bestelling is geannuleerd.'}
@@ -30,7 +30,7 @@
       backShop:'Back to shop',accountTitle:'Your PURE20 account.',accountIntro:'View orders, follow their progress and manage your personal referral link.',
       refActive:'Referral active',refActiveText:'After registration you automatically receive 2% off retail orders.',
       login:'Sign in',register:'Register',email:'Email',password:'Password',name:'Name',createAccount:'Create account',
-      welcome:'Welcome back.',logout:'Log out',orders:'Orders',stacks:'Stacks',refer:'Refer',tracking:'Tracking',
+      welcome:'Welcome back.',logout:'Log out',orders:'Orders',stacks:'Stacks',plans:'Plans',refer:'Refer',tracking:'Tracking',
       orderHistoryKicker:'ORDER HISTORY',yourOrders:'Your orders.',orderHistoryText:'The status updates as your order moves through the process.',
       yourReferral:'YOUR REFERRAL',shareEarn:'Share. Build credit.',refExplain:'People who register through your personal link receive 2% off. Once a referral order is paid, you receive 3% of the paid order value as credit.',
       copy:'Copy',registrations:'Registrations',registrationHelp:'Confirmed accounts registered through your link.',
@@ -47,6 +47,7 @@
   let accountData=null;
   let trackingReady=null;
   let savedStacks=[];
+  let sharedPlans=[];
 
   function t(k){return copy[lang][k]??k}
   function applyLanguage(next){
@@ -58,6 +59,7 @@
     });
     document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
     if(accountData)renderAccount(accountData);
+    if(sharedPlans.length)renderSharedPlans();
     renderStacks();
   }
   document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>applyLanguage(b.dataset.lang)));
@@ -179,6 +181,95 @@
     renderStacks();
   }
 
+  function planItemHtml(item,index){
+    const fields=[
+      [t('dose'),item.amount||''],
+      [t('frequency'),item.frequency||''],
+      [t('timing'),item.timing||''],
+      [t('route'),item.route||''],
+      [t('durationPlan'),item.duration||'']
+    ].filter(([,v])=>String(v||'').trim()!=='');
+    return `<div class="plan-item">
+      <div class="plan-item-index">${String(index+1).padStart(2,'0')}</div>
+      <div>
+        <h4>${esc(item.compound||'Compound')}</h4>
+        ${fields.length?`<div class="plan-item-grid">${fields.map(([k,v])=>`<div class="plan-field"><span>${esc(k)}</span><strong>${esc(v)}</strong></div>`).join('')}</div>`:''}
+        ${item.note?`<div class="plan-note"><strong>${esc(t('note'))}:</strong> ${esc(item.note)}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  function sharedPlanCard(plan,index){
+    const unread=!plan.viewed_at&&plan.status==='sent';
+    const items=Array.isArray(plan.items)?plan.items:[];
+    return `<article class="shared-plan-card ${unread?'unread':''}" data-shared-plan="${esc(plan.id)}">
+      <div class="shared-plan-head">
+        <div>
+          <div class="shared-plan-kicker">
+            <span>${String(index+1).padStart(2,'0')}</span>
+            ${unread?`<span class="shared-plan-new">${esc(lang==='en'?'NEW':'NIEUW')}</span>`:''}
+          </div>
+          <h3>${esc(plan.title||'Plan')}</h3>
+          ${plan.goal?`<p class="shared-plan-goal">${esc(plan.goal)}</p>`:''}
+        </div>
+        <span class="shared-plan-date">${date(plan.sent_at||plan.created_at)}</span>
+      </div>
+      <div class="shared-plan-actions">
+        <button class="solid" type="button" data-open-shared-plan="${esc(plan.id)}">${esc(t('viewPlan'))}</button>
+      </div>
+      <div class="shared-plan-details">
+        <div>${items.map(planItemHtml).join('')}</div>
+        ${plan.general_note?`<div class="plan-general"><strong>${esc(t('generalNote'))}</strong>${esc(plan.general_note)}</div>`:''}
+        ${plan.source_reference?`<div class="plan-source"><strong>${esc(t('source'))}:</strong> ${esc(plan.source_reference)}</div>`:''}
+      </div>
+    </article>`;
+  }
+
+  function updatePlanNotification(){
+    const unread=sharedPlans.filter(p=>!p.viewed_at&&p.status==='sent').length;
+    const badge=$('planBadge'),notice=$('planNotice');
+    if(badge){badge.hidden=unread<1;badge.textContent=unread}
+    if(notice){
+      notice.hidden=unread<1;
+      const n=$('planNoticeText');
+      if(n&&unread>1)n.textContent=lang==='en'?`${unread} new shared plans are waiting in your profile.`:`Er staan ${unread} nieuwe gedeelde plannen klaar in je profiel.`;
+      else if(n)n.textContent=t('newPlanText');
+    }
+  }
+
+  function renderSharedPlans(){
+    const host=$('sharedPlansList');
+    if(!host)return;
+    host.innerHTML=sharedPlans.length
+      ?sharedPlans.map(sharedPlanCard).join('')
+      :`<div class="empty">${esc(t('noPlans'))}</div>`;
+    updatePlanNotification();
+  }
+
+  async function loadSharedPlans(){
+    const {data,error}=await client
+      .from('pure20_customer_plans')
+      .select('id,title,goal,items,general_note,source_reference,status,sent_at,viewed_at,created_at,updated_at')
+      .neq('status','archived')
+      .order('sent_at',{ascending:false});
+    if(error)throw error;
+    sharedPlans=data||[];
+    renderSharedPlans();
+  }
+
+  async function markSharedPlanViewed(id){
+    const plan=sharedPlans.find(p=>p.id===id);
+    if(!plan||plan.viewed_at)return;
+    const {data,error}=await client.rpc('pure20_mark_plan_viewed',{p_plan_id:id});
+    if(error)throw error;
+    if(data===true){
+      plan.viewed_at=new Date().toISOString();
+      plan.status='viewed';
+      renderSharedPlans();
+      document.querySelector(`[data-shared-plan="${CSS.escape(id)}"]`)?.classList.add('open');
+    }
+  }
+
   function renderAccount(data){
     accountData=data;
     const c=data.customer||{};
@@ -204,7 +295,7 @@
   async function enter(){
     $('authGate').style.display='none';
     $('accountMain').hidden=false;
-    await Promise.all([loadAccount(),loadStacks()]);
+    await Promise.all([loadAccount(),loadStacks(),loadSharedPlans()]);
     const next=consumeNext();
     if(next&&next!=='/account'&&!next.startsWith('/account?'))location.href=next;
   }
@@ -232,8 +323,26 @@
     toast(lang==='en'?'Stack deleted.':'Stack verwijderd.');
   });
 
+  $('openPlansNotice')?.addEventListener('click',()=>{
+    document.querySelector('[data-view="plans"]')?.click();
+  });
+
+  document.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-open-shared-plan]');
+    if(!btn)return;
+    const id=btn.dataset.openSharedPlan;
+    const card=btn.closest('[data-shared-plan]');
+    const opening=!card.classList.contains('open');
+    document.querySelectorAll('.shared-plan-card.open').forEach(x=>{if(x!==card)x.classList.remove('open')});
+    card.classList.toggle('open',opening);
+    btn.textContent=opening?t('closePlan'):t('viewPlan');
+    if(opening){
+      try{await markSharedPlanViewed(id)}catch(err){toast(err.message||'Could not update plan status.')}
+    }
+  });
+
   const requestedView=(new URLSearchParams(location.search).get('view')||'').trim();
-  if(['orders','stacks','refer','tracking'].includes(requestedView)){
+  if(['orders','stacks','plans','refer','tracking'].includes(requestedView)){
     document.querySelector(`[data-view="${requestedView}"]`)?.click();
   }
 
