@@ -1,39 +1,37 @@
-PURE20 STACK BUILDER NAVIGATION + ACCOUNT-ONLY SAVING
+PURE20 UNIVERSAL HEADER + JETBRAINS MONO
 
-Upload/overwrite:
-- stack-nav.js                 NEW
+Deze update voert het goedgekeurde headerconcept uit.
+
+UPLOAD / OVERSCHRIJF:
+- site-header.js        NEW
+- site-theme.css        NEW
 - supabase-config.js
-- calculator.js
-- knowledge.js
 - home.js
-- stack-builder.html
-- stack-builder.js
-- stack-builder.css
+- knowledge.js
+- calculator.js
 
-NAVIGATION
-The Stack Builder link is automatically shown on the customer-facing:
-- homepage
-- retail shop
-- wholesale shop
-- account page
-- calculator
-- knowledge overview
-- all peptide knowledge detail pages
-- Stack Builder itself
+WAT ER VERANDERT
+- dezelfde header op alle klantgerichte pagina's
+- PURE20-logo links bovenaan
+- compacte utility buttons rechts
+- taalkeuze blijft behouden
+- zoekknop is functioneel en opent/focust Knowledge search
+- accountknop naar /account
+- winkelwagenknop blijft functioneel op Shop en Wholesale
+- op andere pagina's brengt het winkelwagenicoon je naar de Shop
+- tweede navigatierij:
+  Shop / Knowledge / Calculator / Stack Builder / Wholesale
+- actieve pagina krijgt een subtiele onderlijning
+- mobiele navigatie blijft op één horizontale rij en kan horizontaal scrollen
+- admin/dashboard/portal behouden hun bestaande headerstructuur
 
-Private admin/dashboard/portal pages are intentionally left unchanged.
+TYPOGRAFIE
+- alle UI-, body- en headingtekst gebruikt JetBrains Mono
+- het PURE20-logo/woordmerk blijft bewust zijn eigen zware sans-stijl houden
+- JetBrains Mono wordt via Google Fonts geladen met een veilige monospace fallback
 
-SAVING RULE
-Visitors may build a stack and use Print/PDF without an account.
-Persistent saving is now account-only.
+PAGINA'S
+De loader dekt homepage, Shop, Wholesale, Account, Calculator, Stack Builder,
+Knowledge-overzicht en alle individuele Knowledge-pagina's.
 
-If a logged-out visitor presses "Opslaan in account":
-1. the current form is held temporarily in sessionStorage only for the login hand-off;
-2. the visitor is sent to /account to register/sign in;
-3. after returning, that temporary draft is restored;
-4. the visitor can save it to their protected PURE20 account.
-
-The old "Lokaal bewaren" button and persistent localStorage stack autosave are removed.
-
-Existing cloud stacks and /account > Stacks continue to work.
-No new database migration is required.
+Oude stack-nav.js mag in de repository blijven staan, maar wordt door deze update niet meer geladen.

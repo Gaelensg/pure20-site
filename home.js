@@ -35,11 +35,13 @@
 })();
 
 
-/* PURE20 global Stack Builder navigation */
+
+
+/* PURE20 universal header + JetBrains Mono */
 (() => {
-  if (document.querySelector('script[data-pure20-stack-nav]')) return;
+  if (document.querySelector('script[data-pure20-site-header]')) return;
   const s = document.createElement('script');
-  s.src = '/stack-nav.js';
-  s.dataset.pure20StackNav = '1';
+  s.src = '/site-header.js';
+  s.dataset.pure20SiteHeader = '1';
   document.head.appendChild(s);
 })();
