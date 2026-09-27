@@ -11,6 +11,15 @@
     document.head.appendChild(link);
   }
 
+
+  /* First-visit 18+ / research-use gate */
+  if (!document.querySelector('script[data-pure20-access-gate]')) {
+    const gate = document.createElement('script');
+    gate.src = '/site-gate.js';
+    gate.dataset.pure20AccessGate = '1';
+    document.head.appendChild(gate);
+  }
+
   const path = location.pathname.replace(/\/+$/, '') || '/';
   const isPrivate = /^\/(admin|wholesale-admin|dashboard|portal)(\/|$)/i.test(path);
 

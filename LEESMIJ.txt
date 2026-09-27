@@ -1,56 +1,30 @@
-PURE20 ADMIN → CUSTOMER SHARED PLANS
+PURE20 18+ / RESEARCH-ONLY WELCOME GATE
 
-Supabase is already configured.
+Upload/overwrite:
+- site-header.js
+- site-gate.js        NEW
+- site-gate.css       NEW
 
-Upload/overwrite only:
-- dashboard.html
-- dashboard.js
-- account.html
-- account.js
-- account.css
+WHAT THE VISITOR SEES ON FIRST VISIT
+- PURE20 welcome card
+- language choice: Nederlands / English
+- checkbox: 18 years or older
+- checkbox: understands PURE20 products are offered for research purposes only and are not intended for use in humans or animals
+- Continue button stays disabled until both boxes are checked
 
-ADMIN
-Business Dashboard > Customers:
-- customer must have a registered PURE20 account
-- customers without an account show "No account yet"
-- customers with an account get a "Send plan" button
+LANGUAGE
+The selected language is saved in the existing 'pure20_language' setting.
+After acceptance the page reloads once, so the entire website immediately starts in the selected language.
 
-The send form supports:
-- plan title
-- goal/context
-- multiple compounds
-- amount / dose text
-- frequency text
-- timing text
-- route text
-- duration text
-- compound note
-- general note
-- source/reference
+REMEMBERING ACCEPTANCE
+Acceptance is saved in localStorage as:
+pure20_access_gate_v1
 
-PURE20 does not calculate, recommend or validate those values. The form only transmits the text entered by the admin.
+The gate therefore does not appear again on every page after the visitor has accepted it on that device/browser.
 
-Business Dashboard > Shared plans:
-- see every sent plan
-- see recipient
-- see whether it has been viewed
-- archive plans
+TESTING AGAIN
+To see the gate again, remove 'pure20_access_gate_v1' from the browser's site storage or use a fresh/private browser session.
 
-CUSTOMER PROFILE
-A new "Plans" tab appears in /account.
-Unread plans show:
-- a notification banner
-- a numeric badge on the Plans tab
-- a NEW label on the plan card
-
-When the customer opens the plan:
-- title, context and all compounds appear
-- amount, frequency, timing, route and duration are displayed
-- the plan becomes "viewed" in the admin dashboard
-- general notes and source/reference are shown
-
-SECURITY
-- only a PURE20 admin can send/archive plans
-- only the authenticated customer linked to that customer_id can read their plans
-- customer cannot edit admin-sent plans
-- plan data is protected by Supabase RLS
+SCOPE
+The gate appears on customer-facing pages.
+Admin, Wholesale Admin, Dashboard and Portal are excluded.
