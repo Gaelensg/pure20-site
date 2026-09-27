@@ -1,10 +1,33 @@
-PURE20 TOGGLE CONTRAST FIX
+PURE20 GRATIS VERZENDING + VOORTGANGSBALK
 
-Vervang alleen:
+Supabase is al aangepast:
+- standaard verzendkosten: €17,95
+- gratis verzending vanaf: €300,00
+
+Upload/overschrijf:
+- shop.html
+- app.js
 - styles.css
 
-Resultaat:
-- in donkere modus: wit actief vak + donkere/zwarte tekst
-- in lichte modus: zwart actief vak + lichte tekst
+SHOP
+Boven de producten staat nu een live voortgangsbalk.
+Voorbeeld:
+'Nog €84,50 tot gratis verzending'
 
-Geen andere bestanden aanpassen.
+WINKELMANDJE
+Dezelfde voortgangsbalk staat in de order drawer en verandert direct bij ieder product dat wordt toegevoegd/verwijderd.
+
+VERZENDKOSTEN
+Productsubtotaal < €300:
+€17,95 verzending
+
+Productsubtotaal >= €300:
+€0,00 / Gratis verzending
+
+De drempel wordt bewust berekend op de productwaarde vóór kortingscodes, referral-korting of referral-krediet.
+Dus wanneer de klant voor €300 aan producten bestelt, blijft gratis verzending gelden ook als daarna korting wordt toegepast.
+
+De Supabase store settings zijn al gewijzigd naar €17,95 en €300.
+De app bevat daarnaast veilige fallbackwaarden van €17,95 en €300.
+
+NL/EN teksten worden automatisch aangepast aan de gekozen taal.

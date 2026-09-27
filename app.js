@@ -146,7 +146,12 @@
       orderable:'Niet op voorraad · bestelbaar',
       availableSection:'Op voorraad',
       backorderSection:'Niet op voorraad · bestelbaar',
-      estimated:'Geschatte leveringsdatum'
+      estimated:'Geschatte leveringsdatum',
+      freeShipping:'Gratis verzending',
+      freeShippingProgress:'Voortgang gratis verzending',
+      freeUnlocked:'Gratis verzending ontgrendeld',
+      amountToFree:(amount)=>`Nog ${money(amount)} tot gratis verzending`,
+      shippingStandard:(amount,threshold)=>`${money(amount)} verzending · gratis vanaf ${money(threshold)}`
     };
     const en={
       info:'Products that are currently out of stock can still be ordered. Average delivery time is approximately 12 business days.',
@@ -157,10 +162,15 @@
       orderable:'Out of stock · orderable',
       availableSection:'In stock',
       backorderSection:'Out of stock · orderable',
-      estimated:'Estimated delivery date'
+      estimated:'Estimated delivery date',
+      freeShipping:'Free shipping',
+      freeShippingProgress:'Free shipping progress',
+      freeUnlocked:'Free shipping unlocked',
+      amountToFree:(amount)=>`${money(amount)} until free shipping`,
+      shippingStandard:(amount,threshold)=>`${money(amount)} shipping · free from ${money(threshold)}`
     };
     const dict=shopLanguage()==='en'?en:nl;
-    return typeof dict[key]==='function'?dict[key]:dict[key];
+    return dict[key];
   }
 
   function addBusinessDays(from,days){
@@ -187,6 +197,40 @@
   function maxOrderQty(product){
     const stock=Math.max(0,Number(product?.stock||0));
     return stock>0?stock:99;
+  }
+
+  function shippingFlat(){
+    const value=Number(settings().shippingFlat);
+    return Number.isFinite(value)&&value>0?value:17.95;
+  }
+
+  function freeShippingThreshold(){
+    const value=Number(settings().freeShippingThreshold);
+    return Number.isFinite(value)&&value>0?value:300;
+  }
+
+  function renderFreeShippingProgress(subtotalOverride){
+    const threshold=freeShippingThreshold();
+    const subtotal=Number.isFinite(Number(subtotalOverride))?Number(subtotalOverride):totals().subtotal;
+    const progress=Math.max(0,Math.min(100,threshold>0?(subtotal/threshold)*100:100));
+    const remaining=Math.max(0,threshold-subtotal);
+    const unlocked=subtotal>=threshold&&threshold>0;
+
+    document.querySelectorAll('[data-free-shipping-progress]').forEach(card=>{
+      const fill=card.querySelector('[data-free-shipping-fill]');
+      const message=card.querySelector('[data-free-shipping-message]');
+      const label=card.querySelector('[data-free-shipping-label]');
+      const thresholdEl=card.querySelector('[data-free-shipping-threshold]');
+      if(fill)fill.style.width=`${progress}%`;
+      if(message)message.textContent=unlocked?shopText('freeUnlocked'):shopText('amountToFree')(remaining);
+      if(label)label.textContent=shopText('freeShippingProgress');
+      if(thresholdEl)thresholdEl.textContent=money(threshold);
+      card.classList.toggle('unlocked',unlocked);
+    });
+
+    document.querySelectorAll('[data-free-shipping-heading]').forEach(el=>{
+      el.textContent=shopText('freeShipping');
+    });
   }
 
   function renderAvailabilityControls(){
@@ -227,7 +271,7 @@
     const text=`${r.product} ${r.variant} ${r.code} ${r.category} ${r.note}`.toLowerCase();
     return cat&&stock&&(!q||text.includes(q));
   });}
-  function renderBrand(){const s=settings();els.eyebrow.textContent=s.eyebrow||'';els.pageTitle.textContent=s.title||'PURE20.';els.pageSubtitle.textContent=s.subtitle||'';els.shippingText.textContent=shippingDisplay(0,false);els.footerNotice.textContent=s.footerNotice||'';document.title=`${s.brandName||'PURE20.'} — Order`;}
+  function renderBrand(){const s=settings();els.eyebrow.textContent=s.eyebrow||'';els.pageTitle.textContent=s.title||'PURE20.';els.pageSubtitle.textContent=s.subtitle||'';els.shippingText.textContent=shopText('shippingStandard')(shippingFlat(),freeShippingThreshold());els.footerNotice.textContent=s.footerNotice||'';document.title=`${s.brandName||'PURE20.'} — Order`;}
   function renderCategories(){const cats=['All',...new Set(activeProducts().map(p=>p.category).filter(Boolean))];if(!cats.includes(state.selectedCategory))state.selectedCategory='All';els.categoryPills.innerHTML=cats.map(c=>`<button class="pill ${c===state.selectedCategory?'active':''}" data-category="${esc(c)}" type="button">${esc(c)}</button>`).join('');}
   function stockClass(p){const n=Number(p.stock||0),low=Number(settings().lowStockThreshold||5);return n<=0?'stock-out':n<=low?'stock-low':'stock-ok'}
   function stockLabel(p){
@@ -292,9 +336,8 @@
       ?Math.min(afterDiscounts,Math.max(0,state.member.creditBalance))
       :0;
     const afterCredit=Math.max(0,afterDiscounts-creditUsed);
-    const s=settings();
-    let shipping=units?Number(s.shippingFlat||0):0;
-    if(Number(s.freeShippingThreshold||0)>0&&afterCredit>=Number(s.freeShippingThreshold))shipping=0;
+    let shipping=units?shippingFlat():0;
+    if(units&&subtotal>=freeShippingThreshold())shipping=0;
     return{
       rows,units,subtotal,
       couponDiscount,referralDiscount,creditUsed,
@@ -302,7 +345,7 @@
       shipping,total:afterCredit+shipping,c
     };
   }
-  function shippingDisplay(subtotal=0,hasItems=true){const s=settings();if(Number(s.freeShippingThreshold||0)>0&&subtotal>=Number(s.freeShippingThreshold))return'Free';if(Number(s.shippingFlat||0)>0)return money(s.shippingFlat);return s.shippingText||'Confirmed separately';}
+  function shippingDisplay(subtotal=0,hasItems=true){if(!hasItems)return shopText('shippingStandard')(shippingFlat(),freeShippingThreshold());if(Number(subtotal||0)>=freeShippingThreshold())return shopText('freeShipping');return money(shippingFlat());}
   function renderCart(){
     const t=totals();
     els.cartUnits.textContent=t.units;
@@ -319,8 +362,9 @@
       els.creditUsedRow.hidden=t.creditUsed<=0;
       els.drawerCreditUsed.textContent=`-${money(t.creditUsed)}`;
     }
-    els.drawerShipping.textContent=t.units?shippingDisplay(t.subtotal-t.discount-t.creditUsed,true):shippingDisplay(0,false);
+    els.drawerShipping.textContent=t.units?shippingDisplay(t.subtotal,true):shippingDisplay(0,false);
     els.drawerTotal.textContent=money(t.total);
+    renderFreeShippingProgress(t.subtotal);
     els.drawerEmpty.hidden=t.rows.length>0;
     els.orderLines.innerHTML=t.rows.map(r=>{
       const q=Number(state.cart[r.id]||0);
@@ -374,7 +418,7 @@
       ...(t.couponDiscount>0?[`Coupon (${state.coupon?.code||''}): -${money(t.couponDiscount)}`]:[]),
       ...(t.referralDiscount>0?[`Referral discount: -${money(t.referralDiscount)}`]:[]),
       ...(t.creditUsed>0?[`Referral credit used: -${money(t.creditUsed)}`]:[]),
-      `Shipping: ${t.units?shippingDisplay(t.subtotal-t.discount-t.creditUsed,true):shippingDisplay(0,false)}`,
+      `Shipping: ${t.units?shippingDisplay(t.subtotal,true):shippingDisplay(0,false)}`,
       `Current total ${s.currency||'EUR'}: ${money(t.total)}`,
       '',
       'CUSTOMER DETAILS',
@@ -419,7 +463,7 @@
     state.stockFilter=b.dataset.stockFilter==='in'?'in':'all';
     renderCatalogue();
   });
-  window.addEventListener('pure20:languagechange',()=>{renderCatalogue();renderCart();renderAvailabilityControls();});
+  window.addEventListener('pure20:languagechange',()=>{renderBrand();renderCatalogue();renderCart();renderAvailabilityControls();renderFreeShippingProgress();});
 
   els.catalogue.addEventListener('click',e=>{const row=e.target.closest('.variant-row');const b=e.target.closest('button[data-action]');if(!row||!b)return;const id=row.dataset.id,q=Number(state.cart[id]||0);setQty(id,q+(b.dataset.action==='plus'?1:-1))});
   els.catalogue.addEventListener('change',e=>{const row=e.target.closest('.variant-row');if(row&&e.target.matches('input'))setQty(row.dataset.id,e.target.value)});
