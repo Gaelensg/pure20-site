@@ -1,15 +1,44 @@
-PURE20 AGE / RESEARCH POPUP V2
+PURE20 RETAILSHOP - VOORRAAD / NABESTELLING UPDATE
 
 Vervang alleen:
-- site-gate.js
-- site-gate.css
+- shop.html
+- app.js
+- styles.css
 
-AANGEPAST
-- de native taal-dropdown is volledig verwijderd
-- taalkeuze is nu een custom NL / EN keuzeblok
-- geen zwarte Safari/iPhone selectie-balk meer
-- actieve taal krijgt een duidelijke donkere selectie
-- gekozen taal blijft gekoppeld aan het bestaande pure20_language systeem
-- de rest van de 18+ en research-only gate blijft ongewijzigd
+NIEUW
 
-Geen wijziging nodig aan site-header.js.
+1. Boven de productlijst staat:
+   Producten die momenteel niet in voorraad zijn, kunnen besteld worden.
+   Gemiddelde levertijd: ongeveer 12 werkdagen.
+
+2. Sorteervolgorde:
+   - eerst ALLE producten die in voorraad zijn
+   - alfabetisch op productnaam, daarna variant
+   - vervolgens ALLE producten die niet in voorraad zijn
+   - ook alfabetisch op productnaam, daarna variant
+
+3. Toggle:
+   - Alle producten
+   - Enkel op voorraad
+
+4. Producten met voorraad 0:
+   - blijven bestelbaar
+   - plus/min/handmatige hoeveelheid werkt
+   - max. 99 per variant voor een nabestelling
+   - in-stock producten blijven begrensd op de werkelijk ingegeven voorraad
+
+5. Winkelmand:
+   Een product met voorraad 0 krijgt automatisch:
+   'Geschatte leveringsdatum: [vandaag + 12 werkdagen]'
+
+   De datum wordt dynamisch in de browser berekend.
+   Werkdagen = maandag t/m vrijdag. Weekends worden overgeslagen.
+   Omdat dit een geschatte datum is, worden afzonderlijke Belgische feestdagen
+   niet extra uitgesloten.
+
+6. De geschatte datum wordt ook opgenomen in Copy order / WhatsApp.
+
+7. NL/EN:
+   Nieuwe voorraadteksten en datumweergave volgen de geselecteerde sitetaal.
+
+Geen databasewijziging nodig.

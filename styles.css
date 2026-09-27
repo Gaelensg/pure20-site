@@ -49,3 +49,112 @@ a{color:inherit}.site-header{position:sticky;top:0;z-index:30;background:rgba(24
   .account-icon-link{width:40px;height:40px}
   .member-benefits{margin-left:-20px;margin-right:-20px;padding-left:20px!important;padding-right:20px!important}
 }
+
+
+/* =========================================================
+   Retail stock ordering / backorder UI
+   ========================================================= */
+.availability-panel{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  margin:0 0 24px;
+  padding:16px 0 20px;
+  border-bottom:1px solid var(--line);
+}
+.availability-copy{
+  display:grid;
+  grid-template-columns:24px minmax(0,680px);
+  gap:10px;
+  align-items:start;
+}
+.availability-icon{
+  width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--ink);
+  font-size:11px;
+  line-height:1;
+}
+.availability-copy p{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.65;
+}
+.stock-filter{
+  display:inline-flex;
+  flex:0 0 auto;
+  border:1px solid var(--ink);
+  padding:2px;
+}
+.stock-filter-button{
+  min-height:38px;
+  border:0;
+  background:transparent;
+  color:var(--ink);
+  padding:0 11px;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  cursor:pointer;
+}
+.stock-filter-button.active{
+  background:var(--ink);
+  color:#fff;
+}
+.availability-group.backorder-group{
+  margin-top:38px;
+  padding-top:8px;
+  border-top:2px solid var(--ink);
+}
+.product-card.orderable-out{
+  opacity:1;
+}
+.product-card.orderable-out .stock-out{
+  color:#8b641e;
+}
+.order-line-estimate{
+  margin-top:6px;
+  color:#8b641e;
+  font-size:10px;
+  line-height:1.45;
+}
+.order-line-estimate strong{
+  color:inherit;
+  font-weight:700;
+}
+@media(max-width:700px){
+  .availability-panel{
+    align-items:stretch;
+    flex-direction:column;
+    gap:15px;
+  }
+  .stock-filter{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .stock-filter-button{
+    width:100%;
+    padding:0 8px;
+  }
+}
+@media(max-width:420px){
+  .availability-copy{
+    grid-template-columns:20px 1fr;
+  }
+  .availability-icon{
+    width:20px;
+    height:20px;
+  }
+  .availability-copy p{
+    font-size:10px;
+  }
+  .stock-filter-button{
+    font-size:8px;
+  }
+}
