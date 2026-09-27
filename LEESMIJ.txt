@@ -1,33 +1,15 @@
-PURE20 GRATIS VERZENDING + VOORTGANGSBALK
+PURE20 WINKELMANDJE MOBILE FIX
 
-Supabase is al aangepast:
-- standaard verzendkosten: €17,95
-- gratis verzending vanaf: €300,00
-
-Upload/overschrijf:
-- shop.html
-- app.js
+Vervang alleen:
 - styles.css
 
-SHOP
-Boven de producten staat nu een live voortgangsbalk.
-Voorbeeld:
-'Nog €84,50 tot gratis verzending'
+Opgelost:
+- winkelmandje ligt nu boven de vaste websiteheader
+- volledige hoogte gebruikt 100dvh op iPhone
+- middenstuk van het winkelmandje is opnieuw verticaal scrollbaar
+- header van winkelmandje blijft bovenaan
+- WhatsApp / bestelling kopiëren blijft onderaan bereikbaar
+- iOS momentum scrolling is ingeschakeld
+- rekening gehouden met de iPhone safe area onderaan
 
-WINKELMANDJE
-Dezelfde voortgangsbalk staat in de order drawer en verandert direct bij ieder product dat wordt toegevoegd/verwijderd.
-
-VERZENDKOSTEN
-Productsubtotaal < €300:
-€17,95 verzending
-
-Productsubtotaal >= €300:
-€0,00 / Gratis verzending
-
-De drempel wordt bewust berekend op de productwaarde vóór kortingscodes, referral-korting of referral-krediet.
-Dus wanneer de klant voor €300 aan producten bestelt, blijft gratis verzending gelden ook als daarna korting wordt toegepast.
-
-De Supabase store settings zijn al gewijzigd naar €17,95 en €300.
-De app bevat daarnaast veilige fallbackwaarden van €17,95 en €300.
-
-NL/EN teksten worden automatisch aangepast aan de gekozen taal.
+Geen andere bestanden aanpassen.
