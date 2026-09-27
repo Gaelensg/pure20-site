@@ -77,56 +77,65 @@ body.p20-gate-open{
   line-height:1.75;
 }
 
-.p20-gate-select-label{
+
+.p20-gate-language-block{
   display:grid;
   gap:8px;
   margin:0 0 16px;
+}
+
+.p20-gate-language-label{
   color:#748091;
   font-size:9px;
   font-weight:700;
   letter-spacing:.11em;
 }
 
-.p20-gate-select-wrap{
-  position:relative;
+.p20-gate-language-toggle{
   display:grid;
-  grid-template-columns:auto 1fr auto;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.p20-gate-language-button{
+  min-height:60px;
+  display:flex;
   align-items:center;
-  min-height:62px;
+  justify-content:flex-start;
+  gap:10px;
   border:1px solid #d5dbe1;
   border-radius:14px;
   background:#fff;
+  color:#344053;
+  padding:0 16px;
+  font-family:var(--p20-font,"JetBrains Mono",ui-monospace,monospace)!important;
+  font-size:13px;
+  cursor:pointer;
+  transition:border-color .15s ease,background .15s ease,color .15s ease,transform .15s ease;
 }
 
-.p20-gate-flag{
-  padding-left:18px;
-  font-size:23px;
+.p20-gate-language-button:hover{
+  border-color:#9da7b3;
+}
+
+.p20-gate-language-button:active{
+  transform:scale(.985);
+}
+
+.p20-gate-language-button.active{
+  border-color:#111820;
+  background:#111820;
+  color:#fff;
+}
+
+.p20-gate-lang-flag{
+  font-size:22px;
   line-height:1;
 }
 
-.p20-gate-select-wrap select{
-  width:100%;
-  min-width:0;
-  appearance:none;
-  -webkit-appearance:none;
-  border:0!important;
-  outline:0!important;
-  background:transparent!important;
-  color:#152238!important;
-  padding:0 40px 0 14px!important;
-  font-family:var(--p20-font,"JetBrains Mono",ui-monospace,monospace)!important;
-  font-size:14px!important;
-  line-height:1!important;
-}
-
-.p20-gate-chevron{
-  position:absolute;
-  right:18px;
-  top:50%;
-  transform:translateY(-56%);
-  color:#111820;
-  font-size:24px;
-  pointer-events:none;
+.p20-gate-language-button:focus-visible{
+  outline:2px solid #111820;
+  outline-offset:2px;
 }
 
 .p20-gate-check{
@@ -228,6 +237,22 @@ body.p20-gate-open{
 }
 
 @media(max-width:620px){
+
+  .p20-gate-language-toggle{
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+  }
+
+  .p20-gate-language-button{
+    min-height:56px;
+    padding:0 12px;
+    font-size:12px;
+  }
+
+  .p20-gate-lang-flag{
+    font-size:20px;
+  }
+
   .p20-gate{
     padding:12px;
     align-items:center;
@@ -252,10 +277,6 @@ body.p20-gate-open{
   .p20-gate-intro{
     font-size:13px;
     line-height:1.65;
-  }
-
-  .p20-gate-select-wrap{
-    min-height:58px;
   }
 
   .p20-gate-check{

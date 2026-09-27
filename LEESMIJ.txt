@@ -1,30 +1,15 @@
-PURE20 18+ / RESEARCH-ONLY WELCOME GATE
+PURE20 AGE / RESEARCH POPUP V2
 
-Upload/overwrite:
-- site-header.js
-- site-gate.js        NEW
-- site-gate.css       NEW
+Vervang alleen:
+- site-gate.js
+- site-gate.css
 
-WHAT THE VISITOR SEES ON FIRST VISIT
-- PURE20 welcome card
-- language choice: Nederlands / English
-- checkbox: 18 years or older
-- checkbox: understands PURE20 products are offered for research purposes only and are not intended for use in humans or animals
-- Continue button stays disabled until both boxes are checked
+AANGEPAST
+- de native taal-dropdown is volledig verwijderd
+- taalkeuze is nu een custom NL / EN keuzeblok
+- geen zwarte Safari/iPhone selectie-balk meer
+- actieve taal krijgt een duidelijke donkere selectie
+- gekozen taal blijft gekoppeld aan het bestaande pure20_language systeem
+- de rest van de 18+ en research-only gate blijft ongewijzigd
 
-LANGUAGE
-The selected language is saved in the existing 'pure20_language' setting.
-After acceptance the page reloads once, so the entire website immediately starts in the selected language.
-
-REMEMBERING ACCEPTANCE
-Acceptance is saved in localStorage as:
-pure20_access_gate_v1
-
-The gate therefore does not appear again on every page after the visitor has accepted it on that device/browser.
-
-TESTING AGAIN
-To see the gate again, remove 'pure20_access_gate_v1' from the browser's site storage or use a fresh/private browser session.
-
-SCOPE
-The gate appears on customer-facing pages.
-Admin, Wholesale Admin, Dashboard and Portal are excluded.
+Geen wijziging nodig aan site-header.js.

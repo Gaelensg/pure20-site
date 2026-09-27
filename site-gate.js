@@ -80,17 +80,19 @@
           <p class="p20-gate-intro" data-gate-copy="intro"></p>
         </div>
 
-        <label class="p20-gate-select-label">
-          <span data-gate-copy="languageLabel"></span>
-          <div class="p20-gate-select-wrap">
-            <span class="p20-gate-flag" id="p20GateFlag" aria-hidden="true">🇳🇱</span>
-            <select id="p20GateLanguage">
-              <option value="nl">Nederlands</option>
-              <option value="en">English</option>
-            </select>
-            <span class="p20-gate-chevron" aria-hidden="true">⌄</span>
+        <div class="p20-gate-language-block">
+          <span class="p20-gate-language-label" data-gate-copy="languageLabel"></span>
+          <div class="p20-gate-language-toggle" role="group" aria-label="Language">
+            <button type="button" class="p20-gate-language-button" data-gate-lang="nl">
+              <span class="p20-gate-lang-flag" aria-hidden="true">🇳🇱</span>
+              <span>Nederlands</span>
+            </button>
+            <button type="button" class="p20-gate-language-button" data-gate-lang="en">
+              <span class="p20-gate-lang-flag" aria-hidden="true">🇬🇧</span>
+              <span>English</span>
+            </button>
           </div>
-        </label>
+        </div>
 
         <label class="p20-gate-check">
           <input id="p20GateAge" type="checkbox">
@@ -117,16 +119,18 @@
     document.documentElement.classList.add('p20-gate-open');
     document.body.classList.add('p20-gate-open');
 
-    const select = document.getElementById('p20GateLanguage');
     const age = document.getElementById('p20GateAge');
     const research = document.getElementById('p20GateResearch');
     const button = document.getElementById('p20GateContinue');
-    const flag = document.getElementById('p20GateFlag');
+    const languageButtons = [...overlay.querySelectorAll('[data-gate-lang]')];
 
     function applyLanguage(next) {
       lang = next === 'en' ? 'en' : 'nl';
-      select.value = lang;
-      flag.textContent = lang === 'en' ? '🇬🇧' : '🇳🇱';
+      languageButtons.forEach(btn => {
+        const active = btn.dataset.gateLang === lang;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
       overlay.querySelectorAll('[data-gate-copy]').forEach(el => {
         const key = el.dataset.gateCopy;
         if (copy[lang][key] != null) el.textContent = copy[lang][key];
@@ -137,7 +141,9 @@
       button.disabled = !(age.checked && research.checked);
     }
 
-    select.addEventListener('change', () => applyLanguage(select.value));
+    languageButtons.forEach(btn => {
+      btn.addEventListener('click', () => applyLanguage(btn.dataset.gateLang));
+    });
     age.addEventListener('change', updateButton);
     research.addEventListener('change', updateButton);
 
@@ -163,8 +169,10 @@
     applyLanguage(lang);
     updateButton();
 
-    // Keep keyboard focus inside the required decision.
-    setTimeout(() => select.focus({preventScroll:true}), 100);
+    // Focus the active language choice first for keyboard users.
+    setTimeout(() => {
+      overlay.querySelector(`[data-gate-lang="${lang}"]`)?.focus({preventScroll:true});
+    }, 100);
   }
 
   if (document.readyState === 'loading') {
