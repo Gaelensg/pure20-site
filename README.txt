@@ -1,19 +1,28 @@
-PURE20 — Build a Box visuele v2
+PURE20 — Rebirth-inspired navigation menu
 
-Vervang in de root van Gaelensg/pure20-site:
-- build-a-box.html
-- build-a-box.css
-- build-a-box.js
-- build-box-nav.js
+Upload/replace these files in the root of Gaelensg/pure20-site:
+1. site-header.js
+2. site-theme.css
+3. supabase-config.js
 
-Verbeteringen:
-- volledige dark/light mode ondersteuning
-- correcte contrasten voor voordeelkaarten, boxvakken en catalogus
-- geselecteerde boxvakken krijgen duidelijke inverse styling
-- zoekveld, categorieknoppen en productrijen volgen het gekozen thema
-- vaste mobiele balk compacter gemaakt
-- resterende Engelse teksten vertaald
-- mobiele theme-color volgt licht/donker thema
-- navigatielabel reageert ook op NL/EN wissel
+What changes:
+- Removes the long horizontal public navigation bar.
+- Compact header: PURE20. + theme + account + cart + MENU.
+- Language switch moves inside the menu.
+- Right-side drawer on desktop.
+- Full-width menu on mobile.
+- Routes included:
+  Shop
+  Stel je box samen / Build a Box
+  Kennisbank / Knowledge
+  Calculator
+  Stack Builder
+  Groothandel / Wholesale
+- Active page is visually marked.
+- NL/EN labels update with the site's existing language switch.
+- Light/dark mode supported.
+- Existing shop cart button is re-used, so current cart event handlers stay intact.
+- Private admin/portal/supplier-order pages are not changed.
 
-Geen Supabase- of prijsinstellingen hoeven opnieuw geüpload te worden.
+build-box-nav.js is no longer needed after this update. You can leave it in GitHub,
+but supabase-config.js no longer loads it.
