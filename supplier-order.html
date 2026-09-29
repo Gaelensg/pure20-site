@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f2f1ec" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>PURE20. — Supplier order</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/supplier-order.css" />
+</head>
+
+<body class="admin-body supplier-order-body">
+  <div id="supplierLoginGate" class="login-gate">
+    <div class="admin-auth-card supplier-auth-card">
+      <div class="admin-brand">PURE20.</div>
+      <div class="auth-kicker">PRIVATE / SUPPLIER ORDER</div>
+      <h1>Internal ordering.</h1>
+      <p>This catalogue is restricted to the PURE20 administrator.</p>
+
+      <div class="auth-row">
+        <input id="supplierEmail" class="wide" type="email" autocomplete="username" placeholder="Admin email" />
+        <input id="supplierPassword" class="wide" type="password" autocomplete="current-password" placeholder="Password" />
+        <button id="supplierLoginButton" type="button">Sign in</button>
+      </div>
+
+      <div id="supplierLoginError" class="login-error"></div>
+      <div class="admin-login-help"><small>Protected by Supabase Auth + Row Level Security.</small></div>
+    </div>
+  </div>
+
+  <header class="admin-header supplier-header">
+    <div class="supplier-shell supplier-header-inner">
+      <a class="admin-brand supplier-brand" href="/admin">PURE20.</a>
+      <span id="supplierStatus" class="admin-status">
+        <span class="cloud-dot"></span>
+        <span>Locked</span>
+      </span>
+      <div class="supplier-header-spacer"></div>
+      <span id="supplierUser" class="admin-user"></span>
+      <a class="admin-link" href="/admin">Admin</a>
+      <button id="supplierSignOut" class="admin-link supplier-signout" type="button">Sign out</button>
+    </div>
+  </header>
+
+  <main id="supplierApp" class="supplier-shell supplier-main" hidden>
+    <section class="supplier-hero">
+      <div>
+        <p class="eyebrow">INTERNAL PROCUREMENT / USD</p>
+        <h1>Supplier order.</h1>
+        <p class="supplier-lede">Build an order from the private supplier list. Retail prices apply by default. Wholesale pricing unlocks automatically from a $500 wholesale basket value.</p>
+      </div>
+      <div class="supplier-hero-mark">20<span>.</span></div>
+    </section>
+
+    <section class="supplier-threshold-card" aria-live="polite">
+      <div class="supplier-threshold-top">
+        <div>
+          <span class="supplier-kicker">WHOLESALE THRESHOLD</span>
+          <strong id="supplierThresholdMessage">$500.00 to wholesale pricing</strong>
+        </div>
+        <span id="supplierTierBadge" class="supplier-tier-badge">RETAIL</span>
+      </div>
+      <div class="supplier-progress-track" aria-hidden="true">
+        <span id="supplierProgressFill"></span>
+      </div>
+      <div class="supplier-progress-scale">
+        <span>$0</span>
+        <span id="supplierProgressValue">$0 / $500</span>
+        <span>$500</span>
+      </div>
+    </section>
+
+    <section class="supplier-toolbar">
+      <div class="supplier-search-wrap">
+        <label class="sr-only" for="supplierSearch">Search supplier catalogue</label>
+        <input id="supplierSearch" type="search" placeholder="Search product, strength or code" autocomplete="off" />
+        <button id="supplierClearSearch" class="icon-btn" type="button" aria-label="Clear search">×</button>
+      </div>
+      <div class="supplier-stats">
+        <span><strong id="supplierProductCount">0</strong> products</span>
+        <span><strong id="supplierVariantCount">0</strong> options</span>
+        <span>1 qty = <strong>10 vials</strong></span>
+      </div>
+    </section>
+
+    <div class="supplier-layout">
+      <section class="supplier-catalogue-panel">
+        <div class="supplier-list-head">
+          <span>PRODUCT / STRENGTH</span>
+          <span>PRICE / 10 VIALS</span>
+          <span>QTY</span>
+        </div>
+        <div id="supplierCatalogue" class="supplier-catalogue"></div>
+        <div id="supplierEmpty" class="empty-state" hidden>
+          <strong>No matches.</strong>
+          <span>Try another product, strength or code.</span>
+        </div>
+      </section>
+
+      <aside class="supplier-summary" aria-label="Supplier order summary">
+        <div class="supplier-summary-head">
+          <div>
+            <p class="eyebrow">ORDER</p>
+            <h2>Current basket.</h2>
+          </div>
+          <button id="supplierClearOrder" class="supplier-text-button" type="button">Clear</button>
+        </div>
+
+        <div id="supplierOrderLines" class="supplier-order-lines">
+          <div class="supplier-order-empty">No products selected yet.</div>
+        </div>
+
+        <div class="supplier-summary-meta">
+          <div><span>Packs</span><strong id="supplierPackCount">0</strong></div>
+          <div><span>Vials</span><strong id="supplierVialCount">0</strong></div>
+          <div><span>Retail basket</span><strong id="supplierRetailSubtotal">$0.00</strong></div>
+          <div><span>Wholesale basket</span><strong id="supplierWholesaleSubtotal">$0.00</strong></div>
+        </div>
+
+        <div class="supplier-total-card">
+          <span id="supplierTotalLabel">Retail total</span>
+          <strong id="supplierTotal">$0.00</strong>
+          <small id="supplierSavings" hidden></small>
+        </div>
+
+        <button id="supplierCopyOrder" class="supplier-primary-button" type="button" disabled>
+          Copy supplier order <span>→</span>
+        </button>
+        <div id="supplierCopyStatus" class="supplier-copy-status" aria-live="polite"></div>
+
+        <p class="supplier-private-note">Prices are loaded only after verified admin access. They are not embedded in this page.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>window.__PURE20_UNIVERSAL_HEADER__ = true;</script>
+  <script src="/supabase-config.js"></script>
+  <script src="/fallback-data.js"></script>
+  <script src="/api.js"></script>
+  <script src="/supplier-order.js"></script>
+</body>
+</html>
