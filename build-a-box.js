@@ -82,10 +82,11 @@
   }
 
   function categories(){return ['All',...new Set(activeProducts().map(p=>p.category).filter(Boolean))]}
+  function categoryLabel(value){return value==='All'?'Alle':value}
   function renderCategories(){
     const cats=categories();
     if(!cats.includes(state.category)) state.category='All';
-    els.categories.innerHTML=cats.map(c=>`<button class="pill ${c===state.category?'active':''}" type="button" data-category="${esc(c)}">${esc(c)}</button>`).join('');
+    els.categories.innerHTML=cats.map(c=>`<button class="pill ${c===state.category?'active':''}" type="button" data-category="${esc(c)}">${esc(categoryLabel(c))}</button>`).join('');
   }
 
   function filteredProducts(){
@@ -102,7 +103,7 @@
     rows.forEach(p=>{if(!groups.has(p.product))groups.set(p.product,[]);groups.get(p.product).push(p)});
     els.catalogue.innerHTML=[...groups].map(([name,variants])=>`<section class="box-product-group"><div class="box-product-heading"><h3>${esc(name)}</h3><span>${variants.length} ${variants.length===1?'OPTIE':'OPTIES'}</span></div>${variants.map(p=>{
       const inBox=Number(state.selected[p.id]||0), priced=Number(p.price||0)>0, full=count>=c.size;
-      return `<article class="box-variant ${priced?'':'disabled'}" data-id="${esc(p.id)}"><div class="box-variant-main"><strong>${esc(p.variant)}</strong><small>${esc(p.code)} · ${Number(p.stock||0)>0?'IN STOCK':'ORDERABLE'}</small>${inBox?`<span class="box-in-count">IN BOX × ${inBox}</span>`:''}</div><div class="box-variant-price"><strong>${priced?money(p.price):'Prijs volgt'}</strong><span>per ${esc(p.unit||'vial')}</span></div><button class="box-add-button" type="button" data-add-id="${esc(p.id)}" ${!priced||full?'disabled':''}>${inBox?'+ NOG EEN':'+ TOEVOEGEN'}</button></article>`;
+      return `<article class="box-variant ${priced?'':'disabled'}" data-id="${esc(p.id)}"><div class="box-variant-main"><strong>${esc(p.variant)}</strong><small>${esc(p.code)} · ${Number(p.stock||0)>0?'OP VOORRAAD':'BESTELBAAR'}</small>${inBox?`<span class="box-in-count">IN DE BOX × ${inBox}</span>`:''}</div><div class="box-variant-price"><strong>${priced?money(p.price):'Prijs volgt'}</strong><span>per ${esc(p.unit||'vial')}</span></div><button class="box-add-button" type="button" data-add-id="${esc(p.id)}" ${!priced||full?'disabled':''}>${inBox?'+ NOG EEN':'+ TOEVOEGEN'}</button></article>`;
     }).join('')}</section>`).join('');
     els.empty.hidden=rows.length>0;
     els.productCount.textContent=String(new Set(activeProducts().map(p=>p.product)).size);
@@ -182,13 +183,13 @@
   function orderText(){
     const c=config(),t=totals(),cust=Object.fromEntries(customerFields.map(id=>[id,$(id)?.value?.trim()||'-']));
     return [
-      'PURE20. BUILD A BOX ORDER','',
+      'PURE20. BOXBESTELLING','',
       ...selectedLines().map(({product,qty})=>`${qty} × ${product.product} ${product.variant} (${product.code}) — ${money(qty*Number(product.price))}`),
       '',
       `Normale prijs: ${money(t.retail)}`,
       `Boxkorting (${c.discountPct}%): -${money(t.discount)}`,
-      `Shipping: ${c.freeShipping?'Gratis':money(Number(state.store?.settings?.shippingFlat||0))}`,
-      `BOX TOTAL: ${money(t.total)}`,
+      `Verzending: ${c.freeShipping?'Gratis':money(Number(state.store?.settings?.shippingFlat||0))}`,
+      `BOXTOTAAL: ${money(t.total)}`,
       '',
       'KLANTGEGEVENS',
       `Naam: ${cust.fullName}`,
@@ -222,7 +223,7 @@
       const ids=new Set(activeProducts().map(p=>p.id));
       Object.keys(state.selected).forEach(id=>{if(!ids.has(id)||Number(productById(id)?.price||0)<=0)delete state.selected[id]});
       renderAll();
-      if(showToast)toast('Catalogue updated.');
+      if(showToast)toast('Catalogus bijgewerkt.');
     }catch(err){
       console.error(err);
       state.store=window.PURE20_API.normalizeStore(window.PURE20_FALLBACK_STORE);
@@ -242,6 +243,13 @@
   els.whatsappOrder.addEventListener('click',whatsappOrder);
   customerFields.forEach(id=>$(id)?.addEventListener('change',saveCustomer));
   window.addEventListener('pure20:languagechange',renderAll);
+
+  function syncThemeColor(){
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content',document.documentElement.dataset.p20Theme==='dark'?'#0f1210':'#f2f1ec');
+  }
+  window.addEventListener('pure20:themechange',syncThemeColor);
+  syncThemeColor();
 
   loadCustomer();
   await loadStore(false);

@@ -1,21 +1,19 @@
-PURE20 — Stel je box samen (Nederlandse versie)
+PURE20 — Build a Box visuele v2
 
-Upload/vervang deze bestanden in de root van Gaelensg/pure20-site:
+Vervang in de root van Gaelensg/pure20-site:
 - build-a-box.html
 - build-a-box.css
 - build-a-box.js
 - build-box-nav.js
-- supabase-config.js
 
-Route:
-  /build-a-box
+Verbeteringen:
+- volledige dark/light mode ondersteuning
+- correcte contrasten voor voordeelkaarten, boxvakken en catalogus
+- geselecteerde boxvakken krijgen duidelijke inverse styling
+- zoekveld, categorieknoppen en productrijen volgen het gekozen thema
+- vaste mobiele balk compacter gemaakt
+- resterende Engelse teksten vertaald
+- mobiele theme-color volgt licht/donker thema
+- navigatielabel reageert ook op NL/EN wissel
 
-Werking:
-- Kies 4 producten
-- 15% boxkorting zodra de box compleet is
-- Gratis verzending bij een complete box
-- Live voortgang en totaal
-- Nederlandse interface
-- Gebruikt dezelfde live Supabase-catalogus als de shop
-
-De live Build a Box titel en subtitel in Supabase zijn eveneens naar het Nederlands aangepast.
+Geen Supabase- of prijsinstellingen hoeven opnieuw geüpload te worden.

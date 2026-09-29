@@ -7,7 +7,7 @@
       if(nav.querySelector('[data-p20-build-box], a[href="/build-a-box"], a[href="/build-a-box.html"]')) return;
       const a=document.createElement('a');
       a.href='/build-a-box';
-      a.textContent='Stel je box samen';
+      a.textContent=(localStorage.getItem('pure20_language')==='en'?'Build a Box':'Stel je box samen');
       a.dataset.p20BuildBox='1';
       if(path==='/build-a-box'||path==='/build-a-box.html')a.setAttribute('aria-current','page');
       const shop=nav.querySelector('[data-p20-nav="shop"], a[href="/shop"], a[href="/shop.html"]');
@@ -17,7 +17,10 @@
     });
   }
 
-  addLink();
+  function updateLabel(){document.querySelectorAll('[data-p20-build-box], a[href="/build-a-box"], a[href="/build-a-box.html"]').forEach(a=>{a.textContent=(localStorage.getItem('pure20_language')==='en'?'Build a Box':'Stel je box samen')})}
+
+  addLink();updateLabel();
+  window.addEventListener('pure20:languagechange',()=>{addLink();updateLabel()});
   const observer=new MutationObserver(addLink);
   observer.observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(addLink,100);
