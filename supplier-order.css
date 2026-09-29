@@ -13,7 +13,7 @@
 .supplier-header-inner{min-height:72px;display:flex;align-items:center;gap:18px}
 .supplier-brand{color:inherit;text-decoration:none}.supplier-header-spacer{flex:1}
 .supplier-signout{background:transparent;border:0;cursor:pointer}
-.supplier-main{padding:54px 0 80px}
+.supplier-main{padding:54px 0 152px}
 .supplier-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px;align-items:end;padding:8px 0 44px}
 .supplier-hero h1{margin:8px 0 16px;font-size:clamp(48px,7vw,94px);line-height:.91;letter-spacing:-.055em;font-weight:500}
 .supplier-lede{max-width:760px;margin:0;font-size:16px;line-height:1.65;color:var(--supplier-muted)}
@@ -45,6 +45,96 @@
 .supplier-total-card{padding:18px 0 20px}.supplier-total-card span{display:block;font-size:10px;letter-spacing:.1em;color:var(--supplier-muted)}.supplier-total-card strong{display:block;margin-top:5px;font-size:34px;letter-spacing:-.04em}.supplier-total-card small{display:block;margin-top:5px;color:var(--supplier-muted)}
 .supplier-primary-button{width:100%;min-height:52px;border:1px solid #111;background:#111;color:#fff;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font:inherit;font-size:12px;cursor:pointer}.supplier-primary-button:disabled{opacity:.35;cursor:not-allowed}.supplier-copy-status{min-height:18px;padding-top:8px;font-size:11px;color:var(--supplier-muted)}
 .supplier-private-note{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--supplier-soft);font-size:10px;line-height:1.55;color:var(--supplier-muted)}.supplier-auth-card{max-width:560px}
+
+/* Fixed order totals bar */
+.supplier-bottom-bar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:70;
+  padding:0 max(24px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(24px,env(safe-area-inset-left));
+  background:rgba(17,17,17,.97);
+  color:#fff;
+  border-top:1px solid #111;
+  box-shadow:0 -12px 34px rgba(0,0,0,.12);
+  backdrop-filter:blur(16px);
+}
+.supplier-bottom-bar-inner{
+  width:min(1320px,100%);
+  min-height:72px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:160px 160px minmax(220px,1fr);
+  align-items:stretch;
+}
+.supplier-bottom-stat{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:12px 24px;
+  border-right:1px solid rgba(255,255,255,.18);
+}
+.supplier-bottom-stat span{
+  font-size:9px;
+  letter-spacing:.13em;
+  color:rgba(255,255,255,.6);
+}
+.supplier-bottom-stat strong{
+  margin-top:3px;
+  font-size:20px;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:-.025em;
+}
+.supplier-bottom-total{
+  align-items:flex-end;
+  text-align:right;
+  border-right:0;
+}
+.supplier-bottom-total strong{
+  font-size:30px;
+}
+.wholesale-active .supplier-bottom-total span::after{
+  content:" ✓";
+}
+
 @media(max-width:980px){.supplier-layout{grid-template-columns:1fr}.supplier-summary{position:relative;top:auto;max-height:none}}
-@media(max-width:720px){.supplier-shell{width:min(100% - 20px,1320px)}.supplier-header-inner{min-height:0;padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px 10px}.supplier-header-spacer{display:none}.supplier-header .admin-user{display:none}.supplier-header .admin-status{justify-self:end}.supplier-header .admin-link{font-size:9px;padding:8px 9px}.supplier-main{padding:32px 0 70px}.supplier-hero{grid-template-columns:1fr;padding-bottom:28px}.supplier-hero-mark{display:none}.supplier-hero h1{font-size:54px}.supplier-toolbar{grid-template-columns:1fr}.supplier-stats{gap:10px 14px}.supplier-list-head{display:none}.supplier-product-card{margin-bottom:10px;border:1px solid var(--supplier-line)}.supplier-product-title{padding:15px 12px 9px}.supplier-product-title h3{font-size:19px}.supplier-variant-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;min-height:0;padding:12px}.supplier-price{grid-column:1;grid-row:2}.supplier-qty{grid-column:2;grid-row:1/3}.supplier-threshold-card{padding:16px}.supplier-threshold-top strong{font-size:16px}.supplier-tier-badge{min-width:78px}}
-@media(max-width:430px){.supplier-qty{grid-template-columns:32px 42px 32px}.supplier-qty input{width:42px}.supplier-product-title h3{font-size:17px}.supplier-summary{padding:16px}}
+@media(max-width:720px){
+  .supplier-shell{width:min(100% - 20px,1320px)}
+  .supplier-header-inner{min-height:0;padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px 10px}
+  .supplier-header-spacer{display:none}.supplier-header .admin-user{display:none}.supplier-header .admin-status{justify-self:end}.supplier-header .admin-link{font-size:9px;padding:8px 9px}
+  .supplier-main{padding:32px 0 130px}
+  .supplier-hero{grid-template-columns:1fr;padding-bottom:28px}.supplier-hero-mark{display:none}.supplier-hero h1{font-size:54px}
+  .supplier-toolbar{grid-template-columns:1fr}.supplier-stats{gap:10px 14px}.supplier-list-head{display:none}
+  .supplier-product-card{margin-bottom:10px;border:1px solid var(--supplier-line)}.supplier-product-title{padding:15px 12px 9px}.supplier-product-title h3{font-size:19px}
+  .supplier-variant-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;min-height:0;padding:12px}.supplier-price{grid-column:1;grid-row:2}.supplier-qty{grid-column:2;grid-row:1/3}
+  .supplier-threshold-card{padding:16px}.supplier-threshold-top strong{font-size:16px}.supplier-tier-badge{min-width:78px}
+  .supplier-bottom-bar{
+    padding-left:0;
+    padding-right:0;
+  }
+  .supplier-bottom-bar-inner{
+    min-height:68px;
+    grid-template-columns:.8fr .8fr 1.4fr;
+  }
+  .supplier-bottom-stat{
+    padding:10px 12px;
+    align-items:center;
+    text-align:center;
+  }
+  .supplier-bottom-stat span{font-size:8px}
+  .supplier-bottom-stat strong{font-size:18px}
+  .supplier-bottom-total{
+    align-items:flex-end;
+    text-align:right;
+    padding-right:16px;
+  }
+  .supplier-bottom-total strong{font-size:23px}
+}
+@media(max-width:430px){
+  .supplier-qty{grid-template-columns:32px 42px 32px}.supplier-qty input{width:42px}.supplier-product-title h3{font-size:17px}.supplier-summary{padding:16px}
+  .supplier-bottom-stat{padding-left:8px;padding-right:8px}
+  .supplier-bottom-total{padding-right:12px}
+  .supplier-bottom-total strong{font-size:21px}
+}

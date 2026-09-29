@@ -1,10 +1,13 @@
-Vervang deze 3 bestanden in je repository:
-- styles.css
-- app.js
-- language.js
+PURE20 supplier order — bottom bar update
 
-Dit doet:
-- winkelkar-icoon rechtsboven op de shop
-- mooie, uitgelijnde header op mobiel
-- navigatielinks blijven zichtbaar en lopen niet buiten het scherm
-- NL/EN-switch staat netjes rechtsboven in dezelfde headerzone
+Replace these 3 files in the root of Gaelensg/pure20-site:
+- supplier-order.html
+- supplier-order.css
+- supplier-order.js
+
+The fixed bottom bar shows:
+- BOXES
+- VIALS
+- RETAIL/WHOLESALE TOTAL
+
+It updates live and respects the $500 wholesale threshold.

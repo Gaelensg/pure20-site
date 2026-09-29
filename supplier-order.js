@@ -17,7 +17,8 @@
     progressValue:$('supplierProgressValue'), lines:$('supplierOrderLines'), packCount:$('supplierPackCount'), vialCount:$('supplierVialCount'),
     retailSubtotal:$('supplierRetailSubtotal'), wholesaleSubtotal:$('supplierWholesaleSubtotal'), totalLabel:$('supplierTotalLabel'),
     total:$('supplierTotal'), savings:$('supplierSavings'), clearOrder:$('supplierClearOrder'), copyOrder:$('supplierCopyOrder'),
-    copyStatus:$('supplierCopyStatus')
+    copyStatus:$('supplierCopyStatus'), bottomBoxes:$('supplierBottomBoxes'), bottomVials:$('supplierBottomVials'),
+    bottomTier:$('supplierBottomTier'), bottomTotal:$('supplierBottomTotal')
   };
 
   const state = { products:[], qty:loadDraft() };
@@ -45,6 +46,7 @@
     els.progressFill.style.width=`${progress}%`;els.progressValue.textContent=`${money(Math.min(t.wholesale,THRESHOLD))} / ${money(THRESHOLD)}`;
     els.tierBadge.textContent=t.wholesaleActive?'WHOLESALE':'RETAIL';els.thresholdMessage.textContent=t.wholesaleActive?'Wholesale pricing unlocked':`${money(remaining)} to wholesale pricing`;
     els.packCount.textContent=String(t.packs);els.vialCount.textContent=String(t.vials);els.retailSubtotal.textContent=money(t.retail);els.wholesaleSubtotal.textContent=money(t.wholesale);els.totalLabel.textContent=t.wholesaleActive?'Wholesale total':'Retail total';els.total.textContent=money(t.total);
+    els.bottomBoxes.textContent=String(t.packs);els.bottomVials.textContent=String(t.vials);els.bottomTier.textContent=t.wholesaleActive?'WHOLESALE TOTAL':'RETAIL TOTAL';els.bottomTotal.textContent=money(t.total);
     if(t.wholesaleActive&&t.savings>0){els.savings.hidden=false;els.savings.textContent=`You save ${money(t.savings)} vs. retail`}else{els.savings.hidden=true;els.savings.textContent=''}
     els.copyOrder.disabled=t.lines.length===0;
     if(!t.lines.length){els.lines.innerHTML='<div class="supplier-order-empty">No products selected yet.</div>';return}
