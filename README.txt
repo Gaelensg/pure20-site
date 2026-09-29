@@ -1,28 +1,16 @@
-PURE20 — Rebirth-inspired navigation menu
+PURE20 — Build a Box translation fix
 
-Upload/replace these files in the root of Gaelensg/pure20-site:
-1. site-header.js
-2. site-theme.css
-3. supabase-config.js
+Replace these 2 files in the root of Gaelensg/pure20-site:
+- build-a-box.html
+- build-a-box.js
 
-What changes:
-- Removes the long horizontal public navigation bar.
-- Compact header: PURE20. + theme + account + cart + MENU.
-- Language switch moves inside the menu.
-- Right-side drawer on desktop.
-- Full-width menu on mobile.
-- Routes included:
-  Shop
-  Stel je box samen / Build a Box
-  Kennisbank / Knowledge
-  Calculator
-  Stack Builder
-  Groothandel / Wholesale
-- Active page is visually marked.
-- NL/EN labels update with the site's existing language switch.
-- Light/dark mode supported.
-- Existing shop cart button is re-used, so current cart event handlers stay intact.
-- Private admin/portal/supplier-order pages are not changed.
+What is fixed:
+- NL/EN now works for the complete Build a Box page.
+- Dynamic texts no longer overwrite the selected language.
+- Product buttons, stock status, categories, progress, drawer, errors, toast messages,
+  order copy and WhatsApp order text all switch language.
+- Title and subtitle use the bilingual Build a Box values now stored in Supabase.
+- Existing visual CSS does not need to be replaced.
 
-build-box-nav.js is no longer needed after this update. You can leave it in GitHub,
-but supabase-config.js no longer loads it.
+After upload, reload the page once. If iPhone Safari still shows the cached version,
+close the tab and reopen /build-a-box.
