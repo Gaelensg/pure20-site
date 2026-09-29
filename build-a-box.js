@@ -28,8 +28,8 @@
     size: Math.max(1, Number(state.store?.settings?.buildBox?.size || 4)),
     discountPct: Math.max(0, Math.min(100, Number(state.store?.settings?.buildBox?.discountPct || 15))),
     freeShipping: state.store?.settings?.buildBox?.freeShipping !== false,
-    title: state.store?.settings?.buildBox?.title || 'Build your box.',
-    subtitle: state.store?.settings?.buildBox?.subtitle || 'Choose any 4 priced products. Save 15% and get free shipping.'
+    title: state.store?.settings?.buildBox?.title || 'Stel je box samen.',
+    subtitle: state.store?.settings?.buildBox?.subtitle || 'Kies 4 geprijsde producten. Krijg 15% korting en gratis verzending.'
   });
   const money = value => `${state.store?.settings?.currencySymbol || '€'}${Number(value || 0).toFixed(2)}`;
   const activeProducts = () => (state.store?.products || []).filter(p => p.active).sort((a,b) => {
@@ -61,9 +61,9 @@
     els.title.textContent = c.title;
     els.subtitle.textContent = c.subtitle;
     els.heroDiscount.textContent = `${c.discountPct}%`;
-    els.benefitCount.textContent = `Choose ${c.size} products`;
-    els.benefitDiscount.textContent = `Save ${c.discountPct}%`;
-    els.drawerDiscountLabel.textContent = `Build a Box · ${c.discountPct}%`;
+    els.benefitCount.textContent = `Kies ${c.size} producten`;
+    els.benefitDiscount.textContent = `Bespaar ${c.discountPct}%`;
+    els.drawerDiscountLabel.textContent = `Boxkorting · ${c.discountPct}%`;
   }
 
   function expandedSelection(){
@@ -76,8 +76,8 @@
     const c=config(), selected=expandedSelection();
     els.slots.innerHTML=Array.from({length:c.size},(_,i)=>{
       const p=selected[i];
-      if(!p) return `<article class="box-slot"><span class="box-slot-index">${String(i+1).padStart(2,'0')}</span><div class="box-slot-empty">Select product +</div></article>`;
-      return `<article class="box-slot filled"><span class="box-slot-index">${String(i+1).padStart(2,'0')}</span><button class="box-slot-remove" type="button" data-remove-id="${esc(p.id)}" aria-label="Remove ${esc(p.product)} ${esc(p.variant)}">×</button><div class="box-slot-product"><strong>${esc(p.product)}</strong><span>${esc(p.variant)} · ${esc(p.code)}</span></div><div class="box-slot-price">${money(p.price)}</div></article>`;
+      if(!p) return `<article class="box-slot"><span class="box-slot-index">${String(i+1).padStart(2,'0')}</span><div class="box-slot-empty">Selecteer product +</div></article>`;
+      return `<article class="box-slot filled"><span class="box-slot-index">${String(i+1).padStart(2,'0')}</span><button class="box-slot-remove" type="button" data-remove-id="${esc(p.id)}" aria-label="Verwijder ${esc(p.product)} ${esc(p.variant)}">×</button><div class="box-slot-product"><strong>${esc(p.product)}</strong><span>${esc(p.variant)} · ${esc(p.code)}</span></div><div class="box-slot-price">${money(p.price)}</div></article>`;
     }).join('');
   }
 
@@ -100,9 +100,9 @@
   function renderCatalogue(){
     const rows=filteredProducts(), groups=new Map(), c=config(), count=selectedCount();
     rows.forEach(p=>{if(!groups.has(p.product))groups.set(p.product,[]);groups.get(p.product).push(p)});
-    els.catalogue.innerHTML=[...groups].map(([name,variants])=>`<section class="box-product-group"><div class="box-product-heading"><h3>${esc(name)}</h3><span>${variants.length} ${variants.length===1?'OPTION':'OPTIONS'}</span></div>${variants.map(p=>{
+    els.catalogue.innerHTML=[...groups].map(([name,variants])=>`<section class="box-product-group"><div class="box-product-heading"><h3>${esc(name)}</h3><span>${variants.length} ${variants.length===1?'OPTIE':'OPTIES'}</span></div>${variants.map(p=>{
       const inBox=Number(state.selected[p.id]||0), priced=Number(p.price||0)>0, full=count>=c.size;
-      return `<article class="box-variant ${priced?'':'disabled'}" data-id="${esc(p.id)}"><div class="box-variant-main"><strong>${esc(p.variant)}</strong><small>${esc(p.code)} · ${Number(p.stock||0)>0?'IN STOCK':'ORDERABLE'}</small>${inBox?`<span class="box-in-count">IN BOX × ${inBox}</span>`:''}</div><div class="box-variant-price"><strong>${priced?money(p.price):'Price pending'}</strong><span>per ${esc(p.unit||'vial')}</span></div><button class="box-add-button" type="button" data-add-id="${esc(p.id)}" ${!priced||full?'disabled':''}>${inBox?'+ ADD ANOTHER':'+ ADD TO BOX'}</button></article>`;
+      return `<article class="box-variant ${priced?'':'disabled'}" data-id="${esc(p.id)}"><div class="box-variant-main"><strong>${esc(p.variant)}</strong><small>${esc(p.code)} · ${Number(p.stock||0)>0?'IN STOCK':'ORDERABLE'}</small>${inBox?`<span class="box-in-count">IN BOX × ${inBox}</span>`:''}</div><div class="box-variant-price"><strong>${priced?money(p.price):'Prijs volgt'}</strong><span>per ${esc(p.unit||'vial')}</span></div><button class="box-add-button" type="button" data-add-id="${esc(p.id)}" ${!priced||full?'disabled':''}>${inBox?'+ NOG EEN':'+ TOEVOEGEN'}</button></article>`;
     }).join('')}</section>`).join('');
     els.empty.hidden=rows.length>0;
     els.productCount.textContent=String(new Set(activeProducts().map(p=>p.product)).size);
@@ -118,10 +118,10 @@
     els.savings.textContent=money(t.discount);
     els.total.textContent=money(t.total);
     els.review.disabled=!t.complete;
-    els.review.textContent=t.complete?'Review box →':`${c.size-t.count} to go`;
+    els.review.textContent=t.complete?'Bekijk box →':`nog ${c.size-t.count} te kiezen`;
     els.drawerSubtotal.textContent=money(t.retail);
     els.drawerDiscount.textContent=`-${money(t.discount)}`;
-    els.drawerShipping.textContent=c.freeShipping&&t.complete?'Free':money(Number(state.store?.settings?.shippingFlat||0));
+    els.drawerShipping.textContent=c.freeShipping&&t.complete?'Gratis':money(Number(state.store?.settings?.shippingFlat||0));
     els.drawerTotal.textContent=money(t.total);
     els.drawerEmpty.hidden=t.count>0;
     els.orderLines.innerHTML=selectedLines().map(({product,qty})=>{
@@ -136,7 +136,7 @@
   function add(id){
     const c=config(), p=productById(id);
     if(!p||Number(p.price||0)<=0)return;
-    if(selectedCount()>=c.size){toast('Your box is already complete.');return}
+    if(selectedCount()>=c.size){toast('Je box is al compleet.');return}
     state.selected[id]=Number(state.selected[id]||0)+1;
     renderAll();
   }
@@ -156,7 +156,7 @@
   }
 
   function openDrawer(){
-    if(!totals().complete){toast(`Choose ${config().size} products first.`);return}
+    if(!totals().complete){toast(`Kies eerst ${config().size} producten.`);return}
     renderSummary();
     els.backdrop.hidden=false;
     requestAnimationFrame(()=>els.backdrop.classList.add('visible'));
@@ -173,8 +173,8 @@
   }
 
   function canShare(){
-    if(!totals().complete){toast('Complete your box first.');return false}
-    if(!els.researchConfirm.checked){toast('Confirm the notice first.');return false}
+    if(!totals().complete){toast('Maak eerst je box compleet.');return false}
+    if(!els.researchConfirm.checked){toast('Bevestig eerst de melding.');return false}
     saveCustomer();
     return true;
   }
@@ -185,20 +185,20 @@
       'PURE20. BUILD A BOX ORDER','',
       ...selectedLines().map(({product,qty})=>`${qty} × ${product.product} ${product.variant} (${product.code}) — ${money(qty*Number(product.price))}`),
       '',
-      `Retail subtotal: ${money(t.retail)}`,
-      `Build a Box (${c.discountPct}%): -${money(t.discount)}`,
-      `Shipping: ${c.freeShipping?'Free':money(Number(state.store?.settings?.shippingFlat||0))}`,
+      `Normale prijs: ${money(t.retail)}`,
+      `Boxkorting (${c.discountPct}%): -${money(t.discount)}`,
+      `Shipping: ${c.freeShipping?'Gratis':money(Number(state.store?.settings?.shippingFlat||0))}`,
       `BOX TOTAL: ${money(t.total)}`,
       '',
-      'CUSTOMER DETAILS',
-      `Name: ${cust.fullName}`,
-      `Address: ${cust.address}`,
-      `Postal code: ${cust.zip}`,
-      `Country: ${cust.country}`,
+      'KLANTGEGEVENS',
+      `Naam: ${cust.fullName}`,
+      `Adres: ${cust.address}`,
+      `Postcode: ${cust.zip}`,
+      `Land: ${cust.country}`,
       `Email: ${cust.email}`,
-      `Phone: ${cust.phone}`,
+      `Telefoon: ${cust.phone}`,
       '',
-      'Availability, shipping and payment to be confirmed separately.'
+      'Beschikbaarheid, verzending en betaling worden afzonderlijk bevestigd.'
     ].join('\n');
   }
 
@@ -206,7 +206,7 @@
     if(!canShare())return;
     const text=orderText();
     try{await navigator.clipboard.writeText(text)}catch(_){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
-    toast('Box order copied.');
+    toast('Boxbestelling gekopieerd.');
   }
   function whatsappOrder(){
     if(!canShare())return;

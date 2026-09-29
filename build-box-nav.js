@@ -7,7 +7,7 @@
       if(nav.querySelector('[data-p20-build-box], a[href="/build-a-box"], a[href="/build-a-box.html"]')) return;
       const a=document.createElement('a');
       a.href='/build-a-box';
-      a.textContent='Build a Box';
+      a.textContent='Stel je box samen';
       a.dataset.p20BuildBox='1';
       if(path==='/build-a-box'||path==='/build-a-box.html')a.setAttribute('aria-current','page');
       const shop=nav.querySelector('[data-p20-nav="shop"], a[href="/shop"], a[href="/shop.html"]');
