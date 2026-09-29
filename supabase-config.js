@@ -98,7 +98,8 @@ window.PURE20_SUPABASE_CONFIG = {
       }
     });
   }
-/* Global NL / EN switcher */
+
+  /* Global NL / EN switcher */
   if (!document.querySelector("script[data-pure20-language]")) {
     const s = document.createElement("script");
     s.src = "/language.js";
@@ -107,12 +108,20 @@ window.PURE20_SUPABASE_CONFIG = {
   }
 })();
 
-
 /* PURE20 universal header + JetBrains Mono */
 (() => {
   if (document.querySelector('script[data-pure20-site-header]')) return;
   const s = document.createElement('script');
   s.src = '/site-header.js';
   s.dataset.pure20SiteHeader = '1';
+  document.head.appendChild(s);
+})();
+
+/* Build a Box navigation extension */
+(() => {
+  if (document.querySelector('script[data-pure20-build-box-nav]')) return;
+  const s = document.createElement('script');
+  s.src = '/build-box-nav.js';
+  s.dataset.pure20BuildBoxNav = '1';
   document.head.appendChild(s);
 })();
