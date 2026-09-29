@@ -1,0 +1,23 @@
+{
+  "new_source_documents": 243,
+  "previous_detail_documents": 41,
+  "translation": "local machine translation; editorial review incomplete",
+  "number_token_mismatches": [],
+  "broken_local_file_links": [],
+  "live_published": false,
+  "english_article_text_changed": [],
+  "source_tables_preserved": 274,
+  "bilingual_segments_new_collection": 63560,
+  "missing_image_files": [],
+  "included_images": 356,
+  "missing_translation_mapping": {},
+  "browser_checks": {
+    "search_new_collection": "pass",
+    "search_previous_collection": "pass",
+    "open_detail_page": "pass",
+    "language_switch": "pass",
+    "mobile_width_390": "pass",
+    "browser_console_errors_observed": 0,
+    "preview": "nested local source layout; flat links verified statically"
+  }
+}
