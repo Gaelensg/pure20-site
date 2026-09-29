@@ -107,6 +107,49 @@
       letter-spacing:.16em;
     }
 
+
+    .portal-supplier-shortcut{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:12px;
+      padding:16px 18px;
+      border:1px solid #111;
+      background:#111;
+      color:#fff;
+      text-decoration:none;
+    }
+
+    .portal-supplier-shortcut:hover{
+      background:#292929;
+    }
+
+    .portal-supplier-shortcut:focus-visible{
+      outline:2px solid #111;
+      outline-offset:3px;
+    }
+
+    .portal-supplier-shortcut strong{
+      display:block;
+      font-size:18px;
+      letter-spacing:-.025em;
+    }
+
+    .portal-supplier-shortcut small{
+      display:block;
+      margin-top:4px;
+      color:#aaa;
+      font-size:11px;
+      line-height:1.5;
+    }
+
+    .portal-supplier-shortcut-arrow{
+      flex:0 0 auto;
+      font-size:26px;
+      line-height:1;
+    }
+
     .portal-grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
@@ -284,6 +327,14 @@
       </p>
     </section>
 
+    <a class="portal-supplier-shortcut" href="/supplier-order">
+      <span>
+        <strong>Supplier order</strong>
+        <small>Private supplier catalogue &amp; order builder</small>
+      </span>
+      <span class="portal-supplier-shortcut-arrow" aria-hidden="true">→</span>
+    </a>
+
     <section class="portal-grid">
       <a class="portal-card" href="/" target="_blank">
         <div class="portal-card-top">
@@ -419,4 +470,5 @@
   </script>
 </body>
 </html>
+
 
