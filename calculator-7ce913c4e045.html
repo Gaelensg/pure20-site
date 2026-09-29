@@ -1,0 +1,216 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f2f1ec"><title>Peptide Calculator: Dosage &amp; Reconstitution — PURE20.</title><link rel="stylesheet" href="../pure20-knowledge.css"><script src="../pure20-knowledge.js" defer></script></head><body><a class="skip" href="#main"><span data-nl="Naar inhoud" data-en="Skip to content" >Naar inhoud</span></a><header><div class="shell header"><a class="brand" href="/">PURE20.</a><nav aria-label="Hoofdnavigatie"><a href="/"><span data-nl="Shop" data-en="Shop" >Shop</span></a><a href="../knowledge.html" aria-current="page"><span data-nl="Kennis" data-en="Knowledge" >Kennis</span></a></nav><div class="languages" role="group" aria-label="Language"><button type="button" data-language="nl" aria-pressed="true">NL</button><button type="button" data-language="en" aria-pressed="false">EN</button></div></div></header><main id="main" class="shell"><div class="breadcrumb"><a href="../knowledge.html"><span data-nl="Kennisbank" data-en="Knowledge library" >Kennisbank</span></a> / <span data-nl="Gidsen &amp; hulpmiddelen" data-en="Guides &amp; tools" >Gidsen &amp; hulpmiddelen</span></div><section class="detail-hero"><p class="eyebrow">PURE20 / <span data-nl="Gidsen &amp; hulpmiddelen" data-en="Guides &amp; tools" >Gidsen &amp; hulpmiddelen</span></p><h1 lang="en">Peptide Calculator: Dosage &amp; Reconstitution</h1><p class="source-context"><span data-nl="Brontekst in het Engels · opgehaald op 29 september 2026." data-en="English source text · retrieved 29 September 2026." >Brontekst in het Engels · opgehaald op 29 september 2026.</span><span data-nl=" Dit is de toelichting bij de broncalculator; de interactieve calculator staat op de bronsite." data-en=" This is the source calculator documentation; use the source website for the interactive calculator." > Dit is de toelichting bij de broncalculator; de interactieve calculator staat op de bronsite.</span> <a href="https://peptidedosages.com/calculator/" rel="noopener noreferrer"><span data-nl="Bekijk de bron ↗" data-en="View source ↗" >Bekijk de bron ↗</span></a></p></section><div class="reading-layout"><aside><p class="eyebrow"><span data-nl="Op deze pagina" data-en="On this page" >Op deze pagina</span></p><nav><a href="#section-1">1 Reconstitution</a><a href="#section-2">2 Your Dose</a><a href="#pdc-results-title">Your Draw</a><a href="#section-4">How the Peptide Calculator Works</a><a href="#section-5">How to Use the Free Peptide Calculator</a><a href="#section-6">Peptide Reconstitution Calculator: From Powder to Concentration</a><a href="#section-7">Bacteriostatic Water Volume and Concentration</a><a href="#section-8">How to Calculate Peptide Dosage</a><a href="#section-9">Peptide Calculator Results: Syringe Units and Barrel Size</a><a href="#section-10">Worked Example: 5 mg Vial Reconstituted With 2 mL</a><a href="#section-11">Accuracy Limits for Small Syringe Draws</a><a href="#section-12">Peptide Frequently Asked Questions</a><a href="#section-13">References</a></nav><a class="back-link" href="../knowledge.html"><span data-nl="← Alle onderwerpen" data-en="← All topics" >← Alle onderwerpen</span></a></aside><article class="source-article" lang="en">
+<!-- Hero Section -->
+<div>
+<div>
+
+</div>
+</div>
+<!-- Main Layout (normal, unrestricted) -->
+<div>
+<!-- Table of Contents (Hidden on mobile, shown on desktop) -->
+
+<div id="calculator-toc-title">
+<i></i> Table of Contents
+    </div>
+<ul id="toc">
+<!-- This will be populated by JavaScript -->
+</ul>
+
+<!-- Main Content -->
+<article>
+<div>
+<p>Use this free <strong>peptide calculator</strong> to convert a vial amount and bacteriostatic water volume into a reconstitution concentration, then translate a target research dose into <strong>U-100 syringe units</strong>. The result includes the volume to draw, full doses per vial, and a to-scale 30-, 50-, or 100-unit syringe. For educational and research calculations only.</p>
+<div>
+<!-- STEP 1 · RECONSTITUTION -->
+<div>
+<h2 id="section-1"><span>1</span><i></i> Reconstitution</h2>
+<p>Enter the peptide amount in the vial and the volume of bacteriostatic / sterile water you plan to add.</p>
+<div>
+Peptide in vial
+          <span><span id="tip-pep">The total peptide printed on the vial label (e.g., 5 mg, 10 mg). Water never changes this total — only how diluted it is.</span></span>
+
+<div><span>mg</span></div>
+</div>
+<div>
+Bacteriostatic water added
+          <span><span id="tip-water">Bacteriostatic Water for Injection commonly contains 0.9% benzyl alcohol as a preservative. More water creates a larger draw for the same peptide dose. Diluent compatibility, storage, and discard timing remain product-specific.</span></span>
+
+<div><span>mL</span></div>
+<div>
+
+
+
+
+</div>
+</div>
+<div>
+<div><span>Concentration
+          <span><span id="tip-conc">How much peptide each mL of solution contains after mixing. Every syringe number below comes from this.</span></span>
+</span><span id="r-conc">5 mg/mL</span></div>
+<div><span>Per 1 unit (0.01 mL)</span><span id="r-perunit">50 mcg</span></div>
+<div><span>Per 10 units (0.1 mL)</span><span id="r-perten">500 mcg</span></div>
+</div>
+</div>
+<!-- STEP 2 · DOSE -->
+<div>
+<h2 id="section-2"><span>2</span><i></i> Your Dose</h2>
+<p>Enter the dose from your protocol and pick the insulin syringe you're using.</p>
+<div>
+Target dose per injection
+          <span><span id="tip-dose">The amount for a single injection from your protocol. 1 mg = 1000 mcg.</span></span>
+
+<div>
+
+
+</div>
+<div>
+
+
+
+
+</div>
+</div>
+<div>
+Injection frequency <span>(optional)</span>
+<span><span id="tip-freq">Used only to estimate how long one vial lasts. It doesn't change the draw.</span></span>
+
+<div></div>
+</div>
+<div>
+Syringe size
+          <span><span id="tip-syr">All three are U-100 insulin syringes (100 units = 1 mL) — the same dose is the same unit number on each. Smaller barrels have finer, easier-to-read marks, so match the barrel to your draw for the best accuracy.</span></span>
+
+<div id="d-syr">
+
+
+
+</div>
+<p id="d-syrhint"></p>
+</div>
+</div>
+</div>
+<p id="pdc-validation"></p>
+<p id="pdc-status"></p>
+<!-- RESULTS -->
+<div>
+<h2 id="pdc-results-title"><i></i> Your Draw</h2>
+<div>
+<div>
+<span>Draw to
+          <span><span id="tip-units">Insulin-syringe units on the U-100 scale: 100 units = 1 mL, so 1 unit = 0.01 mL. Fill until the plunger seal sits on this line.</span></span>
+</span>
+<div><span id="d-units">5</span><small>units</small></div>
+</div>
+<div>
+<div><span>Volume</span><span id="d-vol">0.05 mL</span></div>
+<div><span>Doses per vial
+          <span><span id="tip-perv">Full doses only — total peptide in the vial divided by your dose, rounded down.</span></span>
+</span><span id="d-perv">40</span></div>
+<div><span>Vial lasts</span><span id="d-dur">—</span></div>
+</div>
+</div>
+<div>
+
+</div>
+<div>
+<p id="d-mark"></p>
+<p id="d-note"></p>
+<p id="d-rec"></p>
+</div>
+<div>
+
+</div>
+</div>
+<div>
+<div>
+<strong>In short:</strong> This free peptide calculator combines a <strong>peptide reconstitution calculator</strong> and a <strong>peptide dosage calculator</strong>. Enter the amount of peptide in the vial, the bacteriostatic water volume, and the target research dose. It returns the concentration, milliliters to draw, U-100 syringe units, and full doses per vial.
+    </div>
+<h2 id="section-4">How the Peptide Calculator Works</h2>
+<p>A peptide calculator connects three values that are easy to confuse: mass in the vial, liquid volume after reconstitution, and the amount represented by each syringe marking. Peptides are short chains of amino acids, and modern peptide research spans approved medicines, clinical candidates, and laboratory-only compounds.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-1">[1]</a></sup><sup><a href="calculator-7ce913c4e045.html#pdc-ref-2">[2]</a></sup> The calculator does not choose a dose. It performs the arithmetic after a target amount has been supplied from an appropriate research protocol.</p>
+<p>The calculation happens in two stages. First, the vial amount is divided by the diluent volume to determine concentration. Second, the target peptide dose is divided by that concentration to determine the volume to draw. On a standard U-100 insulin syringe, 100 units equals 1 mL, so 1 syringe unit represents 0.01 mL.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-8">[8]</a></sup> These are volume markings, not peptide International Units (IU).</p>
+<h2 id="section-5">How to Use the Free Peptide Calculator</h2>
+<p>The tool is designed as a simple two-card workflow. Use the exact units printed on the vial and in the research protocol, then verify the result independently.</p>
+<ol>
+<li><strong>Enter the peptide amount.</strong> Type the total amount of peptide in the vial, such as 5 mg or 10 mg. This value is the vial strength and does not change when water is added.</li>
+<li><strong>Enter the water volume.</strong> Add the planned volume of bacteriostatic water or other compatible diluent in mL. The peptide reconstitution calculator immediately displays mg/mL, mcg per unit, and mcg per 10 units.</li>
+<li><strong>Enter the target dose.</strong> Type the amount per administration and select mcg or mg. The calculator converts milligrams to micrograms when needed.</li>
+<li><strong>Select the syringe barrel.</strong> Choose a 30-unit (0.3 mL), 50-unit (0.5 mL), or 100-unit (1 mL) U-100 syringe. The unit result stays the same, while the visible graduation spacing changes.</li>
+<li><strong>Read and verify the result.</strong> Review the calculated mL, units to draw, full doses per vial, and the illustrated syringe mark. If an optional frequency is selected, the vial-duration estimate is arithmetic only.</li>
+</ol>
+<p>Changing the volume of bacteriostatic water changes concentration and draw size, but it does not change the total amount of peptide in the vial or the selected peptide dose.</p>
+<h2 id="section-6">Peptide Reconstitution Calculator: From Powder to Concentration</h2>
+<p>Peptide reconstitution is the process of dissolving a lyophilized peptide powder in a compatible liquid so the finished solution has a known concentration. Lyophilization, or freeze-drying, is widely used to improve the storage stability of labile biological molecules, but formulation, container, temperature, and handling still determine actual stability.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-3">[3]</a></sup><sup><a href="calculator-7ce913c4e045.html#pdc-ref-4">[4]</a></sup> A calculator cannot determine diluent compatibility or a beyond-use date.</p>
+<p>Use the diluent named by the product, supplier, laboratory, or validated protocol. When a procedure calls for bacteriostatic water, the labeled product commonly contains 0.9% benzyl alcohol and is supplied in a multi-dose container.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-5">[5]</a></sup> USP peptide guidance also emphasizes following the procedure-specific container, diluent, and reconstitution requirements.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-12">[12]</a></sup></p>
+<h2 id="section-7">Bacteriostatic Water Volume and Concentration</h2>
+<p>The volume of bacteriostatic water controls how concentrated the reconstituted solution becomes. A 5 mg vial reconstituted with 1 mL has a concentration of 5 mg/mL. The same 5 mg vial reconstituted with 2 mL has a concentration of 2.5 mg/mL. Adding more water creates a larger volume to draw for the same peptide dose; adding less water creates a smaller draw.</p>
+<p>Benzyl alcohol is used as an antimicrobial preservative in some multi-dose protein and peptide formulations, but preservative compatibility is formulation-specific.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-6">[6]</a></sup> Research has also shown that benzyl alcohol can increase aggregation in some reconstituted protein formulations under particular conditions.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-7">[7]</a></sup> Therefore, this bac water calculator does not imply that bacteriostatic water is suitable for every peptide.</p>
+<h2 id="section-8">How to Calculate Peptide Dosage</h2>
+<p>The peptide dosage calculation uses four short equations:</p>
+<ol>
+<li><strong>Concentration (mg/mL)</strong> = peptide amount in mg ÷ final liquid volume in mL.</li>
+<li><strong>Target dose (mg)</strong> = target dose in mcg ÷ 1,000.</li>
+<li><strong>Volume to draw (mL)</strong> = target dose in mg ÷ concentration in mg/mL.</li>
+<li><strong>U-100 syringe units</strong> = volume to draw in mL × 100.</li>
+</ol>
+<p>For example, a 250 mcg dose equals 0.25 mg. If the concentration is 2.5 mg/mL, then 0.25 mg ÷ 2.5 mg/mL = 0.1 mL. On a U-100 syringe, 0.1 mL equals 10 units. The calculator performs the same arithmetic for any vial amount, water volume, and desired dose entered above.</p>
+<h2 id="section-9">Peptide Calculator Results: Syringe Units and Barrel Size</h2>
+<p>U-100 identifies a volumetric scale originally designed for insulin at 100 units per mL.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-8">[8]</a></sup> When the scale is used for a research calculation, the number of units tells you the liquid volume only. It does not describe peptide mass until the reconstitution concentration is known.</p>
+<p>A 5-unit draw is 0.05 mL, 10 units is 0.10 mL, 20 units is 0.20 mL, and 50 units is 0.50 mL. The same unit number represents the same volume on 30-, 50-, and 100-unit U-100 barrels. Smaller barrels usually provide more space between low-volume markings, which can make a small draw easier to read.</p>
+<h2 id="section-10">Worked Example: 5 mg Vial Reconstituted With 2 mL</h2>
+<p>Start with a 5 mg peptide vial and 2 mL of bacteriostatic water. The concentration is 5 mg ÷ 2 mL = 2.5 mg/mL, which is also 2,500 mcg/mL. One U-100 syringe unit is 0.01 mL, so each unit contains 25 mcg at this concentration.</p>
+<p>For a 250 mcg research amount, the volume to draw is 250 mcg ÷ 2,500 mcg/mL = 0.10 mL. That equals 10 units on a U-100 syringe. The vial contains 5,000 mcg total, so it holds 20 complete 250 mcg calculation doses before accounting for handling loss or dead space.</p>
+<p>If the same 5 mg vial were reconstituted with 1 mL, the concentration would be 5 mg/mL and the same 250 mcg amount would equal 5 units. With 3 mL, the concentration would be approximately 1.67 mg/mL and the calculated draw would be about 15 units. The peptide amount stays fixed; only concentration and volume to draw change.</p>
+<h2 id="section-11">Accuracy Limits for Small Syringe Draws</h2>
+<p>A mathematically correct result can still be difficult to measure physically. Research on small-volume syringe measurement found more frequent unacceptable error when the measured volume was less than 20% of the syringe's labeled capacity.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-9">[9]</a></sup> A separate low-dose study found the largest percentage error at a 1-unit syringe dose compared with larger draws.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-10">[10]</a></sup></p>
+<p>The visual meter and barrel recommendation help identify when a draw is very small or exceeds the selected syringe. They do not validate a particular syringe, technique, compound, route, or protocol. Always use the actual graduation marks on the selected device and independently confirm the input values.</p>
+<h2 id="section-12">Peptide Frequently Asked Questions</h2>
+<h3>What information do I need to use a peptide calculator?</h3>
+<p>You need the total peptide amount in the vial, the final liquid volume after reconstitution, and the target amount per administration. The calculator accepts vial mass in mg, water volume in mL, and target dose in either mcg or mg.</p>
+<h3>How do I calculate peptide dosage in syringe units?</h3>
+<p>Divide the desired dose by the concentration to get mL, then multiply the mL by 100 for a U-100 syringe. A 250 mcg dose from a 2.5 mg/mL solution equals 0.10 mL, or 10 units on a U-100 syringe.</p>
+<h3>Does adding more water change the peptide dose?</h3>
+<p>No. Adding more water lowers the concentration and increases the volume needed to reach the same dose. It does not change the peptide amount in the vial or the target dose entered into the calculator.</p>
+<h3>How much bacteriostatic water should I add to a peptide vial?</h3>
+<p>The calculator can compare 1 mL, 2 mL, 3 mL, or another water volume, but it cannot select the proper diluent or volume for a compound. Use product-specific instructions or a validated research procedure, then enter that volume to calculate concentration and syringe units.</p>
+<h3>Are U-100 syringe units the same as peptide IU?</h3>
+<p>No. U-100 syringe units are volume markings: 100 units equals 1 mL. International Units (IU) describe biological activity for certain substances and cannot be converted to peptide mass without a substance-specific standard.</p>
+<h3>What syringe size is best for a small calculated draw?</h3>
+<p>Use the smallest compatible barrel that comfortably contains the full draw and has markings that match the required precision. The calculator compares 30-, 50-, and 100-unit U-100 barrels and flags values that cannot be represented cleanly.</p>
+<h3>How should a reconstituted peptide be stored?</h3>
+<p>Storage temperature, light protection, freeze-thaw limits, and discard timing depend on the specific peptide and formulation. Follow the product label, supplier stability documentation, or validated laboratory procedure. Do not infer a universal storage period from vial strength, water type, or this calculator. General multi-dose vial guidance also defers to a manufacturer's shorter product-specific limit.<sup><a href="calculator-7ce913c4e045.html#pdc-ref-11">[11]</a></sup></p>
+<h3>Can sterile water replace bacteriostatic water in the calculation?</h3>
+<p>The concentration math is the same for any compatible diluent because it uses liquid volume. Compatibility and handling are not the same. Sterile Water for Injection has no antimicrobial preservative, while Bacteriostatic Water for Injection commonly contains benzyl alcohol. Use only the diluent specified for the product or validated procedure.</p>
+<h3>How do I convert mcg to mL?</h3>
+<p>Mass cannot be converted to volume without a concentration. First convert the vial and water inputs into mcg/mL. Then divide the target mcg by that concentration to obtain mL. The peptide reconstitution calculator completes both steps automatically.</p>
+<p><strong>For research and educational use only.</strong> This reference tool performs concentration and volume arithmetic. It does not select a dose, establish sterility or stability, or replace compound-specific instructions. Independently confirm every input and result before use.</p>
+<h2 id="section-13">References</h2>
+<ol>
+<li id="pdc-ref-1">Lau, J. L., &amp; Dunn, M. K. (2018). Therapeutic peptides: Historical perspectives, current development trends, and future directions. <em>Bioorganic &amp; Medicinal Chemistry, 26</em>(10), 2700–2707. <a href="https://pubmed.ncbi.nlm.nih.gov/28720325/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-2">Muttenthaler, M., King, G. F., Adams, D. J., &amp; Alewood, P. F. (2021). Trends in peptide drug discovery. <em>Nature Reviews Drug Discovery, 20</em>(4), 309–325. <a href="https://pubmed.ncbi.nlm.nih.gov/33536635/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-3">Tang, X., &amp; Pikal, M. J. (2004). Design of freeze-drying processes for pharmaceuticals: practical advice. <em>Pharmaceutical Research, 21</em>(2), 191–200. <a href="https://pubmed.ncbi.nlm.nih.gov/15032301/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-4">Wang, W. (2000). Lyophilization and development of solid protein pharmaceuticals. <em>International Journal of Pharmaceutics, 203</em>(1–2), 1–60. <a href="https://pubmed.ncbi.nlm.nih.gov/10967427/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-5">U.S. National Library of Medicine. Bacteriostatic Water for Injection, USP: official labeling. <a href="https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=42c6938e-f747-ae13-e063-6294a90a59a3&amp;type=display" rel="noopener noreferrer">DailyMed</a>.</li>
+<li id="pdc-ref-6">Stroppel, L., et al. (2023). Antimicrobial preservatives for protein and peptide formulations: An overview. <em>Pharmaceutics, 15</em>(2), 563. <a href="https://pubmed.ncbi.nlm.nih.gov/36839885/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-7">Roy, S., et al. (2005). Effects of benzyl alcohol on aggregation of recombinant human interleukin-1-receptor antagonist in reconstituted lyophilized formulations. <em>Journal of Pharmaceutical Sciences, 94</em>(2), 382–396. <a href="https://pubmed.ncbi.nlm.nih.gov/15614819/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-8">U.S. Food and Drug Administration. Guidance on the Content of Premarket Notification [510(k)] Submissions for Piston Syringes. <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/guidance-content-premarket-notification-510k-submissions-piston-syringes" rel="noopener noreferrer">FDA</a>.</li>
+<li id="pdc-ref-9">Jordan, M. A., Choksi, D., Lombard, K., &amp; Patton, L. R. (2021). Development of guidelines for accurate measurement of small volume parenteral products using syringes. <em>Hospital Pharmacy, 56</em>(3), 165–171. <a href="https://pubmed.ncbi.nlm.nih.gov/34024924/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-10">Gnanalingham, M. G., Newland, P., &amp; Smith, C. P. (1998). Accuracy and reproducibility of low dose insulin administration using pen-injectors and syringes. <em>Archives of Disease in Childhood, 79</em>(1), 59–62. <a href="https://pubmed.ncbi.nlm.nih.gov/9771255/" rel="noopener noreferrer">PubMed</a>.</li>
+<li id="pdc-ref-11">Centers for Disease Control and Prevention. Preventing Unsafe Injection Practices: Multi-Dose Vials. <a href="https://www.cdc.gov/injection-safety/hcp/clinical-safety/index.html" rel="noopener noreferrer">CDC</a>.</li>
+<li id="pdc-ref-12">United States Pharmacopeia. Best Practices for Reconstitution of USP Peptide. <a href="https://www.usp.org/sites/default/files/usp/document/our-work/biologics/usp_peptide_infographic.pdf" rel="noopener noreferrer">USP</a>.</li>
+</ol>
+</div>
+<div>
+<strong>Research &amp; educational use only.</strong> These calculators are provided for laboratory and educational reference. Peptides discussed are research chemicals not approved for human consumption. Always confirm calculations independently and follow applicable laws and institutional guidelines. Nothing here is medical advice.
+  </div>
+<div>
+<a href="reconstitution-guide-peptides-ee19c107a443.html"><i></i> How to Reconstitute Peptides</a>
+<a href="syringe-measurement-guide-338064b72266.html"><i></i> Syringe &amp; Measurement Guide</a>
+<a href="peptide-storage-guide-dbc2b281a2c5.html"><i></i> Peptide Storage Guide</a>
+<a href="dosages-113d8a20f875.html"><i></i> All Dosage Protocols</a>
+<a href="peptide-dosage-chart-5d2b5854eb1e.html"><i></i> Peptide Dosage Chart</a>
+</div>
+</div>
+</article>
+</div>
+<!-- JavaScript for Table of Contents (same as before) -->
+</article></div></main><footer class="shell"><a class="brand" href="/">PURE20.</a><p><span data-nl="Kennis, met context." data-en="Knowledge, with context." >Kennis, met context.</span><br><span data-nl="Informatie uit externe bronnen. Niet onafhankelijk medisch geverifieerd." data-en="External source material. Not independently medically verified." >Informatie uit externe bronnen. Niet onafhankelijk medisch geverifieerd.</span></p><a href="../knowledge.html"><span data-nl="Naar het overzicht ↗" data-en="Explore the library ↗" >Naar het overzicht ↗</span></a></footer></body></html>
