@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#f2f1ec" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
-  <title>PURE20. — Supplier order</title>
+  <title>PURE20. — Supplier Hub</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/supplier-order.css" />
 </head>
@@ -14,18 +14,18 @@
   <div id="supplierLoginGate" class="login-gate">
     <div class="admin-auth-card supplier-auth-card">
       <div class="admin-brand">PURE20.</div>
-      <div class="auth-kicker">PRIVATE / SUPPLIER ORDER</div>
-      <h1>Internal ordering.</h1>
-      <p>This catalogue is restricted to the PURE20 administrator.</p>
+      <div class="auth-kicker">PRIVATE / SUPPLIER HUB</div>
+      <h1>Interne bestellingen.</h1>
+      <p>Deze catalogus is alleen beschikbaar voor een PURE20-beheerder.</p>
 
       <div class="auth-row">
-        <input id="supplierEmail" class="wide" type="email" autocomplete="username" placeholder="Admin email" />
-        <input id="supplierPassword" class="wide" type="password" autocomplete="current-password" placeholder="Password" />
-        <button id="supplierLoginButton" type="button">Sign in</button>
+        <input id="supplierEmail" class="wide" type="email" autocomplete="username" placeholder="Admin e-mail" />
+        <input id="supplierPassword" class="wide" type="password" autocomplete="current-password" placeholder="Wachtwoord" />
+        <button id="supplierLoginButton" type="button">Inloggen</button>
       </div>
 
       <div id="supplierLoginError" class="login-error"></div>
-      <div class="admin-login-help"><small>Protected by Supabase Auth + Row Level Security.</small></div>
+      <div class="admin-login-help"><small>Beveiligd met Supabase Auth + Row Level Security.</small></div>
     </div>
   </div>
 
@@ -34,118 +34,127 @@
       <a class="admin-brand supplier-brand" href="/admin">PURE20.</a>
       <span id="supplierStatus" class="admin-status">
         <span class="cloud-dot"></span>
-        <span>Locked</span>
+        <span>Vergrendeld</span>
       </span>
       <div class="supplier-header-spacer"></div>
       <span id="supplierUser" class="admin-user"></span>
+      <a class="admin-link" href="/portal">Portal</a>
       <a class="admin-link" href="/admin">Admin</a>
-      <button id="supplierSignOut" class="admin-link supplier-signout" type="button">Sign out</button>
+      <button id="supplierSignOut" class="admin-link supplier-signout" type="button">Uitloggen</button>
     </div>
   </header>
 
   <main id="supplierApp" class="supplier-shell supplier-main" hidden>
     <section class="supplier-hero">
       <div>
-        <p class="eyebrow">INTERNAL PROCUREMENT / USD</p>
-        <h1>Supplier order.</h1>
-        <p class="supplier-lede">Build an order from the private supplier list. Retail prices apply by default. Wholesale pricing unlocks automatically from a $500 wholesale basket value.</p>
+        <p class="eyebrow">INTERNAL PROCUREMENT</p>
+        <h1>Supplier hub.</h1>
+        <p id="supplierHeroText" class="supplier-lede">Kies een leverancier en stel je bestelling samen.</p>
       </div>
       <div class="supplier-hero-mark">20<span>.</span></div>
     </section>
 
-    <section class="supplier-threshold-card" aria-live="polite">
+    <section class="supplier-switcher" aria-label="Leverancier kiezen">
+      <div class="supplier-switcher-kicker">LEVERANCIER</div>
+      <div id="supplierTabs" class="supplier-tabs"></div>
+    </section>
+
+    <section id="supplierCategorySection" class="supplier-category-section" hidden>
+      <div class="supplier-switcher-kicker">CATEGORIE</div>
+      <div id="supplierCategoryTabs" class="supplier-category-tabs"></div>
+    </section>
+
+    <section id="supplierPricingCard" class="supplier-threshold-card" aria-live="polite">
       <div class="supplier-threshold-top">
         <div>
-          <span class="supplier-kicker">WHOLESALE THRESHOLD</span>
-          <strong id="supplierThresholdMessage">$500.00 to wholesale pricing</strong>
+          <span id="supplierPricingKicker" class="supplier-kicker">PRIJSREGEL</span>
+          <strong id="supplierThresholdMessage">Catalogus laden…</strong>
         </div>
-        <span id="supplierTierBadge" class="supplier-tier-badge">RETAIL</span>
+        <span id="supplierTierBadge" class="supplier-tier-badge">—</span>
       </div>
-      <div class="supplier-progress-track" aria-hidden="true">
-        <span id="supplierProgressFill"></span>
+      <div id="supplierProgressWrap">
+        <div class="supplier-progress-track" aria-hidden="true">
+          <span id="supplierProgressFill"></span>
+        </div>
+        <div class="supplier-progress-scale">
+          <span id="supplierProgressStart">$0</span>
+          <span id="supplierProgressValue">$0 / $500</span>
+          <span id="supplierProgressEnd">$500</span>
+        </div>
       </div>
-      <div class="supplier-progress-scale">
-        <span>$0</span>
-        <span id="supplierProgressValue">$0 / $500</span>
-        <span>$500</span>
-      </div>
+      <p id="supplierCurrencyNote" class="supplier-currency-note" hidden></p>
     </section>
 
     <section class="supplier-toolbar">
       <div class="supplier-search-wrap">
-        <label class="sr-only" for="supplierSearch">Search supplier catalogue</label>
-        <input id="supplierSearch" type="search" placeholder="Search product, strength or code" autocomplete="off" />
-        <button id="supplierClearSearch" class="icon-btn" type="button" aria-label="Clear search">×</button>
+        <label class="sr-only" for="supplierSearch">Zoek in leverancierscatalogus</label>
+        <input id="supplierSearch" type="search" placeholder="Zoek product, sterkte of code" autocomplete="off" />
+        <button id="supplierClearSearch" class="icon-btn" type="button" aria-label="Zoekopdracht wissen">×</button>
       </div>
       <div class="supplier-stats">
-        <span><strong id="supplierProductCount">0</strong> products</span>
-        <span><strong id="supplierVariantCount">0</strong> options</span>
-        <span>1 qty = <strong>10 vials</strong></span>
+        <span><strong id="supplierProductCount">0</strong> producten</span>
+        <span><strong id="supplierVariantCount">0</strong> opties</span>
+        <span id="supplierPackInfo"></span>
       </div>
     </section>
 
     <div class="supplier-layout">
       <section class="supplier-catalogue-panel">
         <div class="supplier-list-head">
-          <span>PRODUCT / STRENGTH</span>
-          <span>PRICE / 10 VIALS</span>
-          <span>QTY</span>
+          <span>PRODUCT / SPECIFICATIE</span>
+          <span id="supplierPriceHeading">PRIJS</span>
+          <span>AANTAL</span>
         </div>
         <div id="supplierCatalogue" class="supplier-catalogue"></div>
         <div id="supplierEmpty" class="empty-state" hidden>
-          <strong>No matches.</strong>
-          <span>Try another product, strength or code.</span>
+          <strong>Geen resultaten.</strong>
+          <span>Probeer een ander product, sterkte of code.</span>
         </div>
       </section>
 
-      <aside class="supplier-summary" aria-label="Supplier order summary">
+      <aside class="supplier-summary" aria-label="Besteloverzicht leverancier">
         <div class="supplier-summary-head">
           <div>
-            <p class="eyebrow">ORDER</p>
-            <h2>Current basket.</h2>
+            <p class="eyebrow">BESTELLING</p>
+            <h2 id="supplierSummaryTitle">Huidig mandje.</h2>
           </div>
-          <button id="supplierClearOrder" class="supplier-text-button" type="button">Clear</button>
+          <button id="supplierClearOrder" class="supplier-text-button" type="button">Wissen</button>
         </div>
 
         <div id="supplierOrderLines" class="supplier-order-lines">
-          <div class="supplier-order-empty">No products selected yet.</div>
+          <div class="supplier-order-empty">Nog geen producten geselecteerd.</div>
         </div>
 
-        <div class="supplier-summary-meta">
-          <div><span>Packs</span><strong id="supplierPackCount">0</strong></div>
-          <div><span>Vials</span><strong id="supplierVialCount">0</strong></div>
-          <div><span>Retail basket</span><strong id="supplierRetailSubtotal">$0.00</strong></div>
-          <div><span>Wholesale basket</span><strong id="supplierWholesaleSubtotal">$0.00</strong></div>
-        </div>
+        <div id="supplierSummaryMeta" class="supplier-summary-meta"></div>
 
         <div class="supplier-total-card">
-          <span id="supplierTotalLabel">Retail total</span>
-          <strong id="supplierTotal">$0.00</strong>
+          <span id="supplierTotalLabel">Totaal</span>
+          <strong id="supplierTotal">0.00</strong>
           <small id="supplierSavings" hidden></small>
         </div>
 
         <button id="supplierCopyOrder" class="supplier-primary-button" type="button" disabled>
-          Copy supplier order <span>→</span>
+          Bestelling kopiëren <span>→</span>
         </button>
         <div id="supplierCopyStatus" class="supplier-copy-status" aria-live="polite"></div>
 
-        <p class="supplier-private-note">Prices are loaded only after verified admin access. They are not embedded in this page.</p>
+        <p class="supplier-private-note">Prijzen worden pas na geverifieerde admin-toegang vanuit Supabase geladen en staan niet in de publieke paginacode.</p>
       </aside>
     </div>
 
     <div class="supplier-bottom-bar" aria-live="polite">
       <div class="supplier-bottom-bar-inner">
         <div class="supplier-bottom-stat">
-          <span>BOXES</span>
-          <strong id="supplierBottomBoxes">0</strong>
+          <span id="supplierBottomPrimaryLabel">BOXES</span>
+          <strong id="supplierBottomPrimary">0</strong>
         </div>
         <div class="supplier-bottom-stat">
-          <span>VIALS</span>
-          <strong id="supplierBottomVials">0</strong>
+          <span id="supplierBottomSecondaryLabel">VIALS</span>
+          <strong id="supplierBottomSecondary">0</strong>
         </div>
         <div class="supplier-bottom-stat supplier-bottom-total">
-          <span id="supplierBottomTier">RETAIL TOTAL</span>
-          <strong id="supplierBottomTotal">$0.00</strong>
+          <span id="supplierBottomTier">TOTAAL</span>
+          <strong id="supplierBottomTotal">0.00</strong>
         </div>
       </div>
     </div>
