@@ -1,28 +1,30 @@
-PURE20 product list images v1
+PURE20 LIST IMAGES — DIRECT LOAD v2
 
-UPLOAD / VERVANG IN GITHUB ROOT:
+Deze versie lost de loader/cache-problemen op.
 
-NIEUW:
+UPLOAD / VERVANG:
+- admin.html
+- shop.html
 - admin-product-thumbnails.js
-
-VERVANG:
 - product-catalogue.js
 - supabase-config.js
 
-WAT VERANDERT?
+BELANGRIJK:
+admin.html laadt admin-product-thumbnails.js nu RECHTSTREEKS.
+shop.html laadt product-catalogue.js + product-catalogue.css nu RECHTSTREEKS.
+Alle URLs gebruiken de nieuwe unieke cacheversie:
+20261001-list2
+
+Wat je na deploy moet zien:
 
 ADMIN > PRODUCTEN
-Elke exacte variant die een image_url heeft krijgt nu een miniatuurfoto in de
-productlijst. Dus HGH 10 IU, 12 IU, 15 IU enz. kunnen elk hun eigen foto tonen.
+- HGH 191AA 10iu heeft een thumbnail
+- HGH 191AA 12iu heeft een thumbnail
+- HGH 191AA 15iu heeft een thumbnail
 
-PUBLIEKE SHOP
-De shop blijft bewust maar ÉÉN miniatuur per peptide tonen.
+SHOP
+- maar één thumbnail bij HGH 191AA
+- de andere sterktes krijgen alleen uitlijning/spacer
+- productpagina blijft per gekozen sterkte wisselen
 
-Volgorde:
-1. Als pure20_compounds.image_url bestaat, wordt die shopminiatuur gebruikt.
-2. Als die leeg is, wordt automatisch de eerste beschikbare variantfoto gebruikt.
-
-De sterkte-specifieke foto op de productpagina blijft apart werken via
-variant-product-images.js.
-
-Na upload naar GitHub wacht je op Vercel en vernieuw je /admin en /shop.
+De foto's voor HGH 10iu, 12iu en 15iu staan al daadwerkelijk in Supabase.

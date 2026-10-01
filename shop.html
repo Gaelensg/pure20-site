@@ -8,19 +8,12 @@
   <title>PURE20. — Shop</title>
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/product-catalogue.css?v=20261001-list2" />
 
   <style>
-    /* Search field override */
-    .search-wrap input{
-      font-size:17px;
-    }
+    .search-wrap input{font-size:17px}
+    .cloud-status-hidden{display:none !important}
 
-    /* Keep the status elements available for app.js, but invisible */
-    .cloud-status-hidden{
-      display:none !important;
-    }
-  
-    /* Mobile navigation */
     .header-nav > .knowledge-link,
     .header-nav > .calculator-link{display:inline-flex;min-height:44px;align-items:center}
     @media(max-width:640px){
@@ -36,7 +29,6 @@
       .header-nav > a{font-size:11px}
       .header-cart{font-size:11px;padding:9px 10px}
     }
-
   </style>
 </head>
 
@@ -55,11 +47,6 @@
     </div>
   </header>
 
-  <!--
-    app.js still expects these two IDs.
-    They stay hidden so the "Live catalogue / synced with database" bar
-    does not appear, while the catalogue JavaScript keeps working.
-  -->
   <div class="cloud-status-hidden" aria-hidden="true">
     <span id="cloudDot" class="cloud-dot"></span>
     <span id="cloudStatus" class="cloud-copy"></span>
@@ -85,12 +72,9 @@
       <div class="hero-tools">
         <div class="search-wrap">
           <label class="sr-only" for="search">Search catalogue</label>
-          <input
-            id="search"
-            type="search"
+          <input id="search" type="search"
             placeholder="Search product, strength or code"
-            autocomplete="off"
-          />
+            autocomplete="off" />
           <button id="clearSearch" class="icon-btn" type="button" aria-label="Clear search">×</button>
         </div>
 
@@ -113,7 +97,6 @@
       </div>
 
       <div class="shell catalogue-section">
-
         <div class="availability-panel">
           <div class="availability-copy">
             <span class="availability-icon" aria-hidden="true">↗</span>
@@ -127,7 +110,6 @@
             <button type="button" class="stock-filter-button" data-stock-filter="in">In stock only</button>
           </div>
         </div>
-
 
         <div class="free-shipping-card free-shipping-card-shop" data-free-shipping-progress>
           <div class="free-shipping-copy">
@@ -173,7 +155,6 @@
       </div>
 
       <button id="clearCart" class="cart-clear" type="button">Clear</button>
-
       <button id="reviewOrder" class="cart-review" type="button">
         Review order <span>→</span>
       </button>
@@ -197,7 +178,6 @@
           <span>01</span>
           <h3>Selected items</h3>
         </div>
-
         <div id="orderLines"></div>
         <div id="drawerEmpty" class="drawer-empty">Your order is still empty.</div>
       </section>
@@ -210,33 +190,22 @@
         </div>
 
         <div class="form-grid">
-          <label class="field field-wide">
-            Full name
+          <label class="field field-wide">Full name
             <input id="fullName" type="text" autocomplete="name" placeholder="Full name" />
           </label>
-
-          <label class="field field-wide">
-            Address
+          <label class="field field-wide">Address
             <input id="address" type="text" autocomplete="street-address" placeholder="Street and house number" />
           </label>
-
-          <label class="field">
-            Postal code
+          <label class="field">Postal code
             <input id="zip" type="text" autocomplete="postal-code" placeholder="8400" />
           </label>
-
-          <label class="field">
-            Country
+          <label class="field">Country
             <input id="country" type="text" autocomplete="country-name" placeholder="Belgium" />
           </label>
-
-          <label class="field">
-            Email
+          <label class="field">Email
             <input id="email" type="email" autocomplete="email" placeholder="name@email.com" />
           </label>
-
-          <label class="field">
-            Phone
+          <label class="field">Phone
             <input id="phone" type="tel" autocomplete="tel" placeholder="+32 …" />
           </label>
         </div>
@@ -247,22 +216,18 @@
           <span>03</span>
           <h3>Discount</h3>
         </div>
-
         <div class="coupon-row">
           <input id="couponInput" type="text" placeholder="Discount code" />
           <button id="applyCoupon" class="outline-btn" type="button">Apply</button>
         </div>
-
         <div id="couponMessage" class="coupon-message"></div>
       </section>
-
 
       <section class="drawer-block free-shipping-drawer-block">
         <div class="section-heading">
           <span>04</span>
           <h3 data-free-shipping-heading>Free shipping</h3>
         </div>
-
         <div class="free-shipping-card free-shipping-card-drawer" data-free-shipping-progress>
           <div class="free-shipping-copy">
             <span data-free-shipping-label>Free shipping progress</span>
@@ -283,17 +248,14 @@
           <span>Subtotal</span>
           <strong id="drawerSubtotal">€0.00</strong>
         </div>
-
         <div id="discountRow" hidden>
           <span>Discount</span>
           <strong id="drawerDiscount">-€0.00</strong>
         </div>
-
         <div>
           <span>Shipping</span>
           <strong id="drawerShipping"></strong>
         </div>
-
         <div class="grand-total">
           <span>Current total <small>EUR</small></span>
           <strong id="drawerTotal">€0.00</strong>
@@ -315,10 +277,11 @@
   <div id="toast" class="toast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
+  <script src="supabase-config.js?v=20261001-list2"></script>
   <script src="fallback-data.js"></script>
-  <script src="api.js"></script>
-  <script src="app.js"></script>
-  <script src="order-recorder.js"></script>
+  <script src="api.js?v=20261001-list2"></script>
+  <script src="app.js?v=20261001-list2"></script>
+  <script src="/product-catalogue.js?v=20261001-list2"></script>
+  <script src="order-recorder.js?v=20261001-list2"></script>
 </body>
 </html>
