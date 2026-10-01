@@ -1,32 +1,24 @@
-PURE20 — Supplier Hub met Emlin's
+PURE20 — Order UX update
 
-VERVANG in de root van Gaelensg/pure20-site:
-- supplier-order.html
-- supplier-order.css
-- supplier-order.js
+Upload naar de root van Gaelensg/pure20-site:
 
-Wat is nieuw:
-- Leverancierstabbladen:
-  1. HHPeptide Factory
-  2. Emlin's
-- Emlin's bevat subtabbladen:
-  - Peptides
-  - Orals
-  - Oliën
-- Emlin's winkelmand blijft behouden wanneer je van categorie wisselt.
-- HHPeptide houdt de bestaande $500 wholesale-logica.
-- Emlin's gebruikt de enkele prijs uit de aangeleverde prijslijsten.
-- Emlin's: 195 peptidevarianten, 79 orals, 67 oils.
-- Alle prijzen worden pas na admin-login uit Supabase geladen.
-- Vaste balk onderaan past zich aan per leverancier.
-- Copy order vermeldt leverancier en categorie.
+NIEUW
+- order-ux.js
+- order-ux.css
 
-BELANGRIJK:
-De Emlin PDF's tonen geen valuta. Daarom staat Emlin's in Supabase momenteel
-zonder valuta-symbool. Zodra je bevestigt of dit USD, EUR, GBP, ... is, kan
-currency_code/currency_symbol met één instelling worden ingevuld.
+VERVANG
+- supabase-config.js
 
-Database:
-De nieuwe tabellen pure20_suppliers en pure20_supplier_catalogue zijn al live
-aangemaakt en gevuld. De oude pure20_supplier_products-tabel is niet verwijderd,
-dus je huidige live pagina blijft werken tot je deze frontendbestanden uploadt.
+Werkt automatisch op:
+- /shop
+- /wholesale
+- /supplier-order
+
+Aanpassingen:
+1. Geselecteerd product krijgt subtiel andere achtergrond + accentlijn.
+2. In winkelmandje kan aantal direct aangepast worden tussen - en +.
+3. Klik op de zwarte vaste balk opent het winkelmandje.
+4. Op mobiel schuift retail/wholesale winkelmandje van onder naar boven.
+5. Supplier Hub krijgt dezelfde bottom-sheet winkelmandervaring en -/aantal/+ bediening.
+
+Bestaande prijs-, kortings-, wholesale- en checkoutlogica blijft behouden.
