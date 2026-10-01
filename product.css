@@ -142,3 +142,25 @@ html[data-p20-theme="dark"] .p20-product-cart-bar{background:#090b0a}
   .p20-product-cart-inner button{padding:0 14px}
   .p20-product-cart-inner button span:first-child{display:none}
 }
+
+
+/* Product page editable research content */
+.p20-product-research{
+  margin-top:34px;
+  padding:24px 0;
+  border-top:1px solid var(--prod-line);
+  border-bottom:1px solid var(--prod-line);
+}
+.p20-product-research-kicker{
+  display:block;
+  margin-bottom:12px;
+  font-size:9px;
+  letter-spacing:.14em;
+  color:var(--prod-muted);
+}
+.p20-product-research-copy{
+  white-space:pre-line;
+  font-size:13px;
+  line-height:1.72;
+  color:var(--prod-muted);
+}

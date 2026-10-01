@@ -94,3 +94,27 @@ window.PURE20_SUPABASE_CONFIG = {
     document.head.appendChild(s);
   }
 })();
+
+
+/* Admin product-page manager */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
+  const admin=p==='/admin'||p==='/admin.html';
+  if(!admin)return;
+
+  if(!document.querySelector('link[data-pure20-admin-product-pages]')){
+    const l=document.createElement('link');
+    l.rel='stylesheet';
+    l.href='/admin-product-pages.css';
+    l.dataset.pure20AdminProductPages='1';
+    document.head.appendChild(l);
+  }
+
+  if(!document.querySelector('script[data-pure20-admin-product-pages]')){
+    const s=document.createElement('script');
+    s.src='/admin-product-pages.js';
+    s.defer=true;
+    s.dataset.pure20AdminProductPages='1';
+    document.head.appendChild(s);
+  }
+})();

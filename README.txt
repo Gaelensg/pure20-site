@@ -1,54 +1,54 @@
-PURE20 — Productpagina's + miniaturen
+PURE20 — Admin beheer voor productpagina's
 
-DATABASE
-De Supabase-database is al voorbereid:
-- pure20_compounds is live
-- 65 hoofdproducten zijn aangemaakt
-- bestaande 122 retailvarianten blijven de enige bron voor prijs/voorraad
-- afbeelding/omschrijving worden één keer per hoofdproduct opgeslagen
+DATABASE IS AL LIVE AANGEPAST
+- pure20_compounds heeft nu weergavenamen NL/EN
+- Storage bucket 'pure20-products' is aangemaakt
+- bucket is publiek leesbaar voor productfoto's
+- upload/update/delete is alleen toegestaan voor een geverifieerde PURE20-admin
+- max afbeelding: 5 MB
+- toegestaan: JPG, PNG, WEBP
 
 UPLOAD NAAR DE ROOT VAN Gaelensg/pure20-site
 
-NIEUW:
-- product.html
-- product.css
-- product.js
-- product-catalogue.js
-- product-catalogue.css
-- retail-cart-bridge.js
+NIEUW
+- admin-product-pages.js
+- admin-product-pages.css
 
-VERVANG:
+VERVANG
 - supabase-config.js
-- vercel.json
+- product.js
+- product.css
+- product-catalogue.js
 
-WAT HET DOET
+De overige bestanden in deze ZIP zijn meegestuurd als complete product-page set,
+maar hoeven niet vervangen te worden als ze al identiek aanwezig zijn.
 
-SHOP
-- Een peptide/product krijgt één miniatuurvisual, niet één per sterkte.
-- De productnaam is aanklikbaar.
-- Een klik opent /product/<slug>
-- Wanneer je op een specifieke sterkte klikt, wordt die variant op de
-  productpagina vooraf geselecteerd.
+ADMIN
+In /admin verschijnt een extra tab:
+Product pages
+
+Per hoofdproduct kun je beheren:
+- productfoto
+- weergavenaam NL
+- display name EN
+- categorie
+- korte omschrijving NL/EN
+- research info NL/EN
+- alt-tekst NL/EN
+- actief / verborgen
+- featured
+- preview naar de productpagina
+
+De technische productnaam en slug zijn read-only zodat de koppeling met de
+bestaande sterktevarianten niet kan breken.
+
+CATALOGUS SYNCHRONISEREN
+De knop 'Catalogus synchroniseren' voegt automatisch een hoofdproduct toe
+wanneer later een nieuwe productnaam aan pure20_products wordt toegevoegd.
 
 PRODUCTPAGINA
-- Eén pagina per hoofdproduct.
-- Alle actieve sterktes/varianten worden live uit pure20_products geladen.
-- Sterkte wisselen verandert prijs, code, COA en voorraadstatus.
-- Aantal kiezen en toevoegen aan hetzelfde retailwinkelmandje.
-- Zwarte balk onderaan toont totaal aantal + subtotaal.
-- Klik op winkelmandje stuurt naar /shop?cart=open en opent daar de bestaande cart.
-- Light/dark mode + NL/EN.
-
-GEDEELD WINKELMANDJE
-retail-cart-bridge.js bewaart de retailcart in:
-pure20_retail_cart_v1
-Hierdoor blijft het winkelmandje behouden tussen /shop en productpagina's.
-
-FOTO'S
-Er staan momenteel nog geen echte productfoto's in de repository of database.
-Daarom toont de site een nette PURE20 productvisual als fallback.
-Zodra pure20_compounds.image_url wordt ingevuld, gebruikt:
-- de shop automatisch de foto als miniatuur
-- de productpagina automatisch dezelfde foto groot
-
-Er hoeft dus later geen code meer aangepast te worden om foto's toe te voegen.
+- Weergavenaam wisselt mee met NL/EN
+- Korte omschrijving wisselt mee
+- Research info wordt alleen getoond wanneer ingevuld
+- Dezelfde foto verschijnt als shopminiatuur én grote productfoto
+- Prijs/voorraad blijven uit pure20_products komen

@@ -15,7 +15,7 @@
       notice:'Uitsluitend voor researchdoeleinden. Beschikbaarheid, verzending en betaling worden afzonderlijk bevestigd.',
       cart:'Bekijk winkelmandje',vials:'vials',notFound:'Product niet gevonden.',
       defaultDesc:'Kies hieronder de gewenste sterkte. Prijs en beschikbaarheid worden live uit de PURE20-catalogus geladen.',
-      coa:'COA bekijken ↗'
+      coa:'COA bekijken ↗',research:'RESEARCH INFO'
     },
     en:{
       back:'← Back to shop',strength:'CHOOSE STRENGTH',variants:n=>`${n} ${n===1?'option':'options'}`,
@@ -25,7 +25,7 @@
       notice:'For research purposes only. Availability, shipping and payment are confirmed separately.',
       cart:'View cart',vials:'vials',notFound:'Product not found.',
       defaultDesc:'Choose the desired strength below. Price and availability are loaded live from the PURE20 catalogue.',
-      coa:'View COA ↗'
+      coa:'View COA ↗',research:'RESEARCH INFORMATION'
     }
   };
   const tx=k=>T[lang()][k];
@@ -87,15 +87,46 @@
     return tx('inStock');
   }
 
+  function displayName(){
+    if(!compound)return '';
+    const value=lang()==='en'?compound.display_name_en:compound.display_name_nl;
+    return String(value||'').trim()||compound.product_name||'PURE20.';
+  }
+
+  function translatedResearch(){
+    if(!compound)return '';
+    const value=lang()==='en'?compound.research_summary_en:compound.research_summary_nl;
+    return String(value||'').trim();
+  }
+
+  function renderResearch(){
+    let section=document.getElementById('productResearchSection');
+    const text=translatedResearch();
+    if(!text){
+      if(section)section.hidden=true;
+      return;
+    }
+    if(!section){
+      section=document.createElement('section');
+      section.id='productResearchSection';
+      section.className='p20-product-research';
+      section.innerHTML='<span class="p20-product-research-kicker"></span><div class="p20-product-research-copy"></div>';
+      els.notice.parentNode.insertBefore(section,els.notice);
+    }
+    section.hidden=false;
+    section.querySelector('.p20-product-research-kicker').textContent=tx('research');
+    section.querySelector('.p20-product-research-copy').textContent=text;
+  }
+
   function productVisual(){
     const url=safeUrl(compound?.image_url);
     if(url){
-      els.image.innerHTML=`<img src="${esc(url)}" alt="${esc((lang()==='en'?compound.image_alt_en:compound.image_alt_nl)||compound.product_name)}">`;
+      els.image.innerHTML=`<img src="${esc(url)}" alt="${esc((lang()==='en'?compound.image_alt_en:compound.image_alt_nl)||displayName())}">`;
     }else{
       els.image.innerHTML=`<div class="p20-product-fallback">
         <div class="p20-product-fallback-top">PURE20 / ${esc(compound?.category||'PRODUCT')}</div>
         <div class="p20-product-fallback-vial" aria-hidden="true"></div>
-        <div class="p20-product-fallback-name">${esc(compound?.product_name||'PURE20.')}</div>
+        <div class="p20-product-fallback-name">${esc(displayName())}</div>
       </div>`;
     }
   }
@@ -120,10 +151,12 @@
     els.cartUnitLabel.textContent=tx('vials');
     els.coa.textContent=tx('coa');
     if(compound){
+      els.name.textContent=displayName();
       els.description.textContent=translatedDescription();
-      document.title=`PURE20. — ${compound.product_name}`;
+      document.title=`PURE20. — ${displayName()}`;
       document.querySelector('meta[name="description"]')?.setAttribute('content',translatedDescription());
       productVisual();
+      renderResearch();
     }
     renderSelected();
   }
@@ -147,7 +180,7 @@
     els.price.textContent=priced?money(selected.price):tx('pricePending');
     els.stockText.textContent=availability(selected);
     els.stockDot.className=`p20-stock-dot ${Number(selected.stock||0)>0?'in':'out'}`;
-    els.detailProduct.textContent=selected.product||compound?.product_name||'';
+    els.detailProduct.textContent=displayName();
     els.detailVariant.textContent=variantLabel(selected);
     els.detailUnit.textContent=selected.unit||'vial';
     els.detailAvailability.textContent=availability(selected);
@@ -229,7 +262,6 @@
 
     els.loading.hidden=true;els.content.hidden=false;
     els.category.textContent=compound.category||'';
-    els.name.textContent=compound.product_name;
     renderLanguage();
     updateCartBar();
   }
