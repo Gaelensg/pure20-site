@@ -65,10 +65,32 @@ function enhanceLines(){
   }
 }
 
+function normaliseCartCopy(){
+  const lang=window.PURE20_I18N?.language || (localStorage.getItem('pure20_language')==='en'?'en':'nl');
+  const productsLabel=lang==='en'?'Products':'Producten';
+
+  if(retail||wholesale){
+    const heading=document.querySelector('#orderDrawer .first-block .section-heading h3');
+    if(heading)heading.textContent=productsLabel;
+  }
+
+  if(supplier){
+    document.querySelectorAll('#supplierSummaryMeta > div > span').forEach(span=>{
+      const text=(span.textContent||'').trim().toLowerCase();
+      if(
+        text==='geselecteerde regels' ||
+        text==='selected rows' ||
+        text==='selected items' ||
+        text==='geselecteerde producten'
+      ) span.textContent=productsLabel;
+    });
+  }
+}
+
 function refresh(){
   if(raf)return;
   raf=true;
-  requestAnimationFrame(()=>{raf=false;selected();enhanceLines();});
+  requestAnimationFrame(()=>{raf=false;selected();enhanceLines();normaliseCartCopy();});
 }
 
 function findRow(id){
@@ -217,6 +239,8 @@ function events(){
 function init(){
   events(); setupBars(); refresh();
   new MutationObserver(refresh).observe(document.body,{childList:true,subtree:true});
+  window.addEventListener('pure20:languagechange',refresh);
+  window.addEventListener('pure20:i18nready',refresh);
   document.addEventListener('input',e=>{
     if(e.target.matches('.qty-control input,.supplier-qty input'))refresh();
   });
