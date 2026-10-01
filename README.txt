@@ -1,36 +1,34 @@
-PURE20 Admin cache-proof v5
+PURE20 Product Pages direct-load v6
 
-DIT IS DE FIX VOOR 'IK ZIE DE STERKTES NOG STEEDS NIET'.
+Dit lost op dat de tab 'Product pages' niet zichtbaar is.
 
-De actuele GitHub-code bevat de sterktes al, maar admin.html laadde:
-supabase-config.js
-zonder versienummer. Safari kon daardoor de oude loader blijven cachen.
+WAAROM
+De juiste Product Pages-code stond al in GitHub, maar werd dynamisch geladen via
+supabase-config.js. Op jouw live admin werd die dynamische injectie niet betrouwbaar uitgevoerd.
 
-UPLOAD / VERVANG DEZE 4 BESTANDEN IN DE ROOT VAN GITHUB:
+DEZE VERSIE
+admin.html laadt nu DIRECT:
+- /admin-product-pages.css?v=20261001-6
+- /admin-product-pages.js?v=20261001-6
+
+Daardoor hoeft supabase-config.js de module niet meer dynamisch te injecteren.
+Het data-attribuut zorgt er bovendien voor dat de bestaande loader geen tweede
+kopie probeert te laden.
+
+UPLOAD / VERVANG DEZE 3 BESTANDEN IN DE ROOT VAN GITHUB:
 - admin.html
 - admin-product-pages.js
 - admin-product-pages.css
-- supabase-config.js
 
-admin.html laadt nu:
-- supabase-config.js?v=20261001-5
-- api.js?v=20261001-5
-- admin.js?v=20261001-5
+Daarna:
+1. wacht op de Vercel-deploy
+2. sluit de adminpagina volledig
+3. open /admin opnieuw
 
-supabase-config.js laadt:
-- admin-product-pages.js?v=20261001-5
-- admin-product-pages.css?v=20261001-5
+BOVENAAN MOET JE DAN TUSSEN DE TABS ZIEN:
+PRODUCTEN | PRODUCT PAGES | KORTINGSCODES | INSTELLINGEN | BACKUP
 
-NA VERCEL DEPLOY:
-1. sluit de bestaande admin-tab volledig
-2. open /admin opnieuw
-3. ga naar Product pages
-4. tik een peptide open
-
-BOVENAAN DE EDITOR MOET DAN STAAN:
-STERKTES & FOTO'S
-Afbeelding per variant
-
-Daaronder verschijnen alle databasevarianten.
-
-De Supabase-permissiefout voor pure20_compounds is al live opgelost.
+In Product pages:
+- open een peptide
+- bovenaan staat STERKTES & FOTO'S
+- daar kun je per sterkte een eigen foto uploaden
