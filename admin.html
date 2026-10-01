@@ -519,7 +519,7 @@
       <div class="admin-card">
         <div class="admin-card-head">
           <h2>Products</h2>
-          <button id="addProduct" class="admin-btn primary" type="button">+ Add product</button>
+          <button id="addProduct" class="admin-btn primary" type="button" onclick="window.PURE20_ACTIVE_PRODUCT_ID=''">+ Add product</button>
         </div>
 
         <div class="admin-toolbar">
@@ -707,7 +707,7 @@
       </div>
 
       <div class="admin-field wide product-photo-v9">
-        <span>PRODUCTFOTO <b style="font-size:8px;letter-spacing:.08em;color:#777">V13</b></span>
+        <span>PRODUCTFOTO <b style="font-size:8px;letter-spacing:.08em;color:#777">V14</b></span>
 
         <div id="prodImagePreviewV9" class="product-photo-v9-preview">
           <span>GEEN FOTO</span>
@@ -716,14 +716,14 @@
         <input id="prodImageUrlV9" type="hidden" />
         <input id="prodImageFileV9" type="file"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
-          onchange="window.PURE20_PHOTO_V12.preview(this)" />
+          onchange="window.PURE20_PHOTO_V14.preview(this)" />
 
         <div class="product-photo-v9-options">
           <label class="product-photo-v9-cover">
             <input id="prodImageShopCoverV9" type="checkbox" />
             <span>Gebruik deze variant als shopminiatuur</span>
           </label>
-          <button id="removeProdImageV9" class="admin-btn danger" type="button" disabled onclick="return window.PURE20_PHOTO_V12.remove(event)">
+          <button id="removeProdImageV9" class="admin-btn danger" type="button" disabled onclick="return window.PURE20_PHOTO_V14.remove(event)">
             Foto verwijderen
           </button>
         </div>
@@ -745,7 +745,7 @@
 
     <div class="modal-actions">
       <button class="admin-btn" data-close-modal type="button">Cancel</button>
-      <button id="saveProduct" class="admin-btn primary" type="button" onclick="return window.PURE20_PHOTO_V12.save(event)">Save product</button>
+      <button id="saveProduct" class="admin-btn primary" type="button" onclick="return window.PURE20_PHOTO_V14.save(event)">Save product</button>
     </div>
   </div>
 
@@ -803,8 +803,19 @@
   <script src="supabase-config.js?v=20261001-12"></script>
   <script src="fallback-data.js"></script>
   <script src="api.js?v=20261001-12"></script>
-  <script id="pure20PhotoV13">
-  window.PURE20_PHOTO_V12 = (() => {
+  
+  <script>
+    window.PURE20_ACTIVE_PRODUCT_ID = window.PURE20_ACTIVE_PRODUCT_ID || '';
+    document.addEventListener('click', function(e){
+      const row=e.target.closest && e.target.closest('#productsBody tr[data-id]');
+      if(row){
+        window.PURE20_ACTIVE_PRODUCT_ID=String(row.dataset.id||'');
+      }
+    }, true);
+  </script>
+
+  <script id="pure20PhotoV14">
+  window.PURE20_PHOTO_V14 = (() => {
     'use strict';
 
     const BUCKET = 'pure20-products';
@@ -924,24 +935,43 @@
       const c=client();
       if(!c)return null;
 
-      const explicit=String($('#prodId')?.value||'').trim();
-      if(explicit){
+      // Most reliable ID on mobile: capture it when the catalogue row is tapped.
+      const capturedId=String(window.PURE20_ACTIVE_PRODUCT_ID||'').trim();
+      const explicitId=String($('#prodId')?.value||'').trim();
+      const id=capturedId||explicitId;
+
+      if(id){
         const {data,error}=await c.from('pure20_products')
-          .select('id,product_name,variant,code,coa_url,image_url,image_alt_nl,image_alt_en')
-          .eq('id',explicit).maybeSingle();
+          .select('id,product_name,variant,code,category,unit,price_eur,stock,sort_order,badge,note,active,coa_url,image_url,image_alt_nl,image_alt_en')
+          .eq('id',id)
+          .maybeSingle();
         if(error)throw error;
-        if(data)return data;
+        if(data){
+          window.PURE20_ACTIVE_PRODUCT_ID=String(data.id);
+          if($('#prodId'))$('#prodId').value=data.id;
+          return data;
+        }
       }
 
+      // Fallback only if we truly have no row ID.
+      if(!p.product)return null;
+
       let q=c.from('pure20_products')
-        .select('id,product_name,variant,code,coa_url,image_url,image_alt_nl,image_alt_en')
+        .select('id,product_name,variant,code,category,unit,price_eur,stock,sort_order,badge,note,active,coa_url,image_url,image_alt_nl,image_alt_en')
         .eq('product_name',p.product);
+
       if(p.variant)q=q.eq('variant',p.variant);
       if(p.code)q=q.eq('code',p.code);
 
       const {data,error}=await q.limit(2);
       if(error)throw error;
-      return data?.[0]||null;
+
+      const row=data?.[0]||null;
+      if(row){
+        window.PURE20_ACTIVE_PRODUCT_ID=String(row.id);
+        if($('#prodId'))$('#prodId').value=row.id;
+      }
+      return row;
     }
 
     async function uploadImage(file,p){
@@ -1028,52 +1058,75 @@
         saveBtn.disabled=true;
         saveBtn.textContent=imageFile?'FOTO UPLOADEN…':'OPSLAAN…';
       }
-      setStatus(imageFile?'Variant controleren…':'Product controleren…');
+      setStatus('Exacte variant ophalen…');
 
       try{
         let p=productFromForm();
 
-        // IMPORTANT: resolve the existing DB row BEFORE validating product name.
-        // On the mobile admin form the visible name input can be empty even though
-        // the hidden product id correctly points to the existing catalogue row.
+        // FIRST resolve the exact database row via captured row ID.
         const existing=await currentDbRow(p);
 
         if(existing){
           p.id=existing.id;
-          if($('#prodId'))$('#prodId').value=existing.id;
 
-          p.product=p.product || String(existing.product_name||'').trim();
-          p.variant=p.variant || String(existing.variant||'').trim();
-          p.code=p.code || String(existing.code||'').trim();
+          // Text identity always falls back to the actual DB row.
+          p.product=String(p.product||existing.product_name||'').trim();
+          p.variant=String(p.variant||existing.variant||'').trim();
+          p.code=String(p.code||existing.code||'').trim();
+          p.category=String(
+            ($('#prodCategory')?.value||'').trim() ||
+            existing.category ||
+            'Other'
+          ).trim();
+          p.unit=String(
+            ($('#prodUnit')?.value||'').trim() ||
+            existing.unit ||
+            'vial'
+          ).trim();
 
-          // Fetch category separately only when the visible category is empty.
-          if(!p.category || p.category==='Other'){
-            const {data:catRow,error:catError}=await client()
-              .from('pure20_products')
-              .select('category')
-              .eq('id',existing.id)
-              .maybeSingle();
-            if(catError)throw catError;
-            if(catRow?.category)p.category=catRow.category;
+          // Preserve existing numbers only when the corresponding form is blank.
+          if(String($('#prodPrice')?.value??'').trim()===''){
+            p.price=Number(existing.price_eur||0);
+          }
+          if(String($('#prodStock')?.value??'').trim()===''){
+            p.stock=Math.max(0,Number(existing.stock||0));
+          }
+          if(String($('#prodOrder')?.value??'').trim()===''){
+            p.order=Number(existing.sort_order||1);
           }
 
-          // Keep the form synced too, so the user can see the recovered identity.
-          if($('#prodName')&&!$('#prodName').value)$('#prodName').value=p.product;
-          if($('#prodVariant')&&!$('#prodVariant').value)$('#prodVariant').value=p.variant;
-          if($('#prodCode')&&!$('#prodCode').value)$('#prodCode').value=p.code;
-          if($('#prodCategory')&&!$('#prodCategory').value)$('#prodCategory').value=p.category;
+          if(!p.badge)p.badge=String(existing.badge||'');
+          if(!p.note)p.note=String(existing.note||'');
+          if(!p.coaUrl)p.coaUrl=String(existing.coa_url||'');
+          p.active=String($('#prodActive')?.value||'')!==''
+            ? $('#prodActive').value==='true'
+            : existing.active!==false;
+
+          // Keep visible form synchronized with what was recovered.
+          if($('#prodId'))$('#prodId').value=p.id;
+          if($('#prodName'))$('#prodName').value=p.product;
+          if($('#prodVariant'))$('#prodVariant').value=p.variant;
+          if($('#prodCode'))$('#prodCode').value=p.code;
+          if($('#prodCategory'))$('#prodCategory').value=p.category;
+          if($('#prodUnit'))$('#prodUnit').value=p.unit;
+        }
+
+        if(!existing){
+          throw new Error(
+            'De exacte productvariant kon niet in de database worden gevonden. Sluit dit venster en tik de variant opnieuw aan in de productlijst.'
+          );
         }
 
         if(!p.product){
-          throw new Error('De productnaam kon niet automatisch worden gekoppeld aan deze variant.');
+          throw new Error('De database-rij heeft geen productnaam.');
         }
 
-        const oldImage=String(existing?.image_url||'');
-        const oldCoa=String(existing?.coa_url||p.coaUrl||'');
+        const oldImage=String(existing.image_url||'');
+        const oldCoa=String(existing.coa_url||p.coaUrl||'');
         let imageUrl=removeRequested?'':oldImage;
 
         if(imageFile){
-          setStatus('Foto uploaden naar Supabase…');
+          setStatus(`Foto uploaden voor ${p.product} ${p.variant}…`);
           imageUrl=await uploadImage(imageFile,p);
         }
 
@@ -1091,7 +1144,7 @@
           image_alt_nl:imageUrl?alt:null,
           image_alt_en:imageUrl?alt:null,
           updated_at:new Date().toISOString()
-        }).eq('id',p.id);
+        }).eq('id',existing.id);
         if(imageDbError)throw imageDbError;
 
         await saveCover(p,imageUrl,alt,oldImage);
@@ -1106,9 +1159,9 @@
         setStatus(`Opgeslagen ✓ ${p.product} ${p.variant}`);
         if(saveBtn)saveBtn.textContent='OPGESLAGEN ✓';
 
-        setTimeout(()=>location.reload(),450);
+        setTimeout(()=>location.reload(),500);
       }catch(err){
-        console.error('PURE20 PHOTO V13:',err);
+        console.error('PURE20 PHOTO V14:',err);
         setStatus(`Opslaan mislukt: ${err.message||err}`);
         alert(`Opslaan mislukt: ${err.message||err}`);
         if(saveBtn){
@@ -1129,8 +1182,11 @@
 <script>
     // On mobile, tapping the product card triggers the existing Edit action.
     document.getElementById('productsBody').addEventListener('click', function(e){
-      if(e.target.closest('button, input, select, a')) return;
       const row = e.target.closest('tr[data-id]');
+      if(row){
+        window.PURE20_ACTIVE_PRODUCT_ID = String(row.dataset.id || '');
+      }
+      if(e.target.closest('button, input, select, a')) return;
       if(!row) return;
       const editButton = row.querySelector('button[data-act="edit"]');
       if(editButton) editButton.click();

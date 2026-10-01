@@ -1,27 +1,31 @@
-PURE20 PHOTO V13
+PURE20 PHOTO V14
 
 Vervang ALLEEN admin.html.
 
-Fix:
-V12 controleerde de zichtbare productnaam vóór de bestaande variant uit Supabase
-werd opgehaald. Op mobiel kon dat veld leeg zijn, waardoor:
-'Product name is required.'
+Waarom v13 faalde:
+Op iPhone werd prodId/productnaam niet betrouwbaar meegegeven aan de losse
+fotocode, hoewel de productrij wel correct geopend was.
 
-V13:
-- haalt eerst de bestaande pure20_products rij op;
-- herstelt automatisch product_name, variant, code en categorie;
-- uploadt daarna de foto;
-- slaat image_url op bij exact die variant.
+V14:
+- onthoudt exact het data-id van de productrij zodra je erop tikt;
+- gebruikt DAT id bij Save;
+- haalt de volledige pure20_products-rij uit Supabase;
+- productnaam, variant, code en categorie komen dus rechtstreeks uit de database;
+- er wordt niets meer afgeleid of geraden.
 
 Controle:
-In de editor moet staan: PRODUCTFOTO V13
+Je moet PRODUCTFOTO V14 zien.
 
-Flow:
-1. Kies foto
-2. Preview verschijnt
-3. Druk SAVE PRODUCT + FOTO
-4. Status doorloopt:
-   Variant controleren…
-   Foto uploaden naar Supabase…
+Verwachte flow:
+1. tik product in Producten
+2. kies foto
+3. preview verschijnt
+4. SAVE PRODUCT + FOTO
+5. status:
+   Exacte variant ophalen…
+   Foto uploaden voor HGH 191AA 10iu…
    Productgegevens opslaan…
-   Opgeslagen ✓
+   Opgeslagen ✓ HGH 191AA 10iu
+
+Als je het editvenster al open had vóór de V14-deploy:
+SLUIT HET VENSTER EERST en tik de productvariant opnieuw aan, zodat V14 het rij-ID kan onthouden.
