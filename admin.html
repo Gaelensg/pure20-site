@@ -637,12 +637,12 @@
         <div class="admin-form">
           <label class="admin-field wide">
             Tekst onder productnaam NL
-            <textarea id="ppSimpleDescNl" rows="5" placeholder="Kies hieronder de gewenste sterkte. Prijs en beschikbaarheid worden live uit de PURE20-catalogus geladen."></textarea>
+            <textarea id="ppSimpleDescNl" rows="5" placeholder="Kies hieronder de gewenste sterkte en, indien beschikbaar, of je bacteriostatisch water bij je bestelling wilt laten meeleveren."></textarea>
           </label>
 
           <label class="admin-field wide">
             Text below product name EN
-            <textarea id="ppSimpleDescEn" rows="5" placeholder="Choose the desired strength below. Price and availability are loaded live from the PURE20 catalogue."></textarea>
+            <textarea id="ppSimpleDescEn" rows="5" placeholder="Select your preferred strength below and, where available, whether you would like bacteriostatic water included with your order."></textarea>
           </label>
         </div>
 
@@ -1280,6 +1280,8 @@
     'use strict';
 
     const $ = id => document.getElementById(id);
+    const DEFAULT_DESC_NL = 'Kies hieronder de gewenste sterkte en, indien beschikbaar, of je bacteriostatisch water bij je bestelling wilt laten meeleveren.';
+    const DEFAULT_DESC_EN = 'Select your preferred strength below and, where available, whether you would like bacteriostatic water included with your order.';
     let compounds = [];
     let filtered = [];
 
@@ -1347,8 +1349,8 @@
         return;
       }
 
-      nl.value=c.short_description_nl || '';
-      en.value=c.short_description_en || '';
+      nl.value=c.short_description_nl || DEFAULT_DESC_NL;
+      en.value=c.short_description_en || DEFAULT_DESC_EN;
       preview.href=`/product?slug=${encodeURIComponent(c.slug)}`;
       save.disabled=false;
       setStatus('');
@@ -1395,8 +1397,8 @@
       setStatus('Wijzigingen opslaan…');
 
       const payload={
-        short_description_nl: $('ppSimpleDescNl').value.trim() || null,
-        short_description_en: $('ppSimpleDescEn').value.trim() || null,
+        short_description_nl: $('ppSimpleDescNl').value.trim() || DEFAULT_DESC_NL,
+        short_description_en: $('ppSimpleDescEn').value.trim() || DEFAULT_DESC_EN,
         updated_at: new Date().toISOString()
       };
 

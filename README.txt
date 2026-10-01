@@ -1,17 +1,20 @@
-PURE20 PRODUCT TEXT EDITOR V9
+PURE20 PRODUCT TEXT EDITOR V10
 
-Vervang ALLEEN:
+Vervang alleen:
 - admin.html
 
-Geen extra JS- of CSS-bestanden nodig.
+Nieuwe standaardtekst NL:
+Kies hieronder de gewenste sterkte en, indien beschikbaar, of je bacteriostatisch water bij je bestelling wilt laten meeleveren.
 
-Na deploy:
-1. Open /admin
-2. Open PRODUCTPAGINA'S
-3. Kies een product
-4. Pas 'Tekst onder productnaam NL' aan
-5. Klik Opslaan
-6. Klik 'Productpagina bekijken ↗' om te controleren
+Nieuwe standaardtekst EN:
+Select your preferred strength below and, where available, whether you would like bacteriostatic water included with your order.
 
-Deze versie gebruikt geen admin-product-pages.js meer.
-Het paneel, de velden en de opslaglogica zitten rechtstreeks in admin.html.
+Gedrag:
+- elke peptide zonder eigen tekst gebruikt deze standaardtekst;
+- als je in Admin > Productpagina's een veld leeg laat en opslaat, wordt deze standaardtekst bewaard;
+- eigen teksten die je later per product invult blijven gewoon behouden.
+
+De bestaande PURE20-database is ook al bijgewerkt:
+- 65/65 productpagina's hebben nu de Nederlandse standaardtekst;
+- 65/65 productpagina's hebben nu de Engelse standaardtekst;
+- nieuwe productpagina's krijgen deze teksten automatisch als database-default.
