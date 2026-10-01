@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_BAC_WATER_V1__) return;
-  window.__PURE20_BAC_WATER_V1__=true;
+  if(window.__PURE20_BAC_WATER_V2__)return;
+  window.__PURE20_BAC_WATER_V2__=true;
 
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   const IS_SHOP=PATH==='/shop'||PATH==='/shop.html';
@@ -10,7 +10,7 @@
   if(!IS_SHOP&&!IS_PRODUCT)return;
 
   const CART_KEY='pure20_retail_cart_v1';
-  const BAC_KEY='pure20_bac_qty_v1';
+  const OLD_BAC_KEY='pure20_bac_qty_v1';
   const DEFAULT_PRICE=4.50;
   const DEFAULT_FREE_FROM=5;
 
@@ -19,39 +19,25 @@
 
   let store=null;
   let productsById=new Map();
-  let bacConfig={enabled:true,unitPriceEur:DEFAULT_PRICE,freeFromPeptideVials:DEFAULT_FREE_FROM};
-  let scheduled=false;
+  let bacProduct=null;
+  let cfg={enabled:true,unitPriceEur:DEFAULT_PRICE,freeFromPeptideVials:DEFAULT_FREE_FROM};
   let productChoice='without';
-  let productObserver=null;
-  let shopObserver=null;
+  let raf=false;
+  let observer=null;
 
-  function readJson(key,fallback={}){
+  function readCart(){
     try{
-      const value=JSON.parse(localStorage.getItem(key)||'null');
-      return value&&typeof value==='object'?value:fallback;
-    }catch(_){return fallback}
+      const x=JSON.parse(localStorage.getItem(CART_KEY)||'{}');
+      return x&&typeof x==='object'?x:{};
+    }catch(_){return{}}
   }
 
-  function writeJson(key,value){
-    try{
-      localStorage.setItem(key,JSON.stringify(value));
-    }catch(_){}
+  function writeCart(cart){
+    localStorage.setItem(CART_KEY,JSON.stringify(cart));
+    window.dispatchEvent(new CustomEvent('pure20:retailcartchange',{detail:{cart}}));
   }
 
-  function cart(){
-    return readJson(CART_KEY,{});
-  }
-
-  function bacMap(){
-    return readJson(BAC_KEY,{});
-  }
-
-  function saveBacMap(value){
-    writeJson(BAC_KEY,value);
-    window.dispatchEvent(new CustomEvent('pure20:bacchange',{detail:{bac:value}}));
-  }
-
-  function n(v){
+  function qty(v){
     return Math.max(0,Math.floor(Number(v)||0));
   }
 
@@ -60,7 +46,7 @@
     return `${symbol}${Number(v||0).toFixed(2)}`;
   }
 
-  function parseMoney(text){
+  function safeNumber(text){
     let s=String(text||'').replace(/[^\d,.\-]/g,'');
     if(s.includes(',')&&s.includes('.')){
       if(s.lastIndexOf(',')>s.lastIndexOf('.'))s=s.replace(/\./g,'').replace(',','.');
@@ -68,82 +54,8 @@
     }else if(s.includes(',')){
       s=s.replace(',','.');
     }
-    const value=Number(s);
-    return Number.isFinite(value)?value:0;
-  }
-
-  function isEligibleProduct(p){
-    if(!p||p.active===false)return false;
-    const category=String(p.category||'').trim().toLowerCase();
-    const name=String(p.product||p.product_name||'').trim().toLowerCase();
-    if(category==='supplies & solvents')return false;
-    if(name.includes('bac water')||name.includes('bacteriostatic')||name.includes('benzyl alcohol')||name.includes('acetic acid water'))return false;
-    return String(p.unit||'vial').toLowerCase()==='vial';
-  }
-
-  function eligibleCartEntries(){
-    const c=cart();
-    return Object.entries(c)
-      .map(([id,q])=>({id,q:n(q),p:productsById.get(String(id))}))
-      .filter(x=>x.q>0&&isEligibleProduct(x.p));
-  }
-
-  function peptideVials(){
-    return eligibleCartEntries().reduce((sum,x)=>sum+x.q,0);
-  }
-
-  function clampBacMap(){
-    const c=cart();
-    const current=bacMap();
-    const next={};
-    let changed=false;
-
-    for(const [id,raw] of Object.entries(current)){
-      const p=productsById.get(String(id));
-      const cartQty=n(c[id]);
-      if(!isEligibleProduct(p)||cartQty<=0){
-        changed=true;
-        continue;
-      }
-      const qty=Math.min(cartQty,n(raw));
-      if(qty>0)next[id]=qty;
-      if(qty!==n(raw))changed=true;
-    }
-
-    if(changed||Object.keys(next).length!==Object.keys(current).length){
-      writeJson(BAC_KEY,next);
-    }
-    return next;
-  }
-
-  function bacUnits(){
-    const map=clampBacMap();
-    return eligibleCartEntries().reduce((sum,x)=>sum+Math.min(x.q,n(map[x.id])),0);
-  }
-
-  function missingBacUnits(){
-    return Math.max(0,peptideVials()-bacUnits());
-  }
-
-  function bacIsFree(totalPeptideVials=peptideVials()){
-    return totalPeptideVials>=Number(bacConfig.freeFromPeptideVials||DEFAULT_FREE_FROM);
-  }
-
-  function bacCharge(){
-    const units=bacUnits();
-    return units>0&&!bacIsFree()?units*Number(bacConfig.unitPriceEur||DEFAULT_PRICE):0;
-  }
-
-  function setAllBac(){
-    const next=bacMap();
-    for(const x of eligibleCartEntries())next[x.id]=x.q;
-    saveBacMap(next);
-  }
-
-  function removeAllBac(){
-    const next=bacMap();
-    for(const x of eligibleCartEntries())delete next[x.id];
-    saveBacMap(next);
+    const n=Number(s);
+    return Number.isFinite(n)?n:0;
   }
 
   function esc(v){
@@ -152,647 +64,511 @@
     }[ch]));
   }
 
-  function ensureStyle(){
-    if(document.getElementById('pure20BacWaterStyle'))return;
-    const style=document.createElement('style');
-    style.id='pure20BacWaterStyle';
-    style.textContent=`
-      .p20-bac-option{
-        margin-top:20px;
-        padding:18px 0;
-        border-top:1px solid var(--prod-line,#d6d3cb);
-        border-bottom:1px solid var(--prod-line,#d6d3cb);
-      }
-      .p20-bac-option-head{
-        display:flex;
-        justify-content:space-between;
-        gap:16px;
-        align-items:flex-end;
-        margin-bottom:12px;
-      }
-      .p20-bac-option-head span{
-        font-size:9px;
-        letter-spacing:.14em;
-        color:var(--prod-muted,#777);
-      }
-      .p20-bac-option-head small{
-        font-size:9px;
-        color:var(--prod-muted,#777);
-      }
-      .p20-bac-buttons{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:8px;
-      }
-      .p20-bac-choice{
-        min-height:50px;
-        padding:10px 12px;
-        border:1px solid var(--prod-ink,#111);
-        background:transparent;
-        color:inherit;
-        font:inherit;
-        font-size:10px;
-        line-height:1.35;
-        cursor:pointer;
-      }
-      .p20-bac-choice.active{
-        background:var(--prod-ink,#111);
-        color:var(--prod-bg,#fff);
-      }
-      .p20-bac-note{
-        margin:10px 0 0;
-        font-size:10px;
-        line-height:1.5;
-        color:var(--prod-muted,#777);
-      }
+  function isPeptide(p){
+    if(!p||p.active===false)return false;
+    if(String(p.id)===String(bacProduct?.id||''))return false;
 
-      .p20-bac-cart-block{
-        border:1px solid #d6d3cb;
-        padding:16px;
-        margin:0 0 16px;
-      }
-      .p20-bac-cart-head{
-        display:flex;
-        justify-content:space-between;
-        gap:16px;
-        align-items:flex-start;
-      }
-      .p20-bac-cart-head strong{
-        display:block;
-        font-size:12px;
-        margin-bottom:4px;
-      }
-      .p20-bac-cart-head span{
-        font-size:10px;
-        color:#777;
-      }
-      .p20-bac-pill{
-        flex:0 0 auto;
-        padding:5px 8px;
-        border:1px solid currentColor;
-        font-size:9px;
-        letter-spacing:.08em;
-      }
-      .p20-bac-reminder{
-        margin-top:12px;
-        padding:12px;
-        background:#f2f1ec;
-        border:1px solid #c8c5bd;
-        font-size:10px;
-        line-height:1.55;
-      }
-      .p20-bac-reminder strong{display:block;margin-bottom:4px}
-      .p20-bac-actions{
-        display:flex;
-        gap:8px;
-        flex-wrap:wrap;
-        margin-top:12px;
-      }
-      .p20-bac-actions button{
-        min-height:38px;
-        border:1px solid #111;
-        background:#111;
-        color:#fff;
-        padding:0 12px;
-        font:inherit;
-        font-size:9px;
-        cursor:pointer;
-      }
-      .p20-bac-actions button.secondary{
-        background:transparent;
-        color:inherit;
-      }
-      .order-line.p20-bac-line{
-        border-top:1px dashed #aaa;
-      }
-      .order-line.p20-bac-line .order-line-name::after{
-        content:"";
-      }
-      #bacWaterTotalRow[hidden]{display:none!important}
+    const category=String(p.category||'').toLowerCase();
+    const name=String(p.product||'').toLowerCase();
 
-      html[data-p20-theme="dark"] .p20-bac-cart-block{
-        border-color:#303632;
-      }
-      html[data-p20-theme="dark"] .p20-bac-reminder{
-        background:#151916;
-        border-color:#303632;
-      }
-      html[data-p20-theme="dark"] .p20-bac-actions button{
-        border-color:#f4f3ee;
-        background:#f4f3ee;
-        color:#0f1210;
-      }
-      html[data-p20-theme="dark"] .p20-bac-actions button.secondary{
-        background:transparent;
-        color:#f4f3ee;
-      }
+    if(category==='supplies & solvents')return false;
+    if(
+      name.includes('bac water') ||
+      name.includes('bacteriostatic') ||
+      name.includes('benzyl alcohol') ||
+      name.includes('acetic acid water')
+    )return false;
 
-      @media(max-width:560px){
-        .p20-bac-buttons{grid-template-columns:1fr}
-      }
-    `;
-    document.head.appendChild(style);
+    return String(p.unit||'vial').toLowerCase()==='vial';
   }
 
-  async function waitForApi(){
-    for(let i=0;i<180;i++){
-      if(window.PURE20_API?.loadPublicStore)return true;
-      await new Promise(r=>setTimeout(r,50));
-    }
-    return false;
+  function peptideVials(cart=readCart()){
+    return Object.entries(cart).reduce((sum,[id,q])=>{
+      const p=productsById.get(String(id));
+      return sum+(isPeptide(p)?qty(q):0);
+    },0);
   }
 
-  async function loadStore(){
-    if(!await waitForApi())return false;
-    try{
-      const loaded=await window.PURE20_API.loadPublicStore();
-      store=loaded?.store||null;
-      productsById=new Map((store?.products||[]).map(p=>[String(p.id),p]));
-      const cfg=store?.settings?.bacWater||{};
-      bacConfig={
-        enabled:cfg.enabled!==false,
-        unitPriceEur:Number(cfg.unitPriceEur||DEFAULT_PRICE),
-        freeFromPeptideVials:Math.max(1,n(cfg.freeFromPeptideVials||DEFAULT_FREE_FROM))
-      };
-      clampBacMap();
-      return true;
-    }catch(err){
-      console.warn('PURE20 BAC water:',err?.message||err);
-      return false;
-    }
+  function bacQty(cart=readCart()){
+    return bacProduct?qty(cart[bacProduct.id]):0;
   }
 
-  function currentVariantId(){
+  function bacFree(cart=readCart()){
+    return peptideVials(cart)>=Number(cfg.freeFromPeptideVials||DEFAULT_FREE_FROM);
+  }
+
+  function bacCost(cart=readCart()){
+    return bacFree(cart)?0:bacQty(cart)*Number(cfg.unitPriceEur||DEFAULT_PRICE);
+  }
+
+  function grossSubtotal(cart=readCart()){
+    return Object.entries(cart).reduce((sum,[id,q])=>{
+      const p=productsById.get(String(id));
+      if(!p||p.active===false)return sum;
+      return sum+qty(q)*Number(p.price||0);
+    },0);
+  }
+
+  function addBac(amount){
+    if(!bacProduct||amount<=0)return;
+    const cart=readCart();
+    cart[bacProduct.id]=qty(cart[bacProduct.id])+qty(amount);
+    writeCart(cart);
+  }
+
+  function setBac(target){
+    if(!bacProduct)return;
+    const cart=readCart();
+    target=qty(target);
+    if(target>0)cart[bacProduct.id]=target;
+    else delete cart[bacProduct.id];
+    writeCart(cart);
+  }
+
+  function selectedVariantId(){
     return document.querySelector('#variantButtons .p20-variant-button.active')?.dataset.id
       || new URLSearchParams(location.search).get('variant')
       || '';
   }
 
-  function projectedPeptideVials(addQty){
-    return peptideVials()+Math.max(0,n(addQty));
+  function selectedProduct(){
+    return productsById.get(String(selectedVariantId()||''))||null;
   }
 
-  function productText(key){
+  function style(){
+    if($('p20BacV2Style'))return;
+    const el=document.createElement('style');
+    el.id='p20BacV2Style';
+    el.textContent=`
+      .p20-bac-option{
+        margin-top:18px;
+        padding:18px 0;
+        border-top:1px solid var(--prod-line,#d6d3cb);
+        border-bottom:1px solid var(--prod-line,#d6d3cb);
+      }
+      .p20-bac-head{
+        display:flex;justify-content:space-between;gap:14px;align-items:end;margin-bottom:12px
+      }
+      .p20-bac-head span{font-size:9px;letter-spacing:.14em;color:var(--prod-muted,#777)}
+      .p20-bac-head small{font-size:9px;color:var(--prod-muted,#777)}
+      .p20-bac-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .p20-bac-choice{
+        min-height:50px;padding:10px 12px;border:1px solid var(--prod-ink,#111);
+        background:transparent;color:inherit;font:inherit;font-size:10px;line-height:1.35;cursor:pointer
+      }
+      .p20-bac-choice.active{background:var(--prod-ink,#111);color:var(--prod-bg,#fff)}
+      .p20-bac-note{margin:10px 0 0;font-size:10px;line-height:1.55;color:var(--prod-muted,#777)}
+      .p20-bac-reminder{
+        margin:0 0 16px;padding:14px;border:1px solid #c8c5bd;background:#f2f1ec;
+        font-size:10px;line-height:1.55
+      }
+      .p20-bac-reminder strong{display:block;margin-bottom:4px;font-size:11px}
+      .p20-bac-reminder-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+      .p20-bac-reminder button{
+        min-height:38px;padding:0 12px;border:1px solid #111;background:#111;color:#fff;
+        font:inherit;font-size:9px;cursor:pointer
+      }
+      .p20-bac-reminder button.secondary{background:transparent;color:inherit}
+      .p20-bac-free-row{
+        margin:0 0 12px;padding:10px 12px;border:1px solid #b7b4ac;
+        display:flex;justify-content:space-between;gap:12px;font-size:10px
+      }
+      html[data-p20-theme="dark"] .p20-bac-reminder{background:#151916;border-color:#303632}
+      html[data-p20-theme="dark"] .p20-bac-reminder button{background:#f4f3ee;color:#0f1210;border-color:#f4f3ee}
+      html[data-p20-theme="dark"] .p20-bac-reminder button.secondary{background:transparent;color:#f4f3ee}
+      @media(max-width:560px){.p20-bac-buttons{grid-template-columns:1fr}}
+    `;
+    document.head.appendChild(el);
+  }
+
+  async function load(){
+    for(let i=0;i<180&&!window.PURE20_API?.loadPublicStore;i++){
+      await new Promise(r=>setTimeout(r,50));
+    }
+    if(!window.PURE20_API?.loadPublicStore)return false;
+
+    const loaded=await window.PURE20_API.loadPublicStore();
+    store=loaded?.store||null;
+    productsById=new Map((store?.products||[]).map(p=>[String(p.id),p]));
+
+    const settings=store?.settings?.bacWater||{};
+    cfg={
+      enabled:settings.enabled!==false,
+      unitPriceEur:Number(settings.unitPriceEur||DEFAULT_PRICE),
+      freeFromPeptideVials:Math.max(1,qty(settings.freeFromPeptideVials||DEFAULT_FREE_FROM))
+    };
+
+    bacProduct=(store?.products||[]).find(p=>
+      String(p.code||'').toUpperCase()==='WAC3' ||
+      (
+        String(p.product||'').toLowerCase()==='bac water' &&
+        String(p.variant||'').toLowerCase()==='3ml'
+      )
+    )||null;
+
+    if(!bacProduct){
+      console.warn('PURE20 BAC v2: BAC Water 3ml / WAC3 niet gevonden.');
+      return false;
+    }
+
+    // Retire the old virtual-BAC state from v1.
+    try{localStorage.removeItem(OLD_BAC_KEY)}catch(_){}
+
+    return true;
+  }
+
+  function productWords(key,vars={}){
     const nl={
       title:'BACTERIOSTATISCH WATER',
-      ratio:'1 per vial',
+      ratio:'1 × 3 ml per vial',
       without:'Zonder bacteriostatisch water',
-      withPaid:`Met bacteriostatisch water · +${money(bacConfig.unitPriceEur)} per vial`,
+      withPaid:`Met bacteriostatisch water · +${money(cfg.unitPriceEur)} per vial`,
       withFree:'Met bacteriostatisch water · GRATIS',
-      freeNote:`Vanaf ${bacConfig.freeFromPeptideVials} peptide-vials in je winkelmandje is al het gekozen bacteriostatisch water gratis.`,
-      included:`Bacteriostatisch water wordt 1-op-1 toegevoegd voor de vials die je nu toevoegt.`,
-      pricePending:'Prijs volgt'
+      note:`Vanaf ${cfg.freeFromPeptideVials} peptide-vials in je winkelmandje is het bacteriostatisch water gratis.`,
+      added:n=>`${n} × BAC Water 3 ml mee toegevoegd.`
     };
     const en={
       title:'BACTERIOSTATIC WATER',
-      ratio:'1 per vial',
+      ratio:'1 × 3 ml per vial',
       without:'Without bacteriostatic water',
-      withPaid:`With bacteriostatic water · +${money(bacConfig.unitPriceEur)} per vial`,
+      withPaid:`With bacteriostatic water · +${money(cfg.unitPriceEur)} per vial`,
       withFree:'With bacteriostatic water · FREE',
-      freeNote:`From ${bacConfig.freeFromPeptideVials} peptide vials in your cart, all selected bacteriostatic water is free.`,
-      included:'Bacteriostatic water is added 1:1 for the vials you add now.',
-      pricePending:'Price pending'
+      note:`From ${cfg.freeFromPeptideVials} peptide vials in your cart, bacteriostatic water is free.`,
+      added:n=>`${n} × BAC Water 3 ml added.`
     };
-    return (lang()==='en'?en:nl)[key];
+    const d=lang()==='en'?en:nl;
+    const v=d[key];
+    return typeof v==='function'?v(vars.n):v;
   }
 
   function ensureProductUi(){
-    if(!IS_PRODUCT||!bacConfig.enabled)return;
+    if(!IS_PRODUCT||!cfg.enabled)return;
     const variants=$('variantButtons');
-    if(!variants)return;
+    if(!variants||$('bacWaterOptionV2'))return;
 
-    let box=$('bacWaterOption');
-    if(!box){
-      box=document.createElement('section');
-      box.id='bacWaterOption';
-      box.className='p20-bac-option';
-      box.innerHTML=`
-        <div class="p20-bac-option-head">
-          <span id="bacOptionTitle"></span>
-          <small id="bacOptionRatio"></small>
-        </div>
-        <div class="p20-bac-buttons">
-          <button type="button" class="p20-bac-choice active" data-bac-choice="without"></button>
-          <button type="button" class="p20-bac-choice" data-bac-choice="with"></button>
-        </div>
-        <p id="bacOptionNote" class="p20-bac-note"></p>
-      `;
-      variants.insertAdjacentElement('afterend',box);
+    const box=document.createElement('section');
+    box.id='bacWaterOptionV2';
+    box.className='p20-bac-option';
+    box.innerHTML=`
+      <div class="p20-bac-head">
+        <span id="bacTitleV2"></span>
+        <small id="bacRatioV2"></small>
+      </div>
+      <div class="p20-bac-buttons">
+        <button type="button" class="p20-bac-choice active" data-bac-v2="without"></button>
+        <button type="button" class="p20-bac-choice" data-bac-v2="with"></button>
+      </div>
+      <p id="bacNoteV2" class="p20-bac-note"></p>
+    `;
+    variants.insertAdjacentElement('afterend',box);
 
-      box.addEventListener('click',e=>{
-        const b=e.target.closest('[data-bac-choice]');
-        if(!b)return;
-        productChoice=b.dataset.bacChoice==='with'?'with':'without';
-        refreshProductUi();
-      });
-    }
+    box.addEventListener('click',e=>{
+      const b=e.target.closest('[data-bac-v2]');
+      if(!b)return;
+      productChoice=b.dataset.bacV2==='with'?'with':'without';
+      refreshProduct();
+    });
   }
 
-  function refreshProductUi(){
+  function refreshProduct(){
     if(!IS_PRODUCT||!store)return;
-    const id=String(currentVariantId()||'');
-    const p=productsById.get(id);
-    const box=$('bacWaterOption');
-    if(!p||!isEligibleProduct(p)){
-      if(box)box.hidden=true;
+
+    ensureProductUi();
+
+    const p=selectedProduct();
+    const box=$('bacWaterOptionV2');
+    if(!box)return;
+
+    if(!isPeptide(p)){
+      box.hidden=true;
       return;
     }
 
-    ensureProductUi();
-    if(!$('bacWaterOption'))return;
-    $('bacWaterOption').hidden=false;
+    box.hidden=false;
 
-    const q=Math.max(1,n($('qtyInput')?.value||1));
-    const free=bacIsFree(projectedPeptideVials(q));
+    const q=Math.max(1,qty($('qtyInput')?.value||1));
+    const cart=readCart();
+    const projected={...cart};
+    projected[p.id]=qty(projected[p.id])+q;
+
+    const free=peptideVials(projected)>=cfg.freeFromPeptideVials;
     const base=Number(p.price||0);
-    const priceEl=$('selectedPrice');
 
-    $('bacOptionTitle').textContent=productText('title');
-    $('bacOptionRatio').textContent=productText('ratio');
+    $('bacTitleV2').textContent=productWords('title');
+    $('bacRatioV2').textContent=productWords('ratio');
+    $('bacNoteV2').textContent=productWords('note');
 
-    const withoutBtn=document.querySelector('[data-bac-choice="without"]');
-    const withBtn=document.querySelector('[data-bac-choice="with"]');
-    if(withoutBtn){
-      withoutBtn.textContent=productText('without');
-      withoutBtn.classList.toggle('active',productChoice==='without');
-      withoutBtn.setAttribute('aria-pressed',String(productChoice==='without'));
-    }
-    if(withBtn){
-      withBtn.textContent=free?productText('withFree'):productText('withPaid');
-      withBtn.classList.toggle('active',productChoice==='with');
-      withBtn.setAttribute('aria-pressed',String(productChoice==='with'));
-    }
+    const no=document.querySelector('[data-bac-v2="without"]');
+    const yes=document.querySelector('[data-bac-v2="with"]');
 
-    $('bacOptionNote').textContent=productChoice==='with'
-      ? `${productText('included')} ${productText('freeNote')}`
-      : productText('freeNote');
+    no.textContent=productWords('without');
+    yes.textContent=free?productWords('withFree'):productWords('withPaid');
 
-    if(priceEl){
-      let expected;
-      if(base<=0){
-        expected=productText('pricePending');
-      }else if(productChoice==='with'&&!free){
-        expected=money(base+Number(bacConfig.unitPriceEur||DEFAULT_PRICE));
-      }else{
-        expected=money(base);
-      }
-      if(priceEl.textContent!==expected)priceEl.textContent=expected;
-      priceEl.dataset.bacPrice='1';
+    no.classList.toggle('active',productChoice==='without');
+    yes.classList.toggle('active',productChoice==='with');
+
+    no.setAttribute('aria-pressed',String(productChoice==='without'));
+    yes.setAttribute('aria-pressed',String(productChoice==='with'));
+
+    const price=$('selectedPrice');
+    if(price&&base>0){
+      const shown=productChoice==='with'&&!free
+        ? base+Number(cfg.unitPriceEur||DEFAULT_PRICE)
+        : base;
+      const wanted=money(shown);
+      if(price.textContent!==wanted)price.textContent=wanted;
     }
 
-    patchProductCartBar();
+    refreshProductCartBar();
   }
 
-  function patchProductCartBar(){
+  function refreshProductCartBar(){
     if(!IS_PRODUCT||!store)return;
-    const c=cart();
-    let base=0;
-    for(const [id,qRaw] of Object.entries(c)){
-      const p=productsById.get(String(id));
-      if(!p||p.active===false)continue;
-      base+=n(qRaw)*Number(p.price||0);
-    }
-    const total=base+bacCharge();
+    const cart=readCart();
+    const gross=grossSubtotal(cart);
+    const discount=bacFree(cart)?bacQty(cart)*Number(bacProduct.price||cfg.unitPriceEur):0;
+    const total=Math.max(0,gross-discount);
     const el=$('productCartTotal');
     if(el&&el.textContent!==money(total))el.textContent=money(total);
   }
 
-  function productAddCapture(e){
+  function captureProductAdd(e){
     if(!IS_PRODUCT)return;
-    const add=e.target.closest('#addToCart');
-    if(!add||add.disabled)return;
-    const id=String(currentVariantId()||'');
-    const p=productsById.get(id);
-    if(!isEligibleProduct(p))return;
+    const btn=e.target.closest('#addToCart');
+    if(!btn||btn.disabled||productChoice!=='with')return;
 
-    const q=Math.max(1,n($('qtyInput')?.value||1));
-    const map=bacMap();
-    if(productChoice==='with'){
-      map[id]=n(map[id])+q;
-      saveBacMap(map);
-    }
+    const p=selectedProduct();
+    if(!isPeptide(p))return;
+
+    const q=Math.max(1,qty($('qtyInput')?.value||1));
+    addBac(q);
+
+    setTimeout(()=>{
+      const feedback=$('productFeedback');
+      if(feedback){
+        const existing=feedback.textContent.trim();
+        feedback.textContent=`${existing}${existing?' · ':''}${productWords('added',{n:q})}`;
+      }
+      refreshProduct();
+    },0);
   }
 
   function setupProduct(){
     ensureProductUi();
-    refreshProductUi();
+    refreshProduct();
 
-    document.addEventListener('click',productAddCapture,true);
-    $('qtyInput')?.addEventListener('input',refreshProductUi);
-    $('qtyInput')?.addEventListener('change',refreshProductUi);
-    $('qtyMinus')?.addEventListener('click',()=>setTimeout(refreshProductUi,0));
-    $('qtyPlus')?.addEventListener('click',()=>setTimeout(refreshProductUi,0));
-    $('variantButtons')?.addEventListener('click',()=>setTimeout(refreshProductUi,0));
+    document.addEventListener('click',captureProductAdd,true);
+    $('qtyInput')?.addEventListener('input',refreshProduct);
+    $('qtyInput')?.addEventListener('change',refreshProduct);
+    $('qtyMinus')?.addEventListener('click',()=>setTimeout(refreshProduct,0));
+    $('qtyPlus')?.addEventListener('click',()=>setTimeout(refreshProduct,0));
+    $('variantButtons')?.addEventListener('click',()=>setTimeout(refreshProduct,0));
 
-    const target=$('variantButtons');
-    const price=$('selectedPrice');
-    if(target||price){
-      productObserver=new MutationObserver(()=>schedule(refreshProductUi));
-      if(target)productObserver.observe(target,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed']});
-      if(price)productObserver.observe(price,{childList:true,characterData:true,subtree:true});
-    }
+    observer=new MutationObserver(()=>schedule(refreshProduct));
+    if($('variantButtons'))observer.observe($('variantButtons'),{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-pressed']});
+    if($('selectedPrice'))observer.observe($('selectedPrice'),{childList:true,subtree:true,characterData:true});
 
-    window.addEventListener('pure20:languagechange',refreshProductUi);
-    window.addEventListener('pure20:i18nready',refreshProductUi);
-    window.addEventListener('pure20:retailcartchange',()=>schedule(refreshProductUi));
-    window.addEventListener('pure20:bacchange',()=>schedule(refreshProductUi));
-    window.addEventListener('storage',e=>{
-      if(e.key===CART_KEY||e.key===BAC_KEY)schedule(refreshProductUi);
-    });
+    window.addEventListener('pure20:retailcartchange',()=>schedule(refreshProduct));
+    window.addEventListener('storage',e=>{if(e.key===CART_KEY)schedule(refreshProduct)});
+    window.addEventListener('pure20:languagechange',()=>schedule(refreshProduct));
   }
 
-  function shopText(key,vars={}){
+  function shopWords(key,vars={}){
     const nl={
-      heading:'Bacteriostatisch water',
-      summary:`${vars.bac||0} voor ${vars.vials||0} peptide-vials`,
-      free:'GRATIS',
-      paid:money(vars.charge||0),
-      zeroTitle:'Reminder: geen bacteriostatisch water geselecteerd',
-      zeroBody:`Je hebt ${vars.vials||0} peptide-vials in je winkelmandje maar geen bacteriostatisch water. Voor een 1-op-1 verhouding ontbreken er ${vars.missing||0}.`,
+      zeroTitle:'Reminder: bacteriostatisch water ontbreekt',
       partialTitle:'Reminder: niet genoeg bacteriostatisch water',
-      partialBody:`Je hebt ${vars.vials||0} peptide-vials en ${vars.bac||0} bacteriostatisch water. Voor 1-op-1 ontbreken er nog ${vars.missing||0}.`,
-      fill:vars.free?'Gratis aanvullen tot 1 per vial':'Aanvullen tot 1 per vial',
-      remove:'Bacteriostatisch water verwijderen',
-      rule:`1 bacteriostatisch water per geselecteerde vial. Vanaf ${bacConfig.freeFromPeptideVials} peptide-vials is al het gekozen water gratis.`,
-      line:'Bacteriostatisch water',
-      lineFree:`${vars.bac||0} × GRATIS vanaf ${bacConfig.freeFromPeptideVials} peptide-vials`,
-      linePaid:`${vars.bac||0} × ${money(bacConfig.unitPriceEur)}`,
-      totalLabel:'Bacteriostatisch water'
+      zero:`Je hebt ${vars.vials} peptide-vials in je winkelmandje en geen bacteriostatisch water.`,
+      partial:`Je hebt ${vars.vials} peptide-vials en ${vars.bac} × BAC Water 3 ml. Voor 1-op-1 ontbreken er nog ${vars.missing}.`,
+      fill:vars.free?'Gratis BAC water toevoegen voor alle vials':'BAC water aanvullen tot 1 per vial',
+      rule:`1 × BAC Water 3 ml per peptide-vial. Vanaf ${cfg.freeFromPeptideVials} peptide-vials is het gratis.`,
+      freeLine:`BAC Water 3 ml is gratis vanaf ${cfg.freeFromPeptideVials} peptide-vials.`,
+      remove:'BAC water verwijderen'
     };
     const en={
-      heading:'Bacteriostatic water',
-      summary:`${vars.bac||0} for ${vars.vials||0} peptide vials`,
-      free:'FREE',
-      paid:money(vars.charge||0),
-      zeroTitle:'Reminder: no bacteriostatic water selected',
-      zeroBody:`You have ${vars.vials||0} peptide vials in your cart but no bacteriostatic water. ${vars.missing||0} are missing for a 1:1 ratio.`,
+      zeroTitle:'Reminder: bacteriostatic water is missing',
       partialTitle:'Reminder: not enough bacteriostatic water',
-      partialBody:`You have ${vars.vials||0} peptide vials and ${vars.bac||0} bacteriostatic water. ${vars.missing||0} more are needed for a 1:1 ratio.`,
-      fill:vars.free?'Add free water for every vial':'Add water for every vial',
-      remove:'Remove bacteriostatic water',
-      rule:`1 bacteriostatic water per selected vial. From ${bacConfig.freeFromPeptideVials} peptide vials, all selected water is free.`,
-      line:'Bacteriostatic water',
-      lineFree:`${vars.bac||0} × FREE from ${bacConfig.freeFromPeptideVials} peptide vials`,
-      linePaid:`${vars.bac||0} × ${money(bacConfig.unitPriceEur)}`,
-      totalLabel:'Bacteriostatic water'
+      zero:`You have ${vars.vials} peptide vials in your cart and no bacteriostatic water.`,
+      partial:`You have ${vars.vials} peptide vials and ${vars.bac} × BAC Water 3 ml. ${vars.missing} more are needed for a 1:1 ratio.`,
+      fill:vars.free?'Add free BAC water for every vial':'Add BAC water up to 1 per vial',
+      rule:`1 × BAC Water 3 ml per peptide vial. From ${cfg.freeFromPeptideVials} peptide vials it is free.`,
+      freeLine:`BAC Water 3 ml is free from ${cfg.freeFromPeptideVials} peptide vials.`,
+      remove:'Remove BAC water'
     };
     return (lang()==='en'?en:nl)[key];
   }
 
-  function ensureShopUi(){
+  function ensureReminder(){
     if(!IS_SHOP)return;
-
     const first=document.querySelector('#orderDrawer .first-block');
-    if(first&&!$('bacWaterCartBlock')){
-      const section=document.createElement('section');
-      section.id='bacWaterCartBlock';
-      section.className='drawer-block p20-bac-cart-block';
-      section.innerHTML=`
-        <div class="p20-bac-cart-head">
-          <div>
-            <strong id="bacCartHeading"></strong>
-            <span id="bacCartSummary"></span>
-          </div>
-          <span id="bacCartPill" class="p20-bac-pill"></span>
-        </div>
-        <div id="bacCartReminder" class="p20-bac-reminder" hidden></div>
-        <p id="bacCartRule" style="font-size:10px;line-height:1.5;color:#777;margin:12px 0 0"></p>
-        <div class="p20-bac-actions">
-          <button id="bacFillAll" type="button"></button>
-          <button id="bacRemoveAll" class="secondary" type="button"></button>
-        </div>
-      `;
-      first.insertAdjacentElement('afterend',section);
+    if(!first||$('bacReminderV2'))return;
 
-      $('bacFillAll')?.addEventListener('click',()=>{
-        setAllBac();
-        refreshShop();
-      });
-      $('bacRemoveAll')?.addEventListener('click',()=>{
-        removeAllBac();
-        refreshShop();
-      });
-    }
-
-    const totals=document.querySelector('.totals-card');
-    if(totals&&!$('bacWaterTotalRow')){
-      const row=document.createElement('div');
-      row.id='bacWaterTotalRow';
-      row.hidden=true;
-      row.innerHTML='<span></span><strong></strong>';
-      const shipping=[...totals.children].find(x=>{
-        const s=x.querySelector('span');
-        const t=(s?.textContent||'').trim().toLowerCase();
-        return t==='shipping'||t==='verzending';
-      });
-      if(shipping)totals.insertBefore(row,shipping);
-      else totals.insertBefore(row,totals.lastElementChild||null);
-    }
-  }
-
-  function ensureBacOrderLine(vials,bac,charge,free){
-    const lines=$('orderLines');
-    if(!lines)return;
-
-    let line=lines.querySelector('.p20-bac-line');
-    if(bac<=0){
-      line?.remove();
-      return;
-    }
-
-    if(!line){
-      line=document.createElement('div');
-      line.className='order-line p20-bac-line';
-      line.dataset.id='bac-water-addon';
-      lines.appendChild(line);
-    }
-
-    line.innerHTML=`
-      <div>
-        <div class="order-line-name">${esc(shopText('line'))}</div>
-        <div class="order-line-meta">${esc(free?shopText('lineFree',{bac}):shopText('linePaid',{bac}))}</div>
-      </div>
-      <div class="order-line-right">
-        <div class="order-line-total">${free?esc(shopText('free')):esc(money(charge))}</div>
+    const box=document.createElement('div');
+    box.id='bacReminderV2';
+    box.className='p20-bac-reminder';
+    box.hidden=true;
+    box.innerHTML=`
+      <strong id="bacReminderTitleV2"></strong>
+      <div id="bacReminderBodyV2"></div>
+      <div id="bacReminderRuleV2" style="margin-top:5px;color:#777"></div>
+      <div class="p20-bac-reminder-actions">
+        <button id="bacFillV2" type="button"></button>
+        <button id="bacRemoveV2" class="secondary" type="button"></button>
       </div>
     `;
+    first.insertAdjacentElement('afterend',box);
+
+    $('bacFillV2').addEventListener('click',()=>{
+      const vials=peptideVials();
+      setBac(vials);
+      // Reload is deliberate: retail-cart-bridge will hydrate the real BAC row
+      // into app.js with the correct quantity from localStorage.
+      location.href='/shop?cart=open';
+    });
+
+    $('bacRemoveV2').addEventListener('click',()=>{
+      setBac(0);
+      location.href='/shop?cart=open';
+    });
   }
 
-  function baseSubtotal(){
-    const c=cart();
-    let total=0;
-    for(const [id,qRaw] of Object.entries(c)){
-      const p=productsById.get(String(id));
-      if(!p||p.active===false)continue;
-      total+=n(qRaw)*Number(p.price||0);
-    }
-    return total;
-  }
-
-  function currentDiscounts(){
-    return {
-      coupon:Math.abs(parseMoney($('drawerDiscount')?.textContent)),
-      referral:Math.abs(parseMoney($('drawerMemberDiscount')?.textContent)),
-      credit:Math.abs(parseMoney($('drawerCreditUsed')?.textContent))
-    };
-  }
-
-  function shippingAmount(){
-    const text=String($('drawerShipping')?.textContent||'').toLowerCase();
-    if(text.includes('gratis')||text.includes('free'))return 0;
-    return Math.max(0,parseMoney(text));
+  function appShipping(effectiveSubtotal,hasItems){
+    if(!hasItems)return 0;
+    const threshold=Number(store?.settings?.freeShippingThreshold||300);
+    const flat=Number(store?.settings?.shippingFlat||17.95);
+    return effectiveSubtotal>=threshold?0:flat;
   }
 
   function refreshShop(){
     if(!IS_SHOP||!store)return;
-    ensureShopUi();
 
-    const vials=peptideVials();
-    const bac=bacUnits();
+    ensureReminder();
+
+    const cart=readCart();
+    const vials=peptideVials(cart);
+    const bac=bacQty(cart);
     const missing=Math.max(0,vials-bac);
-    const free=bacIsFree(vials);
-    const charge=bac>0&&!free?bac*Number(bacConfig.unitPriceEur||DEFAULT_PRICE):0;
-    const base=baseSubtotal();
-    const discounts=currentDiscounts();
-    const shipping=shippingAmount();
-    const adjustedSubtotal=base+charge;
-    const adjustedAfterDiscounts=Math.max(0,adjustedSubtotal-discounts.coupon-discounts.referral-discounts.credit);
-    const adjustedTotal=adjustedAfterDiscounts+shipping;
+    const free=bacFree(cart);
 
-    const block=$('bacWaterCartBlock');
-    if(block)block.hidden=vials<=0&&bac<=0;
-
-    if($('bacCartHeading'))$('bacCartHeading').textContent=shopText('heading');
-    if($('bacCartSummary'))$('bacCartSummary').textContent=shopText('summary',{bac,vials});
-    if($('bacCartPill'))$('bacCartPill').textContent=free&&bac>0?shopText('free'):shopText('paid',{charge});
-    if($('bacCartRule'))$('bacCartRule').textContent=shopText('rule');
-
-    const reminder=$('bacCartReminder');
+    const reminder=$('bacReminderV2');
     if(reminder){
+      reminder.hidden=!(vials>0&&missing>0);
+
       if(vials>0&&missing>0){
-        reminder.hidden=false;
         const zero=bac===0;
-        reminder.innerHTML=`<strong>${esc(shopText(zero?'zeroTitle':'partialTitle'))}</strong>${esc(shopText(zero?'zeroBody':'partialBody',{vials,bac,missing}))}`;
-      }else{
-        reminder.hidden=true;
-        reminder.innerHTML='';
+        $('bacReminderTitleV2').textContent=shopWords(zero?'zeroTitle':'partialTitle');
+        $('bacReminderBodyV2').textContent=shopWords(zero?'zero':'partial',{vials,bac,missing});
+        $('bacReminderRuleV2').textContent=shopWords('rule',{vials,bac,missing});
+        $('bacFillV2').textContent=shopWords('fill',{free});
       }
+
+      $('bacRemoveV2').hidden=bac<=0;
+      $('bacRemoveV2').textContent=shopWords('remove');
     }
 
-    if($('bacFillAll')){
-      $('bacFillAll').hidden=vials<=0||missing<=0;
-      $('bacFillAll').textContent=shopText('fill',{free});
-    }
-    if($('bacRemoveAll')){
-      $('bacRemoveAll').hidden=bac<=0;
-      $('bacRemoveAll').textContent=shopText('remove');
-    }
+    const bacLine=document.querySelector(`#orderLines .order-line[data-id="${CSS.escape(String(bacProduct.id))}"]`);
 
-    const totalRow=$('bacWaterTotalRow');
-    if(totalRow){
-      totalRow.hidden=bac<=0;
-      totalRow.querySelector('span').textContent=shopText('totalLabel');
-      totalRow.querySelector('strong').textContent=free?shopText('free'):money(charge);
+    if(bacLine&&free&&bac>0){
+      const meta=bacLine.querySelector('.order-line-meta');
+      const total=bacLine.querySelector('.order-line-total');
+      if(meta)meta.textContent=`${bacProduct.code} · ${bac} × ${lang()==='en'?'FREE':'GRATIS'}`;
+      if(total)total.textContent=lang()==='en'?'FREE':'GRATIS';
     }
 
-    ensureBacOrderLine(vials,bac,charge,free);
+    if(free&&bac>0){
+      const raw=grossSubtotal(cart);
+      const freeValue=bac*Number(bacProduct.price||cfg.unitPriceEur);
+      const effective=Math.max(0,raw-freeValue);
 
-    const subtotalEl=$('drawerSubtotal');
-    const totalEl=$('drawerTotal');
-    const barSubtotal=$('cartSubtotal');
-    if(subtotalEl&&subtotalEl.textContent!==money(adjustedSubtotal))subtotalEl.textContent=money(adjustedSubtotal);
-    if(totalEl&&totalEl.textContent!==money(adjustedTotal))totalEl.textContent=money(adjustedTotal);
-    if(barSubtotal&&barSubtotal.textContent!==money(adjustedAfterDiscounts))barSubtotal.textContent=money(adjustedAfterDiscounts);
+      const coupon=Math.abs(safeNumber($('drawerDiscount')?.textContent));
+      const referral=Math.abs(safeNumber($('drawerMemberDiscount')?.textContent));
+      const credit=Math.abs(safeNumber($('drawerCreditUsed')?.textContent));
+      const shipping=appShipping(effective,Object.keys(cart).some(id=>qty(cart[id])>0));
+      const after=Math.max(0,effective-coupon-referral-credit);
+
+      if($('drawerSubtotal'))$('drawerSubtotal').textContent=money(effective);
+      if($('drawerTotal'))$('drawerTotal').textContent=money(after+shipping);
+      if($('cartSubtotal'))$('cartSubtotal').textContent=money(after);
+      if($('drawerShipping')){
+        $('drawerShipping').textContent=shipping<=0
+          ? (lang()==='en'?'Free shipping':'Gratis verzending')
+          : money(shipping);
+      }
+
+      let freeRow=$('bacFreeRowV2');
+      const totals=document.querySelector('.totals-card');
+      if(totals&&!freeRow){
+        freeRow=document.createElement('div');
+        freeRow.id='bacFreeRowV2';
+        freeRow.className='p20-bac-free-row';
+        const grand=totals.querySelector('.grand-total');
+        totals.insertBefore(freeRow,grand||null);
+      }
+      if(freeRow){
+        freeRow.innerHTML=`<span>${esc(shopWords('freeLine'))}</span><strong>-${esc(money(freeValue))}</strong>`;
+        freeRow.hidden=false;
+      }
+    }else{
+      $('bacFreeRowV2')?.remove();
+    }
   }
 
-  function schedule(fn=refreshShop){
-    if(scheduled)return;
-    scheduled=true;
-    requestAnimationFrame(()=>{
-      scheduled=false;
-      fn();
-    });
-  }
+  function buildFreeOrderText(){
+    refreshShop();
 
-  function toast(message){
-    const el=$('toast')||$('productToast');
-    if(!el)return;
-    el.textContent=message;
-    el.classList.add('show');
-    clearTimeout(toast.t);
-    toast.t=setTimeout(()=>el.classList.remove('show'),1800);
-  }
-
-  function collectOrderLines(){
-    return [...document.querySelectorAll('#orderLines .order-line')].map(line=>{
+    const s=store?.settings||{};
+    const lines=[...document.querySelectorAll('#orderLines .order-line')].map(line=>{
       const name=line.querySelector('.order-line-name')?.textContent?.trim()||'';
       const meta=line.querySelector('.order-line-meta')?.textContent?.trim()||'';
       const total=line.querySelector('.order-line-total')?.textContent?.trim()||'';
-      return {id:line.dataset.id||'',name,meta,total};
-    }).filter(x=>x.name);
-  }
+      return `${name} · ${meta} — ${total}`;
+    }).filter(Boolean);
 
-  function buildShareText(){
-    refreshShop();
-    const lines=collectOrderLines();
     const v=id=>$(id)?.value?.trim?.()||'-';
-    const s=store?.settings||{};
-    const isEn=lang()==='en';
+    const en=lang()==='en';
 
     return [
-      `${s.brandName||'PURE20.'} ${isEn?'ORDER REQUEST':'BESTELAANVRAAG'}`,'',
-      ...lines.map(x=>`${x.name} · ${x.meta} — ${x.total}`),
+      `${s.brandName||'PURE20.'} ${en?'ORDER REQUEST':'BESTELAANVRAAG'}`,'',
+      ...lines,'',
+      `${en?'Subtotal':'Subtotaal'}: ${$('drawerSubtotal')?.textContent||money(0)}`,
+      ...(!$('discountRow')?.hidden?[`${en?'Coupon':'Kortingscode'}: ${$('drawerDiscount')?.textContent||''}`]:[]),
+      ...(!$('memberDiscountRow')?.hidden?[`Referral discount: ${$('drawerMemberDiscount')?.textContent||''}`]:[]),
+      ...(!$('creditUsedRow')?.hidden?[`Referral credit: ${$('drawerCreditUsed')?.textContent||''}`]:[]),
+      `${en?'Shipping':'Verzending'}: ${$('drawerShipping')?.textContent||''}`,
+      `${en?'Current total':'Huidig totaal'} ${s.currency||'EUR'}: ${$('drawerTotal')?.textContent||money(0)}`,
       '',
-      `${isEn?'Subtotal':'Subtotaal'}: ${$('drawerSubtotal')?.textContent||money(0)}`,
-      ...(!$('discountRow')?.hidden?[`${isEn?'Coupon discount':'Kortingscode'}: ${$('drawerDiscount')?.textContent||''}`]:[]),
-      ...(!$('memberDiscountRow')?.hidden?[`${isEn?'Referral discount':'Referral korting'}: ${$('drawerMemberDiscount')?.textContent||''}`]:[]),
-      ...(!$('creditUsedRow')?.hidden?[`${isEn?'Referral credit':'Referral tegoed'}: ${$('drawerCreditUsed')?.textContent||''}`]:[]),
-      `${isEn?'Shipping':'Verzending'}: ${$('drawerShipping')?.textContent||''}`,
-      `${isEn?'Current total':'Huidig totaal'} ${s.currency||'EUR'}: ${$('drawerTotal')?.textContent||money(0)}`,
-      '',
-      isEn?'CUSTOMER DETAILS':'KLANTGEGEVENS',
-      `${isEn?'Name':'Naam'}: ${v('fullName')}`,
-      `${isEn?'Address':'Adres'}: ${v('address')}`,
-      `${isEn?'Postal code':'Postcode'}: ${v('zip')}`,
-      `${isEn?'Country':'Land'}: ${v('country')}`,
+      en?'CUSTOMER DETAILS':'KLANTGEGEVENS',
+      `${en?'Name':'Naam'}: ${v('fullName')}`,
+      `${en?'Address':'Adres'}: ${v('address')}`,
+      `${en?'Postal code':'Postcode'}: ${v('zip')}`,
+      `${en?'Country':'Land'}: ${v('country')}`,
       `Email: ${v('email')}`,
-      `${isEn?'Phone':'Telefoon'}: ${v('phone')}`,
-      '',
-      isEn
-        ?'Availability, shipping and payment to be confirmed separately.'
-        :'Beschikbaarheid, verzending en betaling worden afzonderlijk bevestigd.'
+      `${en?'Phone':'Telefoon'}: ${v('phone')}`
     ].join('\n');
   }
 
-  function recordNumber(text){
-    return parseMoney(text);
-  }
-
-  async function recordOrder(source){
+  async function recordFreeOrder(source){
     try{
-      const cfg=window.PURE20_SUPABASE_CONFIG||{};
-      if(!cfg.url||!cfg.key||!window.supabase?.createClient)return;
+      const cfg0=window.PURE20_SUPABASE_CONFIG||{};
+      if(!cfg0.url||!cfg0.key||!window.supabase?.createClient)return;
 
       const items=[...document.querySelectorAll('#orderLines .order-line')].map(line=>{
         const name=line.querySelector('.order-line-name')?.textContent?.trim()||'';
         const meta=line.querySelector('.order-line-meta')?.textContent?.trim()||'';
-        const totalText=line.querySelector('.order-line-total')?.textContent?.trim()||'';
+        const total=line.querySelector('.order-line-total')?.textContent?.trim()||'';
         const m=meta.match(/(\d+)\s*×/);
         return {
           product_id:line.dataset.id||'',
           name,
           quantity:m?Number(m[1]):1,
           meta,
-          line_total:recordNumber(totalText)
+          line_total:safeNumber(total)
         };
       }).filter(x=>x.name);
 
-      if(!items.length)return;
-
       const customer={
         name:$('fullName')?.value?.trim?.()||'',
-        company:$('company')?.value?.trim?.()||'',
-        vat_number:$('vat')?.value?.trim?.()||'',
+        company:'',
+        vat_number:'',
         address:$('address')?.value?.trim?.()||'',
         postal_code:$('zip')?.value?.trim?.()||'',
         country:$('country')?.value?.trim?.()||'',
@@ -804,57 +580,54 @@
         p_channel:'retail',
         p_customer:customer,
         p_items:items,
-        p_subtotal:recordNumber($('drawerSubtotal')?.textContent),
-        p_discount:Math.abs(recordNumber($('drawerDiscount')?.textContent)),
-        p_shipping:recordNumber($('drawerShipping')?.textContent),
-        p_total:recordNumber($('drawerTotal')?.textContent),
+        p_subtotal:safeNumber($('drawerSubtotal')?.textContent),
+        p_discount:Math.abs(safeNumber($('drawerDiscount')?.textContent)),
+        p_shipping:safeNumber($('drawerShipping')?.textContent),
+        p_total:safeNumber($('drawerTotal')?.textContent),
         p_currency:store?.settings?.currency||'EUR',
         p_coupon_code:$('couponInput')?.value?.trim?.().toUpperCase()||'',
         p_source:source,
         p_use_credit:Boolean($('useReferralCredit')?.checked)
       };
 
-      const fp=JSON.stringify({c:payload.p_channel,e:payload.p_customer.email,i:payload.p_items,t:payload.p_total});
-      const now=Date.now();
-      const prev=readJson('pure20_last_recorded_order',null);
-      if(prev&&prev.fp===fp&&now-Number(prev.at||0)<10*60*1000)return;
-
-      const client=window.supabase.createClient(cfg.url,cfg.key,{
+      const client=window.supabase.createClient(cfg0.url,cfg0.key,{
         auth:{persistSession:true,autoRefreshToken:true}
       });
       const {error}=await client.rpc('pure20_record_order',payload);
       if(error)throw error;
-      writeJson('pure20_last_recorded_order',{fp,at:now});
     }catch(err){
-      console.warn('PURE20 BAC order history:',err?.message||err);
+      console.warn('PURE20 BAC v2 order history:',err?.message||err);
     }
   }
 
-  async function handleShare(e){
+  async function captureFreeShare(e){
     if(!IS_SHOP)return;
     const button=e.target.closest('#copyOrder,#whatsappOrder');
     if(!button)return;
+
+    const cart=readCart();
+    if(!bacFree(cart)||bacQty(cart)<=0)return;
 
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
 
-    if(!collectOrderLines().length){
-      toast(lang()==='en'?'Add at least one item first.':'Voeg eerst minstens één product toe.');
-      return;
-    }
     if($('researchConfirm')&&!$('researchConfirm').checked){
-      toast(lang()==='en'?'Confirm the notice first.':'Bevestig eerst de melding.');
+      const toast=$('toast');
+      if(toast){
+        toast.textContent=lang()==='en'?'Confirm the notice first.':'Bevestig eerst de melding.';
+        toast.classList.add('show');
+        setTimeout(()=>toast.classList.remove('show'),1800);
+      }
       return;
     }
 
-    const text=buildShareText();
+    const text=buildFreeOrderText();
     const source=button.id==='whatsappOrder'?'whatsapp':'copy';
 
     if(source==='copy'){
-      try{
-        await navigator.clipboard.writeText(text);
-      }catch(_){
+      try{await navigator.clipboard.writeText(text)}
+      catch(_){
         const ta=document.createElement('textarea');
         ta.value=text;
         document.body.appendChild(ta);
@@ -862,55 +635,55 @@
         document.execCommand('copy');
         ta.remove();
       }
-      toast(lang()==='en'?'Order copied.':'Bestelling gekopieerd.');
     }else{
       const number=String(store?.settings?.whatsappNumber||'').replace(/\D/g,'');
-      const url=number
-        ?`https://wa.me/${number}?text=${encodeURIComponent(text)}`
-        :`https://wa.me/?text=${encodeURIComponent(text)}`;
-      window.open(url,'_blank','noopener');
+      window.open(
+        number
+          ?`https://wa.me/${number}?text=${encodeURIComponent(text)}`
+          :`https://wa.me/?text=${encodeURIComponent(text)}`,
+        '_blank',
+        'noopener'
+      );
     }
 
-    recordOrder(source);
+    recordFreeOrder(source);
   }
 
   function setupShop(){
-    ensureShopUi();
+    ensureReminder();
     refreshShop();
 
-    document.addEventListener('click',handleShare,true);
+    document.addEventListener('click',captureFreeShare,true);
 
-    const body=document.body;
-    shopObserver=new MutationObserver(()=>schedule(refreshShop));
-    shopObserver.observe(body,{childList:true,subtree:true,characterData:true});
+    observer=new MutationObserver(()=>schedule(refreshShop));
+    observer.observe(document.body,{childList:true,subtree:true,characterData:true});
 
     window.addEventListener('pure20:retailcartchange',()=>schedule(refreshShop));
-    window.addEventListener('pure20:bacchange',()=>schedule(refreshShop));
+    window.addEventListener('storage',e=>{if(e.key===CART_KEY)schedule(refreshShop)});
     window.addEventListener('pure20:languagechange',()=>schedule(refreshShop));
-    window.addEventListener('pure20:i18nready',()=>schedule(refreshShop));
-    window.addEventListener('storage',e=>{
-      if(e.key===CART_KEY||e.key===BAC_KEY)schedule(refreshShop);
-    });
+  }
 
-    document.addEventListener('click',e=>{
-      if(e.target.closest('#catalogue [data-action],#orderLines [data-drawer-action],#orderLines [data-da]')){
-        setTimeout(()=>schedule(refreshShop),0);
-      }
-    });
-    document.addEventListener('change',e=>{
-      if(e.target.closest('#catalogue .qty-control input,#orderLines .p20-cart-qty')){
-        setTimeout(()=>schedule(refreshShop),0);
-      }
+  function schedule(fn){
+    if(raf)return;
+    raf=true;
+    requestAnimationFrame(()=>{
+      raf=false;
+      (fn||refreshShop)();
     });
   }
 
   async function boot(){
-    ensureStyle();
-    if(!await loadStore())return;
-    if(!bacConfig.enabled)return;
+    style();
 
-    if(IS_PRODUCT)setupProduct();
-    if(IS_SHOP)setupShop();
+    try{
+      if(!await load())return;
+      if(!cfg.enabled)return;
+
+      if(IS_PRODUCT)setupProduct();
+      if(IS_SHOP)setupShop();
+    }catch(err){
+      console.warn('PURE20 BAC v2:',err?.message||err);
+    }
   }
 
   if(document.readyState==='loading'){
