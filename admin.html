@@ -729,7 +729,7 @@
 
         <div id="prodImageStatusV9">Geen productfoto gekoppeld.</div>
         <small class="admin-note">
-          Kies één JPG, PNG of WEBP (max. 5 MB) en druk daarna onderaan op SAVE PRODUCT.
+          Kies één JPG, PNG of WEBP (max. 5 MB). De preview verschijnt meteen. Druk daarna op SAVE PRODUCT.
         </small>
       </div>
 
@@ -799,11 +799,418 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=20261001-9"></script>
+  <script src="supabase-config.js?v=20261001-10"></script>
   <script src="fallback-data.js"></script>
-  <script src="api.js?v=20261001-9"></script>
-  <script src="admin.js?v=20261001-9"></script>
-  <script src="/product-photo-save-v9.js?v=20261001-9"></script>
+  <script src="api.js?v=20261001-10"></script>
+  <script src="admin.js?v=20261001-10"></script>
+
+  <script id="pure20ProductPhotoV10">
+  (() => {
+    'use strict';
+
+    const BUCKET = 'pure20-products';
+    const $ = id => document.getElementById(id);
+
+    let currentRow = null;
+    let currentCompound = null;
+    let originalImageUrl = '';
+    let originalCoaUrl = '';
+    let removeImage = false;
+    let previewObjectUrl = '';
+
+    function api(){ return window.PURE20_API; }
+    function client(){ return api()?.client; }
+
+    function safeUrl(value){
+      const raw = String(value || '').trim();
+      if(!raw) return '';
+      try{
+        const u = new URL(raw, location.href);
+        return ['http:','https:'].includes(u.protocol) ? u.href : '';
+      }catch(_){ return ''; }
+    }
+
+    function slugify(value){
+      return String(value || 'file')
+        .normalize('NFKD')
+        .replace(/[\u0300-\u036f]/g,'')
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]+/g,'-')
+        .replace(/^-+|-+$/g,'')
+        .slice(0,100) || 'file';
+    }
+
+    function uid(){
+      return 'product-' + (crypto.randomUUID ? crypto.randomUUID() :
+        Date.now().toString(36) + Math.random().toString(36).slice(2));
+    }
+
+    function formProduct(){
+      const id = String($('#prodId')?.value || '').trim();
+      return {
+        id: id || uid(),
+        product: String($('#prodName')?.value || '').trim(),
+        variant: String($('#prodVariant')?.value || '').trim(),
+        code: String($('#prodCode')?.value || '').trim(),
+        category: String($('#prodCategory')?.value || '').trim() || 'Other',
+        unit: String($('#prodUnit')?.value || '').trim() || 'vial',
+        price: Math.max(0, Number($('#prodPrice')?.value) || 0),
+        stock: Math.max(0, Math.floor(Number($('#prodStock')?.value) || 0)),
+        order: Number($('#prodOrder')?.value) || 1,
+        badge: String($('#prodBadge')?.value || '').trim(),
+        note: String($('#prodNote')?.value || '').trim(),
+        coaUrl: String($('#prodCoaUrl')?.value || '').trim(),
+        active: String($('#prodActive')?.value || 'true') === 'true'
+      };
+    }
+
+    function clearPreviewObject(){
+      if(previewObjectUrl){
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = '';
+      }
+    }
+
+    function renderPreview(){
+      const preview = $('#prodImagePreviewV9');
+      const status = $('#prodImageStatusV9');
+      const removeBtn = $('#removeProdImageV9');
+      if(!preview || !status || !removeBtn) return;
+
+      clearPreviewObject();
+
+      const file = $('#prodImageFileV9')?.files?.[0] || null;
+      const storedUrl = removeImage ? '' : safeUrl($('#prodImageUrlV9')?.value);
+
+      if(file){
+        previewObjectUrl = URL.createObjectURL(file);
+        preview.innerHTML = `<img src="${previewObjectUrl}" alt="Nieuwe productfoto">`;
+        status.textContent = `Nieuwe foto geselecteerd: ${file.name}. Druk nu op SAVE PRODUCT.`;
+        removeBtn.disabled = false;
+        return;
+      }
+
+      if(storedUrl){
+        preview.innerHTML = `<img src="${storedUrl}" alt="Productfoto">`;
+        status.textContent = 'Huidige productfoto. Kies een ander bestand om ze te vervangen.';
+        removeBtn.disabled = false;
+        return;
+      }
+
+      preview.innerHTML = '<span>GEEN FOTO</span>';
+      status.textContent = removeImage
+        ? 'Deze foto wordt verwijderd wanneer je op SAVE PRODUCT drukt.'
+        : 'Geen productfoto gekoppeld. Kies hierboven een bestand.';
+      removeBtn.disabled = true;
+    }
+
+    function validateImage(file){
+      if(!file) return '';
+      const type = String(file.type || '').toLowerCase();
+      if(!['image/jpeg','image/png','image/webp'].includes(type)){
+        return 'Gebruik JPG, PNG of WEBP.';
+      }
+      if(Number(file.size || 0) > 5 * 1024 * 1024){
+        return 'De afbeelding mag maximaal 5 MB zijn.';
+      }
+      return '';
+    }
+
+    async function resolveCurrentRow(){
+      const c = client();
+      if(!c) throw new Error('Supabase-verbinding niet beschikbaar.');
+
+      const f = formProduct();
+      const explicitId = String($('#prodId')?.value || '').trim();
+
+      if(explicitId){
+        const {data,error} = await c.from('pure20_products')
+          .select('id,product_name,variant,code,category,coa_url,image_url,image_alt_nl,image_alt_en')
+          .eq('id', explicitId)
+          .maybeSingle();
+        if(error) throw error;
+        if(data) return data;
+      }
+
+      if(!f.product) return null;
+
+      let q = c.from('pure20_products')
+        .select('id,product_name,variant,code,category,coa_url,image_url,image_alt_nl,image_alt_en')
+        .eq('product_name', f.product);
+
+      if(f.variant) q = q.eq('variant', f.variant);
+      if(f.code) q = q.eq('code', f.code);
+
+      const {data,error} = await q.limit(2);
+      if(error) throw error;
+
+      const row = data?.[0] || null;
+      if(row && $('#prodId') && !$('#prodId').value){
+        $('#prodId').value = row.id;
+      }
+      return row;
+    }
+
+    async function loadExistingPhoto(){
+      currentRow = null;
+      currentCompound = null;
+      originalImageUrl = '';
+      originalCoaUrl = '';
+      removeImage = false;
+
+      const fileInput = $('#prodImageFileV9');
+      if(fileInput) fileInput.value = '';
+      if($('#prodImageUrlV9')) $('#prodImageUrlV9').value = '';
+      if($('#prodImageShopCoverV9')) $('#prodImageShopCoverV9').checked = false;
+
+      renderPreview();
+
+      try{
+        currentRow = await resolveCurrentRow();
+        if(!currentRow) return;
+
+        originalImageUrl = String(currentRow.image_url || '');
+        originalCoaUrl = String(currentRow.coa_url || '');
+        $('#prodImageUrlV9').value = originalImageUrl;
+
+        const {data,error} = await client().from('pure20_compounds')
+          .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
+          .eq('product_name', currentRow.product_name)
+          .maybeSingle();
+
+        if(!error){
+          currentCompound = data || null;
+          if(originalImageUrl && data?.image_url === originalImageUrl){
+            $('#prodImageShopCoverV9').checked = true;
+          }
+        }
+
+        renderPreview();
+      }catch(err){
+        console.error('PURE20 photo load:', err);
+        $('#prodImageStatusV9').textContent =
+          `Foto kon niet geladen worden: ${err.message || err}`;
+      }
+    }
+
+    function storagePathFromUrl(url, bucket){
+      try{
+        const u = new URL(String(url || ''));
+        const marker = `/storage/v1/object/public/${bucket}/`;
+        const i = u.pathname.indexOf(marker);
+        return i < 0 ? '' : decodeURIComponent(u.pathname.slice(i + marker.length));
+      }catch(_){ return ''; }
+    }
+
+    async function deleteStorageUrl(url, bucket){
+      const path = storagePathFromUrl(url, bucket);
+      if(!path) return;
+      const {error} = await client().storage.from(bucket).remove([path]);
+      if(error) console.warn('Kon oud bestand niet verwijderen:', error.message);
+    }
+
+    async function uploadProductImage(file, product){
+      const path =
+        `variants/${slugify(product.product)}/${slugify(product.id)}/` +
+        `${Date.now()}-${slugify(file.name || 'product.webp')}`;
+
+      const {data,error} = await client().storage.from(BUCKET).upload(path, file, {
+        cacheControl:'31536000',
+        upsert:false,
+        contentType:file.type
+      });
+      if(error) throw error;
+
+      const pub = client().storage.from(BUCKET).getPublicUrl(data.path);
+      const url = pub.data?.publicUrl || '';
+      if(!url) throw new Error('Geen publieke afbeeldings-URL ontvangen.');
+      return url;
+    }
+
+    async function saveShopCover(product, nextImageUrl, oldImageUrl, alt){
+      const checked = Boolean($('#prodImageShopCoverV9')?.checked);
+
+      const {data:compound,error:readError} = await client().from('pure20_compounds')
+        .select('slug,product_name,image_url')
+        .eq('product_name', product.product)
+        .maybeSingle();
+      if(readError) throw readError;
+
+      if(checked && nextImageUrl){
+        if(compound){
+          const {error} = await client().from('pure20_compounds').update({
+            image_url:nextImageUrl,
+            image_alt_nl:alt,
+            image_alt_en:alt,
+            updated_at:new Date().toISOString()
+          }).eq('product_name', product.product);
+          if(error) throw error;
+        }else{
+          const {error} = await client().from('pure20_compounds').insert({
+            slug:slugify(product.product).replace(/\./g,'-'),
+            product_name:product.product,
+            category:product.category || 'Other',
+            image_url:nextImageUrl,
+            image_alt_nl:alt,
+            image_alt_en:alt,
+            active:true
+          });
+          if(error) throw error;
+        }
+        return;
+      }
+
+      // Clear cover if it pointed to the image that is being removed/replaced
+      // and the user did not keep this variant as the cover.
+      if(compound?.image_url && oldImageUrl &&
+         compound.image_url === oldImageUrl &&
+         (!nextImageUrl || nextImageUrl !== oldImageUrl)){
+        const {error} = await client().from('pure20_compounds').update({
+          image_url:null,
+          image_alt_nl:null,
+          image_alt_en:null,
+          updated_at:new Date().toISOString()
+        }).eq('product_name', product.product);
+        if(error) throw error;
+      }
+    }
+
+    async function saveProductWithPhoto(event){
+      const saveButton = event.target.closest?.('#saveProduct');
+      if(!saveButton) return;
+
+      // This capture listener becomes the ONE save flow.
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+
+      const p = formProduct();
+      if(!p.product){
+        alert('Product name is required.');
+        return;
+      }
+
+      const imageFile = $('#prodImageFileV9')?.files?.[0] || null;
+      const imageError = validateImage(imageFile);
+      if(imageError){
+        alert(imageError);
+        return;
+      }
+
+      const coaFile = $('#prodCoaFile')?.files?.[0] || null;
+
+      saveButton.disabled = true;
+      saveButton.textContent = imageFile ? 'FOTO UPLOADEN & OPSLAAN…' : 'OPSLAAN…';
+      $('#prodImageStatusV9').textContent =
+        imageFile ? 'Foto uploaden…' : 'Product opslaan…';
+
+      try{
+        const dbRow = await resolveCurrentRow();
+        if(dbRow){
+          p.id = dbRow.id;
+          $('#prodId').value = dbRow.id;
+          originalImageUrl = String(dbRow.image_url || originalImageUrl || '');
+          originalCoaUrl = String(dbRow.coa_url || originalCoaUrl || '');
+        }
+
+        let nextImageUrl = removeImage ? '' : originalImageUrl;
+        const alt = `PURE20 ${p.product} ${p.variant}`.trim();
+
+        if(imageFile){
+          nextImageUrl = await uploadProductImage(imageFile, p);
+        }
+
+        if(coaFile){
+          const uploaded = await api().adminUploadCoa(p, coaFile);
+          p.coaUrl = uploaded.publicUrl;
+        }
+
+        // Save the normal product fields with the existing stable API.
+        await api().adminUpsertProduct(p);
+
+        // Save exact variant image.
+        const {error:imageErrorDb} = await client().from('pure20_products').update({
+          image_url:nextImageUrl || null,
+          image_alt_nl:nextImageUrl ? alt : null,
+          image_alt_en:nextImageUrl ? alt : null,
+          updated_at:new Date().toISOString()
+        }).eq('id', p.id);
+        if(imageErrorDb) throw imageErrorDb;
+
+        await saveShopCover(p, nextImageUrl, originalImageUrl, alt);
+
+        if(originalImageUrl && originalImageUrl !== nextImageUrl){
+          await deleteStorageUrl(originalImageUrl, BUCKET);
+        }
+
+        if(originalCoaUrl && originalCoaUrl !== p.coaUrl){
+          try{ await api().adminDeleteCoa(originalCoaUrl); }
+          catch(err){ console.warn('Oude COA kon niet verwijderd worden:', err); }
+        }
+
+        $('#prodImageStatusV9').textContent = 'Opgeslagen ✓';
+
+        // Close and hard reload so admin and product-image state are fresh.
+        $('#modalBackdrop')?.classList.remove('open');
+        $('#productModal')?.classList.remove('open');
+
+        setTimeout(() => location.reload(), 250);
+
+      }catch(err){
+        console.error('PURE20 product/photo save:', err);
+        alert(`Opslaan mislukt: ${err.message || err}`);
+        $('#prodImageStatusV9').textContent =
+          `Opslaan mislukt: ${err.message || err}`;
+        saveButton.disabled = false;
+        saveButton.textContent = 'SAVE PRODUCT';
+      }
+    }
+
+    function boot(){
+      const modal = $('#productModal');
+      const input = $('#prodImageFileV9');
+      if(!modal || !input){
+        console.error('PURE20 photo v10: required admin elements not found');
+        return;
+      }
+
+      // Immediate local preview. No upload yet.
+      input.addEventListener('change', () => {
+        removeImage = false;
+        renderPreview();
+      });
+
+      $('#removeProdImageV9')?.addEventListener('click', () => {
+        input.value = '';
+        removeImage = true;
+        $('#prodImageUrlV9').value = '';
+        $('#prodImageShopCoverV9').checked = false;
+        renderPreview();
+      });
+
+      const observer = new MutationObserver(() => {
+        if(modal.classList.contains('open')){
+          setTimeout(loadExistingPhoto, 120);
+        }else{
+          clearPreviewObject();
+        }
+      });
+      observer.observe(modal, {attributes:true, attributeFilter:['class']});
+
+      // Capture BEFORE the existing admin.js click handler.
+      document.addEventListener('click', saveProductWithPhoto, true);
+
+      // Version marker for troubleshooting.
+      document.documentElement.dataset.pure20PhotoVersion = '10';
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', boot, {once:true});
+    }else{
+      boot();
+    }
+  })();
+  </script>
 
   <script>
     // On mobile, tapping the product card triggers the existing Edit action.

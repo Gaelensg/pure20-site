@@ -1,25 +1,23 @@
-PURE20 PRODUCT PHOTO SAVE v9
+PURE20 PHOTO V10 — één bestand, één uploadflow
 
-DIT VERVANGT ALLE VORIGE FOTO-UPLOADFLOWS IN EDIT PRODUCT.
-
-ER IS NOG MAAR ÉÉN MANIER:
-1. Open Producten > exacte variant.
-2. Onder PRODUCTFOTO: kies één bestand.
-3. Je ziet meteen een preview.
-4. Optioneel: vink 'Gebruik deze variant als shopminiatuur' aan.
-5. Druk onderaan op de bestaande zwarte knop SAVE PRODUCT.
-6. De foto wordt dan naar Supabase geüpload en aan die exacte variant gekoppeld.
-
-GEEN TWEEDE FOTO-UPLOADKNOP MEER.
-
-UPLOAD / VERVANG:
+Vervang ALLEEN:
 - admin.html
-- product-photo-save-v9.js
 
-De oude bestanden:
-- variant-photo-editor.js
-- variant-photo-editor.css
-mogen in GitHub blijven staan, maar admin.html laadt ze NIET meer.
+Daarna:
+1. wacht op de Vercel deploy
+2. sluit Safari-tab volledig
+3. open https://pure20-site.vercel.app/admin?v=10
+4. open Producten > een variant
+5. kies een foto
 
-DATABASE/BUCKET:
-Geen wijzigingen nodig. pure20_products image_url + pure20-products Storage zijn al live.
+De preview MOET onmiddellijk verschijnen, nog vóór SAVE PRODUCT.
+
+Daarna:
+- optioneel 'Gebruik deze variant als shopminiatuur'
+- druk SAVE PRODUCT
+- foto wordt geüpload naar pure20-products
+- image_url wordt opgeslagen op de exacte pure20_products-variant
+- admin reloadt automatisch
+
+Er wordt GEEN extern foto-JavaScriptbestand meer geladen.
+De volledige logica zit inline in admin.html.
