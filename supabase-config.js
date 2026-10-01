@@ -100,13 +100,14 @@ window.PURE20_SUPABASE_CONFIG = {
   if(!document.querySelector('link[data-pure20-product-catalogue]')){
     const l=document.createElement('link');
     l.rel='stylesheet';
-    l.href='/product-catalogue.css';
+    l.href='/product-catalogue.css?v=20261001-list1';
     l.dataset.pure20ProductCatalogue='1';
     document.head.appendChild(l);
   }
 
-  for(const src of ['/retail-cart-bridge.js','/product-catalogue.js']){
-    if(document.querySelector(`script[src="${src}"]`))continue;
+  for(const src of ['/retail-cart-bridge.js','/product-catalogue.js?v=20261001-list1']){
+    const base=src.split('?')[0];
+    if([...document.scripts].some(s=>s.src&&new URL(s.src,location.href).pathname===base))continue;
     const s=document.createElement('script');
     s.src=src;
     s.defer=true;
@@ -121,9 +122,22 @@ window.PURE20_SUPABASE_CONFIG = {
 
   if(document.querySelector('script[data-pure20-variant-product-images]'))return;
   const s=document.createElement('script');
-  s.src='/variant-product-images.js?v=20261001-5';
+  s.src='/variant-product-images.js?v=20261001-list1';
   s.defer=true;
   s.dataset.pure20VariantProductImages='1';
+  document.head.appendChild(s);
+})();
+
+/* Admin product thumbnails */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
+  if(p!=='/admin'&&p!=='/admin.html')return;
+
+  if(document.querySelector('script[data-pure20-admin-thumbnails]'))return;
+  const s=document.createElement('script');
+  s.src='/admin-product-thumbnails.js?v=20261001-list1';
+  s.defer=true;
+  s.dataset.pure20AdminThumbnails='1';
   document.head.appendChild(s);
 })();
 

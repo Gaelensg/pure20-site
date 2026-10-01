@@ -108,13 +108,55 @@
       if(window.PURE20_API?.client)break;
       await new Promise(r=>setTimeout(r,50));
     }
-    const client=window.PURE20_API?.client;if(!client)return;
-    const {data,error}=await client.from('pure20_compounds')
-      .select('slug,product_name,display_name_nl,display_name_en,image_url,image_alt_nl,image_alt_en')
-      .eq('active',true)
-      .order('sort_order',{ascending:true});
-    if(error){console.warn('PURE20 product metadata:',error.message);return}
-    compounds=new Map((data||[]).map(c=>[String(c.product_name),c]));
+
+    const client=window.PURE20_API?.client;
+    if(!client)return;
+
+    const [compoundRes,productRes]=await Promise.all([
+      client.from('pure20_compounds')
+        .select('slug,product_name,display_name_nl,display_name_en,image_url,image_alt_nl,image_alt_en,sort_order')
+        .eq('active',true)
+        .order('sort_order',{ascending:true}),
+
+      client.from('pure20_products')
+        .select('product_name,image_url,image_alt_nl,image_alt_en,sort_order,active')
+        .eq('active',true)
+        .order('sort_order',{ascending:true})
+    ]);
+
+    if(compoundRes.error){
+      console.warn('PURE20 product metadata:',compoundRes.error.message);
+      return;
+    }
+    if(productRes.error){
+      console.warn('PURE20 product image fallback:',productRes.error.message);
+      return;
+    }
+
+    // First available variant image becomes the automatic thumbnail fallback.
+    const fallback=new Map();
+    for(const row of productRes.data||[]){
+      if(!safeUrl(row.image_url))continue;
+      if(!fallback.has(row.product_name)){
+        fallback.set(row.product_name,row);
+      }
+    }
+
+    const rows=(compoundRes.data||[]).map(c=>{
+      if(safeUrl(c.image_url))return c;
+
+      const f=fallback.get(c.product_name);
+      if(!f)return c;
+
+      return {
+        ...c,
+        image_url:f.image_url,
+        image_alt_nl:f.image_alt_nl||c.image_alt_nl,
+        image_alt_en:f.image_alt_en||c.image_alt_en
+      };
+    });
+
+    compounds=new Map(rows.map(c=>[String(c.product_name),c]));
     decorate();
 
     const cat=document.getElementById('catalogue');

@@ -1,31 +1,28 @@
-PURE20 PHOTO V14
+PURE20 product list images v1
 
-Vervang ALLEEN admin.html.
+UPLOAD / VERVANG IN GITHUB ROOT:
 
-Waarom v13 faalde:
-Op iPhone werd prodId/productnaam niet betrouwbaar meegegeven aan de losse
-fotocode, hoewel de productrij wel correct geopend was.
+NIEUW:
+- admin-product-thumbnails.js
 
-V14:
-- onthoudt exact het data-id van de productrij zodra je erop tikt;
-- gebruikt DAT id bij Save;
-- haalt de volledige pure20_products-rij uit Supabase;
-- productnaam, variant, code en categorie komen dus rechtstreeks uit de database;
-- er wordt niets meer afgeleid of geraden.
+VERVANG:
+- product-catalogue.js
+- supabase-config.js
 
-Controle:
-Je moet PRODUCTFOTO V14 zien.
+WAT VERANDERT?
 
-Verwachte flow:
-1. tik product in Producten
-2. kies foto
-3. preview verschijnt
-4. SAVE PRODUCT + FOTO
-5. status:
-   Exacte variant ophalen…
-   Foto uploaden voor HGH 191AA 10iu…
-   Productgegevens opslaan…
-   Opgeslagen ✓ HGH 191AA 10iu
+ADMIN > PRODUCTEN
+Elke exacte variant die een image_url heeft krijgt nu een miniatuurfoto in de
+productlijst. Dus HGH 10 IU, 12 IU, 15 IU enz. kunnen elk hun eigen foto tonen.
 
-Als je het editvenster al open had vóór de V14-deploy:
-SLUIT HET VENSTER EERST en tik de productvariant opnieuw aan, zodat V14 het rij-ID kan onthouden.
+PUBLIEKE SHOP
+De shop blijft bewust maar ÉÉN miniatuur per peptide tonen.
+
+Volgorde:
+1. Als pure20_compounds.image_url bestaat, wordt die shopminiatuur gebruikt.
+2. Als die leeg is, wordt automatisch de eerste beschikbare variantfoto gebruikt.
+
+De sterkte-specifieke foto op de productpagina blijft apart werken via
+variant-product-images.js.
+
+Na upload naar GitHub wacht je op Vercel en vernieuw je /admin en /shop.
