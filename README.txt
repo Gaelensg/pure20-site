@@ -1,23 +1,22 @@
-PURE20 PHOTO V10 — één bestand, één uploadflow
+PURE20 PHOTO V12
 
-Vervang ALLEEN:
-- admin.html
+Vervang ALLEEN admin.html.
 
-Daarna:
-1. wacht op de Vercel deploy
-2. sluit Safari-tab volledig
-3. open https://pure20-site.vercel.app/admin?v=10
-4. open Producten > een variant
-5. kies een foto
+Dit is bewust anders dan de vorige fixes:
+- de file input heeft rechtstreeks een onchange-handler in de HTML;
+- preview gebruikt FileReader, niet URL.createObjectURL;
+- SAVE PRODUCT heeft rechtstreeks een onclick-handler;
+- die handler blokkeert de oude admin.js-saveflow zodat er maar één save gebeurt;
+- foto wordt geüpload naar pure20-products;
+- image_url wordt rechtstreeks op de exacte pure20_products variant opgeslagen.
 
-De preview MOET onmiddellijk verschijnen, nog vóór SAVE PRODUCT.
+CONTROLE:
+In Edit product moet bovenaan het fotoblok staan:
+PRODUCTFOTO V12
 
-Daarna:
-- optioneel 'Gebruik deze variant als shopminiatuur'
-- druk SAVE PRODUCT
-- foto wordt geüpload naar pure20-products
-- image_url wordt opgeslagen op de exacte pure20_products-variant
-- admin reloadt automatisch
+Als je een foto kiest:
+1. de preview verschijnt DIRECT;
+2. status wordt 'Nieuwe foto geselecteerd ... Preview OK';
+3. knop wordt 'SAVE PRODUCT + FOTO'.
 
-Er wordt GEEN extern foto-JavaScriptbestand meer geladen.
-De volledige logica zit inline in admin.html.
+Als PRODUCTFOTO V12 niet zichtbaar is, draait de nieuwe admin.html niet.
