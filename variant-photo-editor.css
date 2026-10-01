@@ -1,0 +1,74 @@
+/* PURE20 variant photo editor, shown directly in Edit product */
+.variant-photo-admin-field{
+  border-top:1px solid #ddd;
+  padding-top:14px;
+}
+
+.variant-photo-preview{
+  width:170px;
+  aspect-ratio:1/1;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  margin-top:9px;
+  border:1px solid #c8c5bd;
+  background:#f3f2ee;
+}
+
+.variant-photo-preview img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+.variant-photo-preview>span{
+  color:#85827c;
+  font-size:8px;
+  letter-spacing:.12em;
+}
+
+.variant-photo-actions{
+  display:grid;
+  grid-template-columns:1.2fr 1.4fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+
+.variant-photo-actions .admin-btn{
+  min-height:42px;
+  padding:8px;
+}
+
+.variant-photo-actions .admin-btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+.variant-photo-status{
+  margin-top:9px;
+  color:#666;
+  font-size:10px;
+  line-height:1.45;
+  text-transform:none;
+  letter-spacing:0;
+}
+
+@media(max-width:680px){
+  .variant-photo-preview{
+    width:100%;
+    max-width:240px;
+  }
+
+  .variant-photo-actions{
+    grid-template-columns:1fr 1fr;
+  }
+
+  #chooseVariantPhoto{
+    grid-column:1/-1;
+  }
+
+  .variant-photo-actions .admin-btn{
+    min-height:46px;
+  }
+}

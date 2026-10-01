@@ -1,34 +1,43 @@
-PURE20 Product Pages direct-load v6
+PURE20 — Productfoto rechtstreeks in Edit product (v7)
 
-Dit lost op dat de tab 'Product pages' niet zichtbaar is.
+DIT VERVANGT DE OMSLACHTIGE ROUTE VIA 'PRODUCT PAGES' VOOR FOTO'S PER STERKTE.
 
-WAAROM
-De juiste Product Pages-code stond al in GitHub, maar werd dynamisch geladen via
-supabase-config.js. Op jouw live admin werd die dynamische injectie niet betrouwbaar uitgevoerd.
-
-DEZE VERSIE
-admin.html laadt nu DIRECT:
-- /admin-product-pages.css?v=20261001-6
-- /admin-product-pages.js?v=20261001-6
-
-Daardoor hoeft supabase-config.js de module niet meer dynamisch te injecteren.
-Het data-attribuut zorgt er bovendien voor dat de bestaande loader geen tweede
-kopie probeert te laden.
-
-UPLOAD / VERVANG DEZE 3 BESTANDEN IN DE ROOT VAN GITHUB:
+UPLOAD / VERVANG IN DE ROOT VAN GITHUB:
 - admin.html
-- admin-product-pages.js
-- admin-product-pages.css
+- variant-photo-editor.js
+- variant-photo-editor.css
 
-Daarna:
-1. wacht op de Vercel-deploy
-2. sluit de adminpagina volledig
-3. open /admin opnieuw
+NA VERCEL DEPLOY:
+1. sluit /admin volledig
+2. open /admin opnieuw
+3. ga naar Producten
+4. open bijvoorbeeld HGH 191AA 10iu
 
-BOVENAAN MOET JE DAN TUSSEN DE TABS ZIEN:
-PRODUCTEN | PRODUCT PAGES | KORTINGSCODES | INSTELLINGEN | BACKUP
+ONDER HET COA-BLOK ZIE JE NU:
+PRODUCTFOTO
 
-In Product pages:
-- open een peptide
-- bovenaan staat STERKTES & FOTO'S
-- daar kun je per sterkte een eigen foto uploaden
+Met:
+- Foto uploaden
+- Foto vervangen
+- Foto verwijderen
+- Gebruik als shopminiatuur
+
+Elke rij in Producten is al één exacte variant, dus:
+HGH 191AA 10iu = eigen foto
+HGH 191AA 12iu = eigen foto
+Retatrutide 10mg = eigen foto
+Retatrutide 20mg = eigen foto
+enz.
+
+De foto wordt direct opgeslagen in pure20_products.image_url.
+
+SHOPMINIATUUR
+De eerste variantfoto wordt automatisch de shopminiatuur als er nog geen bestaat.
+Je kunt later een andere sterkte kiezen en op 'Gebruik als shopminiatuur' tikken.
+
+PRODUCTPAGINA
+De bestaande variant-product-images.js gebruikt de variantfoto wanneer de klant
+op de productpagina van sterkte wisselt.
+
+DATABASE
+Geen SQL nodig. De vereiste kolommen, grants en Storage policies zijn al live.
