@@ -1,4 +1,4 @@
-/* PURE20 variant photo editor, shown directly in Edit product */
+/* PURE20 variant photo editor v8, iPhone/Safari safe */
 .variant-photo-admin-field{
   border-top:1px solid #ddd;
   padding-top:14px;
@@ -28,6 +28,17 @@
   letter-spacing:.12em;
 }
 
+/* Do NOT use display:none on iOS. Keep the real file control available to the label. */
+.variant-photo-file-input{
+  position:fixed !important;
+  left:-10000px !important;
+  top:0 !important;
+  width:1px !important;
+  height:1px !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
 .variant-photo-actions{
   display:grid;
   grid-template-columns:1.2fr 1.4fr 1fr;
@@ -38,6 +49,15 @@
 .variant-photo-actions .admin-btn{
   min-height:42px;
   padding:8px;
+}
+
+.variant-photo-picker{
+  cursor:pointer;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  text-decoration:none;
 }
 
 .variant-photo-actions .admin-btn:disabled{
@@ -66,6 +86,7 @@
 
   #chooseVariantPhoto{
     grid-column:1/-1;
+    min-height:50px;
   }
 
   .variant-photo-actions .admin-btn{

@@ -9,7 +9,6 @@
 
   let current=null;
   let compound=null;
-  let previewUrl='';
 
   function client(){return window.PURE20_API?.client}
 
@@ -29,10 +28,19 @@
       .replace(/^-+|-+$/g,'').slice(0,100)||'file';
   }
 
+  function formIdentity(){
+    return {
+      id:String($('#prodId')?.value||'').trim(),
+      product:String($('#prodName')?.value||'').trim(),
+      variant:String($('#prodVariant')?.value||'').trim(),
+      code:String($('#prodCode')?.value||'').trim(),
+      category:String($('#prodCategory')?.value||'').trim()
+    };
+  }
+
   function defaultAlt(){
-    const product=String($('#prodName')?.value||current?.product_name||'').trim();
-    const variant=String($('#prodVariant')?.value||current?.variant||'').trim();
-    return `PURE20 ${product} ${variant}`.trim();
+    const f=formIdentity();
+    return `PURE20 ${f.product||current?.product_name||''} ${f.variant||current?.variant||''}`.trim();
   }
 
   function inject(){
@@ -51,17 +59,23 @@
         <span>GEEN FOTO</span>
       </div>
 
-      <input id="variantPhotoFile" class="hidden" type="file"
+      <input id="variantPhotoFile" class="variant-photo-file-input" type="file"
         accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" />
 
       <div class="variant-photo-actions">
-        <button id="chooseVariantPhoto" class="admin-btn primary" type="button">Foto uploaden</button>
-        <button id="makeVariantShopCover" class="admin-btn" type="button" disabled>Gebruik als shopminiatuur</button>
-        <button id="removeVariantPhoto" class="admin-btn danger" type="button" disabled>Foto verwijderen</button>
+        <label id="chooseVariantPhoto" for="variantPhotoFile" class="admin-btn primary variant-photo-picker">
+          Foto uploaden
+        </label>
+        <button id="makeVariantShopCover" class="admin-btn" type="button" disabled>
+          Gebruik als shopminiatuur
+        </button>
+        <button id="removeVariantPhoto" class="admin-btn danger" type="button" disabled>
+          Foto verwijderen
+        </button>
       </div>
 
       <div id="variantPhotoStatus" class="variant-photo-status">
-        Open een bestaand product om de foto te beheren.
+        Variant wordt gekoppeld…
       </div>
 
       <small class="admin-note">
@@ -71,16 +85,6 @@
 
     coa.insertAdjacentElement('afterend',block);
 
-    $('#chooseVariantPhoto').addEventListener('click',()=>{
-      const id=String($('#prodId')?.value||'').trim();
-      if(!id){
-        alert('Sla het nieuwe product eerst één keer op. Daarna kun je een foto toevoegen.');
-        return;
-      }
-      $('#variantPhotoFile').value='';
-      $('#variantPhotoFile').click();
-    });
-
     $('#variantPhotoFile').addEventListener('change',handleFile);
     $('#removeVariantPhoto').addEventListener('click',removePhoto);
     $('#makeVariantShopCover').addEventListener('click',makeShopCover);
@@ -88,11 +92,62 @@
     return true;
   }
 
-  function clearObjectPreview(){
-    if(previewUrl){
-      URL.revokeObjectURL(previewUrl);
-      previewUrl='';
+  async function resolveCurrent(){
+    if(!client())throw new Error('Databaseverbinding niet beschikbaar.');
+
+    const f=formIdentity();
+
+    // Preferred path: exact database id from the existing admin form.
+    if(f.id){
+      const {data,error}=await client().from('pure20_products')
+        .select('id,product_name,variant,code,category,image_url,image_alt_nl,image_alt_en')
+        .eq('id',f.id)
+        .maybeSingle();
+      if(error)throw error;
+      if(data){
+        current=data;
+        return data;
+      }
     }
+
+    // iPhone/admin fallback: resolve the exact variant by its visible form fields.
+    if(!f.product)throw new Error('Geen productnaam gevonden.');
+
+    let q=client().from('pure20_products')
+      .select('id,product_name,variant,code,category,image_url,image_alt_nl,image_alt_en')
+      .eq('product_name',f.product);
+
+    if(f.variant)q=q.eq('variant',f.variant);
+    if(f.code)q=q.eq('code',f.code);
+
+    const {data,error}=await q.limit(3);
+    if(error)throw error;
+
+    if(!data?.length){
+      throw new Error(`Variant niet gevonden: ${f.product}${f.variant?' · '+f.variant:''}`);
+    }
+
+    current=data[0];
+
+    // Backfill the hidden form id so later operations use the canonical id.
+    if($('#prodId')&&!$('#prodId').value){
+      $('#prodId').value=current.id;
+    }
+
+    return current;
+  }
+
+  async function loadCompound(){
+    compound=null;
+    if(!current?.product_name)return;
+
+    const {data,error}=await client().from('pure20_compounds')
+      .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
+      .eq('product_name',current.product_name)
+      .maybeSingle();
+
+    if(error)console.warn('Shopminiatuur kon niet gelezen worden:',error.message);
+    compound=data||null;
   }
 
   function render(){
@@ -100,79 +155,51 @@
     const status=$('variantPhotoStatus');
     const remove=$('removeVariantPhoto');
     const cover=$('makeVariantShopCover');
-    const choose=$('chooseVariantPhoto');
-    if(!preview||!status||!remove||!cover||!choose)return;
+    const picker=$('chooseVariantPhoto');
+    if(!preview||!status||!remove||!cover||!picker)return;
 
-    clearObjectPreview();
-
-    const id=String($('#prodId')?.value||'').trim();
-    if(!id){
-      preview.innerHTML='<span>NIEUW PRODUCT</span>';
-      status.textContent='Sla het product eerst op. Daarna wordt foto-upload beschikbaar.';
+    if(!current){
+      preview.innerHTML='<span>GEEN FOTO</span>';
+      status.textContent='Variant wordt gekoppeld…';
       remove.disabled=true;
       cover.disabled=true;
-      choose.textContent='Foto uploaden';
+      picker.textContent='Foto uploaden';
       return;
     }
 
-    const url=safeUrl(current?.image_url);
+    const url=safeUrl(current.image_url);
     const isCover=Boolean(url&&compound?.image_url&&url===compound.image_url);
 
     if(url){
       preview.innerHTML=`<img src="${url}" alt="">`;
-      choose.textContent='Foto vervangen';
+      picker.textContent='Foto vervangen';
       remove.disabled=false;
       cover.disabled=isCover;
       cover.textContent=isCover?'Shopminiatuur ✓':'Gebruik als shopminiatuur';
-      status.textContent=isCover
-        ? 'Deze variant heeft een eigen foto en is momenteel ook de shopminiatuur.'
-        : 'Deze variant heeft een eigen foto.';
+      status.textContent=`Gekoppeld aan ${current.product_name} · ${current.variant||current.code||'variant'}.`;
     }else{
       preview.innerHTML='<span>GEEN FOTO</span>';
-      choose.textContent='Foto uploaden';
+      picker.textContent='Foto uploaden';
       remove.disabled=true;
       cover.disabled=true;
       cover.textContent='Gebruik als shopminiatuur';
-      status.textContent='Nog geen productfoto gekoppeld aan deze sterkte.';
+      status.textContent=`Klaar voor upload: ${current.product_name} · ${current.variant||current.code||'variant'}.`;
     }
   }
 
   async function load(){
     if(!inject())return;
-
-    const id=String($('#prodId')?.value||'').trim();
     current=null;
     compound=null;
-
-    if(!id||!client()){
-      render();
-      return;
-    }
-
-    $('#variantPhotoStatus').textContent='Foto laden…';
+    render();
 
     try{
-      const {data,error}=await client().from('pure20_products')
-        .select('id,product_name,variant,category,image_url,image_alt_nl,image_alt_en')
-        .eq('id',id)
-        .maybeSingle();
-
-      if(error)throw error;
-      current=data||null;
-
-      if(current?.product_name){
-        const {data:c,error:ce}=await client().from('pure20_compounds')
-          .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
-          .eq('product_name',current.product_name)
-          .maybeSingle();
-        if(ce)console.warn('Shopminiatuur kon niet gelezen worden:',ce.message);
-        compound=c||null;
-      }
-
+      await resolveCurrent();
+      await loadCompound();
       render();
     }catch(err){
       console.error(err);
-      $('#variantPhotoStatus').textContent=`Kon productfoto niet laden: ${err.message||err}`;
+      $('#variantPhotoStatus').textContent=`Kon variant niet koppelen: ${err.message||err}`;
     }
   }
 
@@ -199,9 +226,9 @@
     if(error)console.warn('Oude productfoto kon niet verwijderd worden:',error.message);
   }
 
-  async function uploadStorage(file,id){
-    const product=String($('#prodName')?.value||current?.product_name||'product').trim();
-    const path=`variants/${slugify(product)}/${slugify(id)}/${Date.now()}-${slugify(file.name||'photo.webp')}`;
+  async function uploadStorage(file){
+    if(!current?.id)await resolveCurrent();
+    const path=`variants/${slugify(current.product_name)}/${slugify(current.id)}/${Date.now()}-${slugify(file.name||'photo.webp')}`;
 
     const {data,error}=await client().storage.from(BUCKET).upload(path,file,{
       cacheControl:'31536000',
@@ -216,91 +243,39 @@
     return url;
   }
 
-  async function handleFile(){
-    const file=$('variantPhotoFile').files?.[0]||null;
-    const problem=validate(file);
-    if(problem){alert(problem);return}
-
-    const id=String($('#prodId')?.value||'').trim();
-    if(!id){alert('Sla het product eerst op.');return}
-
-    const button=$('chooseVariantPhoto');
-    const oldUrl=String(current?.image_url||'');
-
-    button.disabled=true;
-    button.textContent='Uploaden…';
-    $('#variantPhotoStatus').textContent='Productfoto uploaden…';
-
-    try{
-      const url=await uploadStorage(file,id);
-      const alt=defaultAlt();
-
-      const {error}=await client().from('pure20_products').update({
-        image_url:url,
-        image_alt_nl:alt,
-        image_alt_en:alt,
-        updated_at:new Date().toISOString()
-      }).eq('id',id);
-      if(error)throw error;
-
-      if(oldUrl&&oldUrl!==url)await deleteStorage(oldUrl);
-
-      current={...(current||{}),image_url:url,image_alt_nl:alt,image_alt_en:alt};
-
-      // If this peptide has no shop cover yet, use the first uploaded variant automatically.
-      if(current?.product_name){
-        await ensureCompound();
-        if(compound&&!safeUrl(compound.image_url)){
-          await setCompoundCover(url,alt);
-        }
-      }
-
-      render();
-    }catch(err){
-      console.error(err);
-      alert(`Foto uploaden mislukt: ${err.message||err}`);
-      $('#variantPhotoStatus').textContent=`Upload mislukt: ${err.message||err}`;
-    }finally{
-      button.disabled=false;
-    }
-  }
-
   async function ensureCompound(){
-    if(compound||!current?.product_name)return compound;
+    if(compound)return compound;
+    if(!current)await resolveCurrent();
 
-    const name=current.product_name;
     const {data,error}=await client().from('pure20_compounds')
       .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
-      .eq('product_name',name)
+      .eq('product_name',current.product_name)
       .maybeSingle();
     if(error)throw error;
 
     if(data){
       compound=data;
-      return compound;
+      return data;
     }
 
-    let slug=slugify(name).replace(/\./g,'-');
-    const payload={
-      slug,
-      product_name:name,
-      category:current.category||String($('#prodCategory')?.value||'Other').trim()||'Other',
-      active:true
-    };
-
+    const slug=slugify(current.product_name).replace(/\./g,'-');
     const {data:created,error:createError}=await client().from('pure20_compounds')
-      .insert(payload)
+      .insert({
+        slug,
+        product_name:current.product_name,
+        category:current.category||formIdentity().category||'Other',
+        active:true
+      })
       .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
       .single();
 
     if(createError)throw createError;
     compound=created;
-    return compound;
+    return created;
   }
 
   async function setCompoundCover(url,alt){
     await ensureCompound();
-    if(!compound)return;
 
     const {error}=await client().from('pure20_compounds').update({
       image_url:url,
@@ -310,48 +285,95 @@
     }).eq('product_name',current.product_name);
 
     if(error)throw error;
-
     compound={...compound,image_url:url,image_alt_nl:alt,image_alt_en:alt};
   }
 
-  async function makeShopCover(){
-    const url=safeUrl(current?.image_url);
-    if(!url)return;
+  async function handleFile(){
+    const input=$('variantPhotoFile');
+    const file=input.files?.[0]||null;
+    const problem=validate(file);
+    if(problem){
+      if(file)alert(problem);
+      input.value='';
+      return;
+    }
 
-    const button=$('makeVariantShopCover');
-    button.disabled=true;
-    button.textContent='Instellen…';
+    $('#variantPhotoStatus').textContent='Productfoto uploaden…';
 
     try{
+      if(!current)await resolveCurrent();
+
+      const oldUrl=safeUrl(current.image_url);
+      const url=await uploadStorage(file);
+      const alt=defaultAlt();
+
+      const {error}=await client().from('pure20_products').update({
+        image_url:url,
+        image_alt_nl:alt,
+        image_alt_en:alt,
+        updated_at:new Date().toISOString()
+      }).eq('id',current.id);
+
+      if(error)throw error;
+
+      if(oldUrl&&oldUrl!==url)await deleteStorage(oldUrl);
+
+      current={...current,image_url:url,image_alt_nl:alt,image_alt_en:alt};
+
+      await loadCompound();
+
+      // First uploaded variant becomes the shop thumbnail if none exists yet.
+      if(!safeUrl(compound?.image_url)){
+        await setCompoundCover(url,alt);
+      }
+
+      render();
+    }catch(err){
+      console.error(err);
+      alert(`Foto uploaden mislukt: ${err.message||err}`);
+      $('#variantPhotoStatus').textContent=`Upload mislukt: ${err.message||err}`;
+    }finally{
+      input.value='';
+    }
+  }
+
+  async function makeShopCover(){
+    try{
+      if(!current)await resolveCurrent();
+      const url=safeUrl(current.image_url);
+      if(!url)return;
+
+      const button=$('makeVariantShopCover');
+      button.disabled=true;
+      button.textContent='Instellen…';
+
       await setCompoundCover(url,current.image_alt_nl||defaultAlt());
       render();
     }catch(err){
       console.error(err);
       alert(`Shopminiatuur instellen mislukt: ${err.message||err}`);
-      button.disabled=false;
-      button.textContent='Gebruik als shopminiatuur';
+      render();
     }
   }
 
   async function removePhoto(){
-    const id=String($('#prodId')?.value||'').trim();
-    const oldUrl=safeUrl(current?.image_url);
-    if(!id||!oldUrl)return;
-
-    if(!confirm('Deze productfoto verwijderen?'))return;
-
-    const wasCover=Boolean(compound?.image_url&&oldUrl===compound.image_url);
-
     try{
+      if(!current)await resolveCurrent();
+      const oldUrl=safeUrl(current.image_url);
+      if(!oldUrl)return;
+      if(!confirm('Deze productfoto verwijderen?'))return;
+
+      const wasCover=Boolean(compound?.image_url&&oldUrl===compound.image_url);
+
       const {error}=await client().from('pure20_products').update({
         image_url:null,
         image_alt_nl:null,
         image_alt_en:null,
         updated_at:new Date().toISOString()
-      }).eq('id',id);
+      }).eq('id',current.id);
       if(error)throw error;
 
-      if(wasCover&&current?.product_name){
+      if(wasCover){
         const {error:coverError}=await client().from('pure20_compounds').update({
           image_url:null,
           image_alt_nl:null,
@@ -359,12 +381,11 @@
           updated_at:new Date().toISOString()
         }).eq('product_name',current.product_name);
         if(coverError)throw coverError;
-
-        compound={...(compound||{}),image_url:null,image_alt_nl:null,image_alt_en:null};
+        compound={...compound,image_url:null,image_alt_nl:null,image_alt_en:null};
       }
 
       await deleteStorage(oldUrl);
-      current={...(current||{}),image_url:null,image_alt_nl:null,image_alt_en:null};
+      current={...current,image_url:null,image_alt_nl:null,image_alt_en:null};
       render();
     }catch(err){
       console.error(err);
@@ -378,11 +399,11 @@
 
     const observer=new MutationObserver(()=>{
       if(modal.classList.contains('open')){
-        setTimeout(load,40);
+        // Give admin.js time to populate product, variant and code.
+        setTimeout(load,120);
       }else{
         current=null;
         compound=null;
-        clearObjectPreview();
       }
     });
 
@@ -393,12 +414,12 @@
     if(!inject())return;
     watchModal();
 
-    // Extra safety for the mobile row-click shortcut.
     document.addEventListener('click',e=>{
-      const row=e.target.closest('#productsBody tr[data-id]');
-      if(row)setTimeout(()=>{
-        if($('#productModal')?.classList.contains('open'))load();
-      },80);
+      if(e.target.closest('#productsBody tr[data-id]')){
+        setTimeout(()=>{
+          if($('#productModal')?.classList.contains('open'))load();
+        },180);
+      }
     });
   }
 
