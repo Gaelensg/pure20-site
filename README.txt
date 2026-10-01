@@ -1,13 +1,18 @@
-PURE20 THUMBNAIL CLICK V6
+PURE20 PRODUCT VARIANT SYNC V1
 
-Vervang alleen:
-- product-catalogue.js
-- shop.html
+Upload / vervang:
+- product.html
+- product-variant-sync.js
 
-Wat verandert:
-- thumbnails blijven exact zoals in werkende V5;
-- klikken/tikken op thumbnail, productnaam of productblok opent de productpagina;
-- exacte variant-ID wordt meegestuurd via ?variant=...;
-- + / − / aantallen / COA-links blijven hun eigen functie houden;
-- productblok is ook via toetsenbord toegankelijk;
-- shop.html verandert alleen thumb5 -> thumb6 voor cache busting.
+Wat gebeurt er:
+- klik je op een andere sterkte op de productpagina, dan wordt de juiste variant opnieuw gelezen;
+- de productfoto wisselt naar pure20_products.image_url van die exacte variant;
+- de prijs wisselt naar pure20_products.price_eur van die exacte variant;
+- code en detail-sterkte worden mee gesynchroniseerd;
+- als een variant geen eigen foto heeft, wordt de algemene compoundfoto gebruikt.
+
+BELANGRIJK:
+HGH 191AA heeft momenteel in Supabase voor 10iu, 12iu, 15iu, 24iu en 36iu
+allemaal price_eur = 0.00.
+De foto's zullen dus wel wisselen, maar de prijs zal bij HGH 'Prijs volgt' blijven
+tot de retailprijzen per variant zijn ingevuld.
