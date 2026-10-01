@@ -1,57 +1,36 @@
-PURE20 — Product pages integrated v4
+PURE20 Admin cache-proof v5
 
-WAAROM DE VORIGE VERSIE NIET BETROUWBAAR WAS
-De sterktes zaten in een tweede JavaScript-module die achteraf probeerde aan te
-haken op de Product pages-editor. Op jouw live admin werd die koppeling niet
-betrouwbaar uitgevoerd.
+DIT IS DE FIX VOOR 'IK ZIE DE STERKTES NOG STEEDS NIET'.
 
-Deze versie verwijdert die afhankelijkheid volledig.
+De actuele GitHub-code bevat de sterktes al, maar admin.html laadde:
+supabase-config.js
+zonder versienummer. Safari kon daardoor de oude loader blijven cachen.
 
-UPLOAD / VERVANG IN DE ROOT VAN GITHUB:
+UPLOAD / VERVANG DEZE 4 BESTANDEN IN DE ROOT VAN GITHUB:
+- admin.html
 - admin-product-pages.js
 - admin-product-pages.css
 - supabase-config.js
 
-Het oude bestand variant-images-admin.js mag in de repo blijven staan.
-Het wordt na deze update NIET meer geladen.
+admin.html laadt nu:
+- supabase-config.js?v=20261001-5
+- api.js?v=20261001-5
+- admin.js?v=20261001-5
 
-DATABASE
-De databasefix is al live uitgevoerd.
-Je hoeft geen SQL uit te voeren.
+supabase-config.js laadt:
+- admin-product-pages.js?v=20261001-5
+- admin-product-pages.css?v=20261001-5
 
-WAT JE NU ZIET
-Admin > Product pages > open een peptide.
+NA VERCEL DEPLOY:
+1. sluit de bestaande admin-tab volledig
+2. open /admin opnieuw
+3. ga naar Product pages
+4. tik een peptide open
 
-DIRECT BOVENAAN DE EDITOR staat:
+BOVENAAN DE EDITOR MOET DAN STAAN:
 STERKTES & FOTO'S
+Afbeelding per variant
 
-Daaronder staan ALLE varianten uit pure20_products voor dat peptide, bijvoorbeeld:
-HGH 191AA:
-- 6 IU
-- 10 IU
-- 12 IU
-- 15 IU
-- 24 IU
-- 36 IU
-(alleen wat werkelijk in jouw database staat wordt getoond)
+Daaronder verschijnen alle databasevarianten.
 
-Retatrutide, BPC-157, Semaglutide enz. werken exact hetzelfde.
-
-PER VARIANT:
-- Foto uploaden
-- Foto vervangen
-- Foto verwijderen
-
-SHOPMINIATUUR
-Verder naar beneden staat apart:
-SHOPMINIATUUR / FALLBACK
-
-Dat is de ene afbeelding die in de shoplijst verschijnt.
-Als een specifieke sterkte geen eigen foto heeft, gebruikt de publieke
-productpagina deze shopminiatuur als fallback.
-
-CACHE
-supabase-config.js laadt de nieuwe adminbestanden met:
-?v=20261001-4
-
-Na Vercel deployment Safari één keer volledig vernieuwen.
+De Supabase-permissiefout voor pure20_compounds is al live opgelost.

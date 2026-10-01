@@ -121,7 +121,7 @@ window.PURE20_SUPABASE_CONFIG = {
 
   if(document.querySelector('script[data-pure20-variant-product-images]'))return;
   const s=document.createElement('script');
-  s.src='/variant-product-images.js?v=20261001-4';
+  s.src='/variant-product-images.js?v=20261001-5';
   s.defer=true;
   s.dataset.pure20VariantProductImages='1';
   document.head.appendChild(s);
@@ -135,14 +135,14 @@ window.PURE20_SUPABASE_CONFIG = {
   if(!document.querySelector('link[data-pure20-admin-product-pages]')){
     const l=document.createElement('link');
     l.rel='stylesheet';
-    l.href='/admin-product-pages.css?v=20261001-4';
+    l.href='/admin-product-pages.css?v=20261001-5';
     l.dataset.pure20AdminProductPages='1';
     document.head.appendChild(l);
   }
 
   if(!document.querySelector('script[data-pure20-admin-product-pages]')){
     const s=document.createElement('script');
-    s.src='/admin-product-pages.js?v=20261001-4';
+    s.src='/admin-product-pages.js?v=20261001-5';
     s.defer=true;
     s.dataset.pure20AdminProductPages='1';
     document.head.appendChild(s);
