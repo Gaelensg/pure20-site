@@ -1,63 +1,56 @@
-PURE20 — afbeeldingen per sterkte / variant
+PURE20 — fix voor Product pages / foto's per sterkte
 
 DATABASE
-De live Supabase-database is AL aangepast.
-pure20_products heeft nu:
-- image_url
-- image_alt_nl
-- image_alt_en
+De permission error is AL LIVE opgelost in Supabase.
 
-De meegeleverde migration SQL is alleen ter referentie. Je hoeft die niet opnieuw uit te voeren.
+pure20_compounds:
+- anon: SELECT
+- authenticated: SELECT / INSERT / UPDATE / DELETE
+- RLS blijft actief
+- de bestaande admin-policy bepaalt nog steeds wie effectief mag schrijven
 
-UPLOAD NAAR DE ROOT VAN Gaelensg/pure20-site
+Je hoeft dus GEEN SQL uit te voeren.
 
-NIEUW
+UPLOAD NAAR DE ROOT VAN GITHUB
+
+VERVANG:
 - variant-images-admin.js
 - variant-images-admin.css
-- variant-product-images.js
-
-VERVANG
 - supabase-config.js
 
-WAAR BEHEER JE FOTO'S?
-1. Open /admin
-2. Ga naar Product pages
-3. Open een peptide
-4. Onderaan verschijnt 'Foto's per sterkte'
-5. Daar zie je elke variant / sterkte apart
-6. Upload per sterkte zijn eigen vialfoto
+Wat verandert er?
 
-SHOPMINIATUUR
-De normale shop blijft bewust maar ÉÉN miniatuur per peptide tonen.
-Klik bij de gewenste sterkte op:
-  Als shopminiatuur
+1. STERKTES ZIJN ZICHTBAAR
+Open:
+Admin > Product pages > kies een peptide
 
-Als er nog geen shopminiatuur bestaat, wordt de eerste geüploade variantfoto
-automatisch als shopminiatuur gebruikt.
+Bovenaan de editor verschijnt nu bijvoorbeeld:
+5 STERKTES & FOTO'S
 
-PRODUCTPAGINA
-Op /product?slug=... verandert de grote productfoto automatisch wanneer de klant
-een andere sterkte kiest.
+Tik daarop en er schuift een aparte lade omhoog met alle sterktes.
 
-Voorbeeld:
-Retatrutide 10 mg -> retatrutide 10 mg foto
-Retatrutide 20 mg -> retatrutide 20 mg foto
-Retatrutide 30 mg -> retatrutide 30 mg foto
+2. FOTO PER STERKTE
+Elke sterkte heeft:
+- Foto uploaden
+- Foto vervangen
+- Foto verwijderen
 
-Als een bepaalde sterkte nog geen eigen foto heeft, valt de productpagina terug
-op de gekozen shopminiatuur.
+3. SHOPMINIATUUR BLIJFT APART
+De grote foto bovenaan de gewone Product page-editor heet nu:
+Shopminiatuur uploaden
 
-OPSLAG
-Alle bestanden worden opgeslagen in de bestaande Supabase Storage bucket:
-pure20-products
+Dat is de ene afbeelding die je in de shoplijst wilt tonen.
 
-Structuur:
-variants/<product>/<variant-id>/<bestand>
+De foto's in 'Sterktes & foto's' worden alleen gebruikt voor de exacte variant
+op de productpagina.
 
-Toegestaan:
-- JPG
-- PNG
-- WEBP
-- maximaal 5 MB
+4. PRODUCTPAGINA
+variant-product-images.js blijft automatisch de juiste foto kiezen wanneer een
+klant bijvoorbeeld van 10 mg naar 20 mg wisselt.
 
-UPLOADS blijven door de bestaande Storage/RLS-regels beperkt tot PURE20-admins.
+Als een variant geen eigen foto heeft, gebruikt de productpagina de algemene
+shopminiatuur als fallback.
+
+Safari:
+Na Vercel deployment de adminpagina één keer volledig vernieuwen.
+De bestanden hebben ook een nieuwe ?v=20261001-2 cacheversie gekregen.

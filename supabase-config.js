@@ -102,7 +102,7 @@ window.PURE20_SUPABASE_CONFIG = {
   if(document.querySelector('script[data-pure20-variant-product-images]'))return;
 
   const s=document.createElement('script');
-  s.src='/variant-product-images.js?v=20261001-1';
+  s.src='/variant-product-images.js?v=20261001-2';
   s.defer=true;
   s.dataset.pure20VariantProductImages='1';
   document.head.appendChild(s);
@@ -133,14 +133,14 @@ window.PURE20_SUPABASE_CONFIG = {
   if(!document.querySelector('link[data-pure20-variant-images-admin]')){
     const l=document.createElement('link');
     l.rel='stylesheet';
-    l.href='/variant-images-admin.css?v=20261001-1';
+    l.href='/variant-images-admin.css?v=20261001-2';
     l.dataset.pure20VariantImagesAdmin='1';
     document.head.appendChild(l);
   }
 
   if(!document.querySelector('script[data-pure20-variant-images-admin]')){
     const s=document.createElement('script');
-    s.src='/variant-images-admin.js?v=20261001-1';
+    s.src='/variant-images-admin.js?v=20261001-2';
     s.defer=true;
     s.dataset.pure20VariantImagesAdmin='1';
     document.head.appendChild(s);

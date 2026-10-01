@@ -11,12 +11,10 @@
   }[ch]));
 
   let variants=[];
-  let compound=null;
   let currentProduct='';
   let selectedVariant=null;
-  let selectedFile=null;
 
-  function client(){return window.PURE20_API?.client}
+  function client(){ return window.PURE20_API?.client; }
 
   function slugify(value){
     return String(value||'file')
@@ -31,53 +29,91 @@
     try{
       const u=new URL(raw,location.href);
       return ['http:','https:'].includes(u.protocol)?u.href:'';
-    }catch(_){return''}
+    }catch(_){ return ''; }
   }
 
-  async function waitForUi(){
+  async function waitForBaseUi(){
     for(let i=0;i<120;i++){
-      if($('#compoundModal')&&$('#compoundSourceName')&&client())return true;
+      if($('#compoundModal')&&$('#compoundSourceName')&&client()) return true;
       await new Promise(r=>setTimeout(r,75));
     }
     return false;
   }
 
+  function patchBaseCopy(){
+    const note=document.querySelector('#panel-productpages .p20-compound-head .admin-note');
+    if(note){
+      note.textContent='Eén productpagina per peptide. De shop gebruikt één miniatuur; iedere sterkte kan daarnaast een eigen foto krijgen.';
+    }
+
+    const imageEditor=$('#compoundModal .p20-compound-image-editor');
+    const button=$('chooseCompoundImage');
+    if(button) button.textContent='Shopminiatuur uploaden';
+
+    const helper=imageEditor?.querySelector('small');
+    if(helper){
+      helper.textContent='Algemene shopminiatuur / fallback. Foto’s per sterkte beheer je via “Sterktes & foto’s” bovenaan.';
+    }
+  }
+
   function inject(){
-    if($('#variantImageSection'))return;
+    if($('#openVariantImages'))return;
 
-    const scroll=$('#compoundModal .p20-compound-modal-scroll');
-    if(!scroll)return;
+    patchBaseCopy();
 
-    const section=document.createElement('section');
-    section.id='variantImageSection';
-    section.className='p20-variant-images-section';
-    section.innerHTML=`
-      <div class="p20-variant-images-head">
+    const head=$('#compoundModal .p20-compound-modal-head > div:first-child');
+    if(head){
+      const launch=document.createElement('button');
+      launch.id='openVariantImages';
+      launch.type='button';
+      launch.className='admin-btn p20-variant-launch';
+      launch.textContent='STERKTES & FOTO’S';
+      launch.disabled=true;
+      head.appendChild(launch);
+      launch.addEventListener('click',openSheet);
+    }
+
+    const backdrop=document.createElement('div');
+    backdrop.id='variantSheetBackdrop';
+    backdrop.className='p20-variant-sheet-backdrop';
+
+    const sheet=document.createElement('aside');
+    sheet.id='variantSheet';
+    sheet.className='p20-variant-sheet';
+    sheet.setAttribute('aria-hidden','true');
+    sheet.innerHTML=`
+      <div class="p20-variant-sheet-head">
         <div>
-          <span class="p20-variant-images-kicker">FOTO'S PER STERKTE</span>
-          <h4>Variantafbeeldingen</h4>
-          <p>
-            Elke sterkte kan een eigen vialfoto krijgen. Op de productpagina verandert de
-            foto automatisch wanneer de klant van sterkte wisselt.
-          </p>
+          <span class="p20-variant-sheet-kicker">PRODUCTVARIANTEN</span>
+          <h3 id="variantSheetTitle">Sterktes & foto’s</h3>
+          <p id="variantSheetSubtitle"></p>
         </div>
-        <div class="p20-variant-images-hint">
-          De shop toont maar één miniatuur per peptide. Kies daarvoor bij één sterkte
-          <strong>Als shopminiatuur</strong>.
-        </div>
+        <button id="closeVariantSheet" type="button" class="icon-btn" aria-label="Sluiten">×</button>
       </div>
 
-      <div id="variantImagesStatus" class="p20-variant-images-status">Varianten laden…</div>
-      <div id="variantImagesGrid" class="p20-variant-images-grid"></div>
+      <div class="p20-variant-sheet-body">
+        <div class="p20-variant-explainer">
+          <strong>Per sterkte een eigen foto.</strong>
+          <span>Deze foto verschijnt op de productpagina zodra de klant die sterkte selecteert. De algemene shopminiatuur blijft apart.</span>
+        </div>
+        <div id="variantImagesStatus" class="p20-variant-images-status"></div>
+        <div id="variantImagesGrid" class="p20-variant-images-grid"></div>
+      </div>
 
       <input id="variantImageFile" type="file"
         accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden>
     `;
 
-    scroll.appendChild(section);
+    document.body.append(backdrop,sheet);
 
+    $('#closeVariantSheet').addEventListener('click',closeSheet);
+    backdrop.addEventListener('click',closeSheet);
     $('#variantImagesGrid').addEventListener('click',handleGridClick);
     $('#variantImageFile').addEventListener('change',handleFileChange);
+
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&sheet.classList.contains('open')) closeSheet();
+    });
   }
 
   async function authorised(){
@@ -85,7 +121,7 @@
       const session=await window.PURE20_API.getSession();
       if(!session?.user)return false;
       return await window.PURE20_API.isAdmin();
-    }catch(_){return false}
+    }catch(_){ return false; }
   }
 
   function variantTitle(v){
@@ -97,72 +133,73 @@
   }
 
   async function loadForCurrentProduct(force=false){
-    const modal=$('#compoundModal');
+    const modal=$('compoundModal');
     if(!modal?.classList.contains('open'))return;
 
     const product=String($('#compoundSourceName')?.value||'').trim();
     if(!product)return;
-    if(!force&&product===currentProduct&&variants.length)return;
 
-    currentProduct=product;
-    variants=[];
-    compound=null;
-    renderLoading();
-
-    if(!await authorised()){
-      renderError('Geen admin-toegang.');
+    if(!force&&product===currentProduct&&variants.length){
+      updateLaunch();
       return;
     }
 
-    const c=client();
-    const [variantRes,compoundRes]=await Promise.all([
-      c.from('pure20_products')
-        .select('id,product_name,variant,code,sort_order,active,image_url,image_alt_nl,image_alt_en')
-        .eq('product_name',product)
-        .order('sort_order',{ascending:true}),
-      c.from('pure20_compounds')
-        .select('slug,product_name,image_url,image_alt_nl,image_alt_en')
-        .eq('product_name',product)
-        .maybeSingle()
-    ]);
+    currentProduct=product;
+    variants=[];
+    updateLaunch(true);
 
-    if(variantRes.error){renderError(variantRes.error.message);return}
-    if(compoundRes.error){renderError(compoundRes.error.message);return}
+    if(!await authorised()){
+      setStatus('Geen admin-toegang.');
+      return;
+    }
 
-    variants=variantRes.data||[];
-    compound=compoundRes.data||null;
+    const {data,error}=await client().from('pure20_products')
+      .select('id,product_name,variant,code,sort_order,active,image_url,image_alt_nl,image_alt_en')
+      .eq('product_name',product)
+      .order('sort_order',{ascending:true});
+
+    if(error){
+      setStatus(`Kon varianten niet laden: ${error.message}`);
+      return;
+    }
+
+    variants=data||[];
+    updateLaunch();
     render();
   }
 
-  function renderLoading(){
-    const status=$('#variantImagesStatus');
-    const grid=$('#variantImagesGrid');
-    if(status)status.textContent='Varianten laden…';
-    if(grid)grid.innerHTML='';
+  function updateLaunch(loading=false){
+    const btn=$('openVariantImages');
+    if(!btn)return;
+    if(loading){
+      btn.textContent='STERKTES LADEN…';
+      btn.disabled=true;
+      return;
+    }
+    const n=variants.length;
+    btn.textContent=n
+      ? `${n} ${n===1?'STERKTE':'STERKTES'} & FOTO’S`
+      : 'STERKTES & FOTO’S';
+    btn.disabled=n===0;
   }
 
-  function renderError(message){
-    const status=$('#variantImagesStatus');
-    const grid=$('#variantImagesGrid');
-    if(status)status.textContent=`Kon variantfoto's niet laden: ${message}`;
-    if(grid)grid.innerHTML='';
+  function setStatus(text){
+    const status=$('variantImagesStatus');
+    if(status) status.textContent=text;
   }
 
   function render(){
-    const status=$('#variantImagesStatus');
-    const grid=$('#variantImagesGrid');
-    if(!status||!grid)return;
+    const grid=$('variantImagesGrid');
+    if(!grid)return;
 
-    status.textContent=variants.length
-      ? `${variants.length} ${variants.length===1?'sterkte':'sterktes'}`
-      : 'Geen varianten gevonden.';
+    setStatus(variants.length
+      ? `${variants.length} ${variants.length===1?'variant':'varianten'}`
+      : 'Geen varianten gevonden.');
 
     grid.innerHTML=variants.map(v=>{
       const url=safeUrl(v.image_url);
-      const isCover=Boolean(url&&compound?.image_url&&url===compound.image_url);
-      const inactive=v.active===false;
       return `
-        <article class="p20-variant-image-card ${inactive?'is-inactive':''}" data-variant-id="${esc(v.id)}">
+        <article class="p20-variant-image-card ${v.active===false?'is-inactive':''}" data-variant-id="${esc(v.id)}">
           <div class="p20-variant-image-preview">
             ${url
               ? `<img src="${esc(url)}" alt="${esc(v.image_alt_nl||defaultAlt(v))}">`
@@ -171,32 +208,44 @@
 
           <div class="p20-variant-image-copy">
             <div class="p20-variant-image-meta">
-              <span>${esc(v.code||'')}</span>
-              ${inactive?'<span>VERBORGEN</span>':''}
-              ${isCover?'<span class="is-cover">SHOPMINIATUUR</span>':''}
+              ${v.code?`<span>${esc(v.code)}</span>`:''}
+              ${v.active===false?'<span>VERBORGEN</span>':''}
+              ${url?'<span class="has-image">FOTO</span>':''}
             </div>
             <strong>${esc(variantTitle(v))}</strong>
           </div>
 
           <div class="p20-variant-image-actions">
-            <button class="admin-btn ${url?'':'primary'}"
-              type="button" data-variant-action="upload">
-              ${url?'Vervangen':'Uploaden'}
+            <button class="admin-btn ${url?'':'primary'}" type="button" data-variant-action="upload">
+              ${url?'Foto vervangen':'Foto uploaden'}
             </button>
-            <button class="admin-btn"
-              type="button" data-variant-action="cover"
-              ${url&&!isCover?'':'disabled'}>
-              ${isCover?'Shopminiatuur ✓':'Als shopminiatuur'}
-            </button>
-            <button class="admin-btn danger"
-              type="button" data-variant-action="remove"
-              ${url?'':'disabled'}>
+            <button class="admin-btn danger" type="button" data-variant-action="remove" ${url?'':'disabled'}>
               Verwijderen
             </button>
           </div>
         </article>
       `;
     }).join('');
+  }
+
+  function openSheet(){
+    if(!variants.length)return;
+
+    $('#variantSheetTitle').textContent=`${currentProduct}`;
+    $('#variantSheetSubtitle').textContent=`${variants.length} ${variants.length===1?'sterkte':'sterktes'}`;
+    render();
+
+    $('#variantSheetBackdrop').classList.add('open');
+    $('#variantSheet').classList.add('open');
+    $('#variantSheet').setAttribute('aria-hidden','false');
+    document.body.classList.add('p20-variant-sheet-open');
+  }
+
+  function closeSheet(){
+    $('#variantSheetBackdrop')?.classList.remove('open');
+    $('#variantSheet')?.classList.remove('open');
+    $('#variantSheet')?.setAttribute('aria-hidden','true');
+    document.body.classList.remove('p20-variant-sheet-open');
   }
 
   async function handleGridClick(event){
@@ -207,24 +256,16 @@
     const v=variants.find(x=>String(x.id)===String(card?.dataset.variantId));
     if(!v)return;
 
-    const action=button.dataset.variantAction;
-
-    if(action==='upload'){
+    if(button.dataset.variantAction==='upload'){
       selectedVariant=v;
-      selectedFile=null;
       $('#variantImageFile').value='';
       $('#variantImageFile').click();
       return;
     }
 
-    if(action==='cover'){
-      await setAsCover(v);
-      return;
-    }
-
-    if(action==='remove'){
+    if(button.dataset.variantAction==='remove'){
       const ok=confirm(`Foto verwijderen voor ${variantTitle(v)}?`);
-      if(ok)await removeVariantImage(v);
+      if(ok) await removeVariantImage(v);
     }
   }
 
@@ -242,10 +283,8 @@
   async function handleFileChange(){
     const file=$('#variantImageFile').files?.[0]||null;
     const error=validateFile(file);
-    if(error){alert(error);return}
+    if(error){ alert(error); return; }
     if(!selectedVariant)return;
-
-    selectedFile=file;
     await uploadVariantImage(selectedVariant,file);
   }
 
@@ -255,22 +294,22 @@
       const marker='/storage/v1/object/public/pure20-products/';
       const i=u.pathname.indexOf(marker);
       return i<0?'':decodeURIComponent(u.pathname.slice(i+marker.length));
-    }catch(_){return''}
+    }catch(_){ return ''; }
   }
 
-  async function maybeDeleteStorageObject(url){
-    const path=pathFromPublicUrl(url);
-    if(!path)return;
-    const {error}=await client().storage.from(BUCKET).remove([path]);
-    if(error)console.warn('Oude variantfoto niet verwijderd:',error.message);
+  async function deleteStorageObject(url){
+    const storagePath=pathFromPublicUrl(url);
+    if(!storagePath)return;
+    const {error}=await client().storage.from(BUCKET).remove([storagePath]);
+    if(error) console.warn('Oude variantfoto kon niet verwijderd worden:',error.message);
   }
 
   async function uploadFile(file,v){
     const folder=`variants/${slugify(v.product_name)}/${slugify(v.id)}`;
     const filename=`${Date.now()}-${slugify(file.name||'variant.webp')}`;
-    const path=`${folder}/${filename}`;
+    const objectPath=`${folder}/${filename}`;
 
-    const {data,error}=await client().storage.from(BUCKET).upload(path,file,{
+    const {data,error}=await client().storage.from(BUCKET).upload(objectPath,file,{
       cacheControl:'31536000',
       upsert:false,
       contentType:file.type
@@ -284,11 +323,10 @@
   }
 
   async function uploadVariantImage(v,file){
-    const grid=$('#variantImagesGrid');
+    const grid=$('variantImagesGrid');
     grid?.classList.add('is-busy');
 
     const oldUrl=String(v.image_url||'');
-    const wasCover=Boolean(oldUrl&&compound?.image_url===oldUrl);
 
     try{
       const url=await uploadFile(file,v);
@@ -300,58 +338,23 @@
         image_alt_en:alt,
         updated_at:new Date().toISOString()
       }).eq('id',v.id);
+
       if(error)throw error;
 
-      if(wasCover||!compound?.image_url){
-        const {error:coverError}=await client().from('pure20_compounds').update({
-          image_url:url,
-          image_alt_nl:alt,
-          image_alt_en:alt,
-          updated_at:new Date().toISOString()
-        }).eq('product_name',v.product_name);
-        if(coverError)throw coverError;
-      }
-
-      if(oldUrl&&oldUrl!==url)await maybeDeleteStorageObject(oldUrl);
+      if(oldUrl&&oldUrl!==url) await deleteStorageObject(oldUrl);
 
       await loadForCurrentProduct(true);
-      refreshVisibleCompoundCard();
     }catch(err){
       console.error(err);
-      alert(`Upload mislukt: ${err.message||err}`);
+      alert(`Foto uploaden mislukt: ${err.message||err}`);
     }finally{
       grid?.classList.remove('is-busy');
       selectedVariant=null;
-      selectedFile=null;
-    }
-  }
-
-  async function setAsCover(v){
-    const url=safeUrl(v.image_url);
-    if(!url)return;
-
-    const alt=v.image_alt_nl||defaultAlt(v);
-    try{
-      const {error}=await client().from('pure20_compounds').update({
-        image_url:url,
-        image_alt_nl:alt,
-        image_alt_en:v.image_alt_en||alt,
-        updated_at:new Date().toISOString()
-      }).eq('product_name',v.product_name);
-      if(error)throw error;
-
-      await loadForCurrentProduct(true);
-      refreshVisibleCompoundCard();
-    }catch(err){
-      console.error(err);
-      alert(`Shopminiatuur instellen mislukt: ${err.message||err}`);
     }
   }
 
   async function removeVariantImage(v){
     const oldUrl=String(v.image_url||'');
-    const wasCover=Boolean(oldUrl&&compound?.image_url===oldUrl);
-
     try{
       const {error}=await client().from('pure20_products').update({
         image_url:null,
@@ -359,72 +362,41 @@
         image_alt_en:null,
         updated_at:new Date().toISOString()
       }).eq('id',v.id);
+
       if(error)throw error;
-
-      if(wasCover){
-        const replacement=variants.find(x=>x.id!==v.id&&safeUrl(x.image_url));
-        const payload=replacement ? {
-          image_url:replacement.image_url,
-          image_alt_nl:replacement.image_alt_nl||defaultAlt(replacement),
-          image_alt_en:replacement.image_alt_en||replacement.image_alt_nl||defaultAlt(replacement),
-          updated_at:new Date().toISOString()
-        } : {
-          image_url:null,
-          image_alt_nl:null,
-          image_alt_en:null,
-          updated_at:new Date().toISOString()
-        };
-
-        const {error:coverError}=await client().from('pure20_compounds')
-          .update(payload)
-          .eq('product_name',v.product_name);
-        if(coverError)throw coverError;
-      }
-
-      if(oldUrl)await maybeDeleteStorageObject(oldUrl);
+      if(oldUrl) await deleteStorageObject(oldUrl);
 
       await loadForCurrentProduct(true);
-      refreshVisibleCompoundCard();
     }catch(err){
       console.error(err);
       alert(`Foto verwijderen mislukt: ${err.message||err}`);
     }
   }
 
-  function refreshVisibleCompoundCard(){
-    if(!compound)return;
-    const card=document.querySelector(`[data-compound-slug="${CSS.escape(compound.slug)}"]`);
-    if(!card)return;
-
-    const thumb=card.querySelector('.p20-compound-thumb');
-    if(thumb){
-      if(compound.image_url){
-        thumb.innerHTML=`<img src="${esc(compound.image_url)}" alt="${esc(compound.image_alt_nl||compound.product_name)}">`;
-      }else{
-        thumb.innerHTML='<div class="p20-variant-no-cover">GEEN FOTO</div>';
-      }
-    }
-  }
-
   async function boot(){
-    if(!await waitForUi())return;
-    inject();
+    if(!await waitForBaseUi())return;
 
-    const modal=$('#compoundModal');
+    inject();
+    patchBaseCopy();
+
+    const modal=$('compoundModal');
+
     const observer=new MutationObserver(()=>{
       if(modal.classList.contains('open')){
-        setTimeout(()=>loadForCurrentProduct(false),60);
+        patchBaseCopy();
+        setTimeout(()=>loadForCurrentProduct(true),80);
       }else{
+        closeSheet();
         currentProduct='';
         variants=[];
-        compound=null;
+        updateLaunch();
       }
     });
     observer.observe(modal,{attributes:true,attributeFilter:['class']});
 
-    document.addEventListener('click',e=>{
-      if(e.target.closest('[data-compound-slug]')){
-        setTimeout(()=>loadForCurrentProduct(false),100);
+    document.addEventListener('click',event=>{
+      if(event.target.closest('[data-compound-slug]')){
+        setTimeout(()=>loadForCurrentProduct(true),130);
       }
     });
   }
