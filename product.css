@@ -9,6 +9,15 @@
 
 .p20-product-page{background:var(--prod-bg);color:var(--prod-ink);padding-bottom:104px}
 .p20-product-main{min-height:70vh}
+
+/* Important: author CSS had display:flex on the loading block,
+   which overrode the HTML hidden attribute in Safari. */
+.p20-product-loading[hidden],
+.p20-product-not-found[hidden],
+.p20-product-layout[hidden]{
+  display:none!important;
+}
+
 .p20-product-loading{padding:80px 0;display:flex;align-items:center;gap:12px;color:var(--prod-muted)}
 .p20-product-loader{width:13px;height:13px;border:1px solid var(--prod-muted);border-top-color:transparent;border-radius:50%;animation:p20spin .8s linear infinite}
 @keyframes p20spin{to{transform:rotate(360deg)}}
@@ -143,8 +152,6 @@ html[data-p20-theme="dark"] .p20-product-cart-bar{background:#090b0a}
   .p20-product-cart-inner button span:first-child{display:none}
 }
 
-
-/* Product page editable research content */
 .p20-product-research{
   margin-top:34px;
   padding:24px 0;
