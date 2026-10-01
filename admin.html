@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PURE20. — Admin</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="/admin-product-pages.css?v=20261001-8" data-pure20-admin-product-pages />
-
-  <style>
+<style>
     /* Retail admin mobile refinement */
     .product-list-hint{
       display:none;
@@ -350,9 +348,7 @@
       .coa-admin-actions .admin-btn{min-height:44px}
     }
   </style>
-  <script src="/admin-product-pages.js?v=20261001-8" defer data-pure20-admin-product-pages></script>
-
-  <style id="pure20ProductPhotoV9">
+<style id="pure20ProductPhotoV9">
     .product-photo-v9{
       border-top:1px solid #ddd;
       padding-top:14px;
@@ -434,6 +430,55 @@
       .product-photo-v9-cover,
       #removeProdImageV9{
         width:100%;
+        min-height:48px;
+      }
+    }
+  </style>
+
+
+  <style id="p20SimpleProductPagesStyle">
+    #panel-productpages .p20-text-editor{
+      max-width:920px;
+    }
+    #panel-productpages .p20-productpage-toolbar{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(220px,.7fr);
+      gap:12px;
+      margin-bottom:22px;
+    }
+    #panel-productpages .p20-productpage-status{
+      margin-top:12px;
+      min-height:20px;
+      font-size:11px;
+      color:#777;
+    }
+    #panel-productpages .p20-productpage-help{
+      font-size:12px;
+      line-height:1.6;
+      color:#777;
+      margin:0 0 18px;
+    }
+    #panel-productpages .p20-productpage-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    #panel-productpages .p20-productpage-actions a{
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    @media(max-width:680px){
+      #panel-productpages .p20-productpage-toolbar{
+        grid-template-columns:1fr;
+      }
+      #panel-productpages .p20-productpage-actions{
+        display:grid;
+        grid-template-columns:1fr;
+      }
+      #panel-productpages .p20-productpage-actions .admin-btn{
         min-height:48px;
       }
     }
@@ -558,6 +603,55 @@
             <tbody id="productsBody"></tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+
+    <section id="panel-productpages" class="admin-panel">
+      <div class="admin-card p20-text-editor">
+        <div class="admin-card-head">
+          <div>
+            <h2>Productpagina’s</h2>
+            <p class="admin-note">Pas hier per peptide de tekst aan die rechtstreeks onder de productnaam op de publieke productpagina staat.</p>
+          </div>
+        </div>
+
+        <div class="p20-productpage-toolbar">
+          <label class="admin-field">
+            Product
+            <select id="ppSimpleProduct">
+              <option value="">Producten laden…</option>
+            </select>
+          </label>
+
+          <label class="admin-field">
+            Zoeken
+            <input id="ppSimpleSearch" type="search" placeholder="Zoek peptide…" />
+          </label>
+        </div>
+
+        <p class="p20-productpage-help">
+          Laat een veld leeg als je de standaardtekst wilt gebruiken. De Nederlandse en Engelse tekst worden apart opgeslagen.
+        </p>
+
+        <div class="admin-form">
+          <label class="admin-field wide">
+            Tekst onder productnaam NL
+            <textarea id="ppSimpleDescNl" rows="5" placeholder="Kies hieronder de gewenste sterkte. Prijs en beschikbaarheid worden live uit de PURE20-catalogus geladen."></textarea>
+          </label>
+
+          <label class="admin-field wide">
+            Text below product name EN
+            <textarea id="ppSimpleDescEn" rows="5" placeholder="Choose the desired strength below. Price and availability are loaded live from the PURE20 catalogue."></textarea>
+          </label>
+        </div>
+
+        <div class="p20-productpage-actions">
+          <button id="ppSimpleSave" class="admin-btn primary" type="button">Opslaan</button>
+          <a id="ppSimplePreview" class="admin-btn" href="/shop" target="_blank" rel="noopener noreferrer">Productpagina bekijken ↗</a>
+        </div>
+
+        <div id="ppSimpleStatus" class="p20-productpage-status" aria-live="polite"></div>
       </div>
     </section>
 
@@ -1180,6 +1274,169 @@
 
 
   <script src="admin.js?v=20261001-list2"></script>
+
+  <script id="p20SimpleProductPagesScript">
+  (() => {
+    'use strict';
+
+    const $ = id => document.getElementById(id);
+    let compounds = [];
+    let filtered = [];
+
+    function client(){
+      return window.PURE20_API?.client;
+    }
+
+    function shownName(c){
+      return String(c?.display_name_nl || c?.product_name || c?.slug || 'Product').trim();
+    }
+
+    function setStatus(text, error=false){
+      const el=$('ppSimpleStatus');
+      if(!el)return;
+      el.textContent=text || '';
+      el.style.color=error ? '#a33' : '#777';
+    }
+
+    async function waitForClient(){
+      for(let i=0;i<160;i++){
+        if(client()) return true;
+        await new Promise(r=>setTimeout(r,50));
+      }
+      return false;
+    }
+
+    function current(){
+      const slug=$('ppSimpleProduct')?.value || '';
+      return compounds.find(c=>String(c.slug)===String(slug)) || null;
+    }
+
+    function renderSelect(keepSlug=''){
+      const select=$('ppSimpleProduct');
+      if(!select)return;
+
+      const q=String($('ppSimpleSearch')?.value||'').trim().toLowerCase();
+      filtered=compounds.filter(c=>{
+        const hay=`${c.product_name||''} ${c.display_name_nl||''} ${c.display_name_en||''} ${c.category||''}`.toLowerCase();
+        return !q || hay.includes(q);
+      });
+
+      select.innerHTML=filtered.length
+        ? filtered.map(c=>`<option value="${String(c.slug).replace(/"/g,'&quot;')}">${shownName(c)}</option>`).join('')
+        : '<option value="">Geen producten gevonden</option>';
+
+      if(keepSlug && filtered.some(c=>c.slug===keepSlug)){
+        select.value=keepSlug;
+      }
+
+      loadSelected();
+    }
+
+    function loadSelected(){
+      const c=current();
+      const nl=$('ppSimpleDescNl');
+      const en=$('ppSimpleDescEn');
+      const preview=$('ppSimplePreview');
+      const save=$('ppSimpleSave');
+
+      if(!c){
+        if(nl)nl.value='';
+        if(en)en.value='';
+        if(preview)preview.href='/shop';
+        if(save)save.disabled=true;
+        return;
+      }
+
+      nl.value=c.short_description_nl || '';
+      en.value=c.short_description_en || '';
+      preview.href=`/product?slug=${encodeURIComponent(c.slug)}`;
+      save.disabled=false;
+      setStatus('');
+    }
+
+    async function loadCompounds(){
+      const select=$('ppSimpleProduct');
+      if(!select)return;
+
+      setStatus('Productpagina’s laden…');
+
+      if(!await waitForClient()){
+        setStatus('Databaseverbinding niet beschikbaar.', true);
+        select.innerHTML='<option value="">Niet beschikbaar</option>';
+        return;
+      }
+
+      try{
+        const {data,error}=await client()
+          .from('pure20_compounds')
+          .select('slug,product_name,display_name_nl,display_name_en,category,short_description_nl,short_description_en,active')
+          .order('sort_order',{ascending:true})
+          .order('product_name',{ascending:true});
+
+        if(error)throw error;
+
+        compounds=data || [];
+        renderSelect();
+        setStatus(`${compounds.length} productpagina’s geladen.`);
+      }catch(err){
+        console.error(err);
+        setStatus(`Laden mislukt: ${err.message||err}`, true);
+        select.innerHTML='<option value="">Laden mislukt</option>';
+      }
+    }
+
+    async function save(){
+      const c=current();
+      if(!c)return;
+
+      const btn=$('ppSimpleSave');
+      btn.disabled=true;
+      btn.textContent='Opslaan…';
+      setStatus('Wijzigingen opslaan…');
+
+      const payload={
+        short_description_nl: $('ppSimpleDescNl').value.trim() || null,
+        short_description_en: $('ppSimpleDescEn').value.trim() || null,
+        updated_at: new Date().toISOString()
+      };
+
+      try{
+        const {error}=await client()
+          .from('pure20_compounds')
+          .update(payload)
+          .eq('slug',c.slug);
+
+        if(error)throw error;
+
+        Object.assign(c,payload);
+        setStatus('Opgeslagen ✓');
+        btn.textContent='Opgeslagen ✓';
+        setTimeout(()=>{btn.textContent='Opslaan';btn.disabled=false},900);
+      }catch(err){
+        console.error(err);
+        setStatus(`Opslaan mislukt: ${err.message||err}`, true);
+        btn.textContent='Opslaan';
+        btn.disabled=false;
+      }
+    }
+
+    const tab=document.querySelector('.admin-tab[data-tab="productpages"]');
+    tab?.addEventListener('click',()=>{
+      if(!compounds.length)loadCompounds();
+    });
+
+    $('ppSimpleProduct')?.addEventListener('change',loadSelected);
+    $('ppSimpleSearch')?.addEventListener('input',()=>{
+      const keep=$('ppSimpleProduct')?.value||'';
+      renderSelect(keep);
+    });
+    $('ppSimpleSave')?.addEventListener('click',save);
+
+    // If the tab is already active for any reason, load immediately.
+    if(tab?.classList.contains('active'))loadCompounds();
+  })();
+  </script>
+
 
   <script src="/admin-product-thumbnails.js?v=20261001-list2" data-pure20-admin-thumbnails></script>
 <script>

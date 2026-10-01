@@ -1,21 +1,17 @@
-PURE20 PRODUCTPAGINA'S STATIC V8
+PURE20 PRODUCT TEXT EDITOR V9
 
-VERVANG ALLEEN:
+Vervang ALLEEN:
 - admin.html
-- admin-product-pages.js
 
-NIET nodig:
-- admin-product-pages.css (ongewijzigd)
+Geen extra JS- of CSS-bestanden nodig.
 
-Wat is anders:
-- De tab PRODUCTPAGINA'S staat nu statisch in admin.html.
-- Hij hoeft dus niet meer eerst door JavaScript gemaakt te worden.
-- admin.js ziet hem meteen bij het laden.
-- admin-product-pages.js hergebruikt die bestaande tab en maakt alleen de inhoud.
-- Nieuwe cacheversie: 20261001-8.
+Na deploy:
+1. Open /admin
+2. Open PRODUCTPAGINA'S
+3. Kies een product
+4. Pas 'Tekst onder productnaam NL' aan
+5. Klik Opslaan
+6. Klik 'Productpagina bekijken ↗' om te controleren
 
-Na deploy moet de bovenste tabbalk letterlijk beginnen met:
-PRODUCTEN | PRODUCTPAGINA'S | KORTINGSCODES | INSTELLINGEN | BACKUP
-
-In Productpagina's:
-open HGH 191AA en wijzig 'Tekst onder productnaam NL'.
+Deze versie gebruikt geen admin-product-pages.js meer.
+Het paneel, de velden en de opslaglogica zitten rechtstreeks in admin.html.
