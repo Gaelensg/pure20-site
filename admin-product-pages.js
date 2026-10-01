@@ -328,7 +328,7 @@
     $('compoundFeatured').value=String(Boolean(selected.featured));
 
     const preview=$('previewCompoundPage');
-    preview.href=`/product/${encodeURIComponent(selected.slug)}`;
+    preview.href=`/product?slug=${encodeURIComponent(selected.slug)}`;
     preview.classList.toggle('disabled-link',!selected.active);
     preview.title=selected.active?'Open publieke productpagina':'Deze productpagina is momenteel verborgen';
 

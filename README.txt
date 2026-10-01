@@ -1,54 +1,44 @@
-PURE20 — Admin beheer voor productpagina's
+PURE20 — productpagina route + thumbnail fix
 
-DATABASE IS AL LIVE AANGEPAST
-- pure20_compounds heeft nu weergavenamen NL/EN
-- Storage bucket 'pure20-products' is aangemaakt
-- bucket is publiek leesbaar voor productfoto's
-- upload/update/delete is alleen toegestaan voor een geverifieerde PURE20-admin
-- max afbeelding: 5 MB
-- toegestaan: JPG, PNG, WEBP
+DIT PAKKET LOST DE HUIDIGE 2 PROBLEMEN OP:
 
-UPLOAD NAAR DE ROOT VAN Gaelensg/pure20-site
+1. 404 BIJ PRODUCTPAGINA
+Links gebruiken voortaan:
+  /product?slug=retatrutide
+in plaats van:
+  /product/retatrutide
 
-NIEUW
+Daarmee wordt rechtstreeks product.html gebruikt via Vercel cleanUrls en
+zijn we niet meer afhankelijk van een dynamische rewrite.
+
+2. VIERKANT MET '20.'
+De tijdelijke PURE20-placeholder is volledig verwijderd.
+Zolang een product GEEN echte afbeelding heeft, verschijnt er GEEN vierkant.
+Zodra je via Admin > Product pages een echte afbeelding uploadt:
+- verschijnt die automatisch als miniatuur in de shop
+- verschijnt dezelfde foto groot op de productpagina
+- andere sterktes van hetzelfde peptide krijgen geen tweede foto
+
+BELANGRIJK
+Op dit moment hebben de producten nog geen echte image_url in Supabase.
+Daarom zie je na deze fix eerst een cleane lijst zonder thumbnail.
+Upload daarna foto's via:
+  /admin > Product pages
+
+UPLOAD / VERVANG ALLE BESTANDEN UIT DEZE ZIP IN DE ROOT VAN GITHUB.
+
+Nieuw indien nog niet aanwezig:
 - admin-product-pages.js
 - admin-product-pages.css
 
-VERVANG
+Vervangen:
 - supabase-config.js
-- product.js
+- product.html
 - product.css
+- product.js
 - product-catalogue.js
+- product-catalogue.css
+- retail-cart-bridge.js
+- vercel.json
 
-De overige bestanden in deze ZIP zijn meegestuurd als complete product-page set,
-maar hoeven niet vervangen te worden als ze al identiek aanwezig zijn.
-
-ADMIN
-In /admin verschijnt een extra tab:
-Product pages
-
-Per hoofdproduct kun je beheren:
-- productfoto
-- weergavenaam NL
-- display name EN
-- categorie
-- korte omschrijving NL/EN
-- research info NL/EN
-- alt-tekst NL/EN
-- actief / verborgen
-- featured
-- preview naar de productpagina
-
-De technische productnaam en slug zijn read-only zodat de koppeling met de
-bestaande sterktevarianten niet kan breken.
-
-CATALOGUS SYNCHRONISEREN
-De knop 'Catalogus synchroniseren' voegt automatisch een hoofdproduct toe
-wanneer later een nieuwe productnaam aan pure20_products wordt toegevoegd.
-
-PRODUCTPAGINA
-- Weergavenaam wisselt mee met NL/EN
-- Korte omschrijving wisselt mee
-- Research info wordt alleen getoond wanneer ingevuld
-- Dezelfde foto verschijnt als shopminiatuur én grote productfoto
-- Prijs/voorraad blijven uit pure20_products komen
+Daarna Vercel laten deployen en Safari eventueel één keer hard refreshen.

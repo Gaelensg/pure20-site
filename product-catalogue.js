@@ -24,8 +24,7 @@
 
   function visual(c){
     const img=safeUrl(c.image_url);
-    if(img)return `<img src="${safe(img)}" alt="${safe(imageAlt(c))}">`;
-    return `<span class="p20-catalogue-thumb-fallback"><b>20.</b><small>${safe(displayName(c))}</small></span>`;
+    return img?`<img src="${safe(img)}" alt="${safe(imageAlt(c))}">`:'';
   }
 
   function sourceName(row){
@@ -47,7 +46,7 @@
       if(!c||!main)return;
 
       const variantId=row.dataset.id||'';
-      const href=`/product/${encodeURIComponent(c.slug)}${variantId?`?variant=${encodeURIComponent(variantId)}`:''}`;
+      const href=`/product?slug=${encodeURIComponent(c.slug)}${variantId?`&variant=${encodeURIComponent(variantId)}`:''}`;
       const shownName=displayName(c);
 
       let link=row.querySelector('.p20-catalogue-product-link');
@@ -63,30 +62,39 @@
       }
 
       const key=c.product_name;
+      const imageHtml=visual(c);
       let thumb=row.querySelector('.p20-catalogue-thumb,.p20-catalogue-thumb-spacer');
-      if(!thumb){
-        const index=main.querySelector('.product-index');
-        thumb=document.createElement(seen.has(key)?'span':'a');
-        thumb.className=seen.has(key)?'p20-catalogue-thumb-spacer':'p20-catalogue-thumb';
-        if(index?.nextSibling)main.insertBefore(thumb,index.nextSibling);
-        else main.appendChild(thumb);
-      }
 
-      if(!seen.has(key)){
-        if(thumb.tagName!=='A'){
+      if(!imageHtml){
+        if(thumb)thumb.remove();
+      }else if(!seen.has(key)){
+        if(!thumb||thumb.tagName!=='A'){
           const fresh=document.createElement('a');
           fresh.className='p20-catalogue-thumb';
-          thumb.replaceWith(fresh);
+          if(thumb)thumb.replaceWith(fresh);
+          else{
+            const index=main.querySelector('.product-index');
+            if(index?.nextSibling)main.insertBefore(fresh,index.nextSibling);
+            else main.appendChild(fresh);
+          }
           thumb=fresh;
         }
+        thumb.className='p20-catalogue-thumb';
         thumb.href=href;
         thumb.setAttribute('aria-label',`${shownName} bekijken`);
-        thumb.innerHTML=visual(c);
+        thumb.innerHTML=imageHtml;
         seen.add(key);
-      }else if(!thumb.classList.contains('p20-catalogue-thumb-spacer')){
-        const spacer=document.createElement('span');
-        spacer.className='p20-catalogue-thumb-spacer';
-        thumb.replaceWith(spacer);
+      }else{
+        if(!thumb||!thumb.classList.contains('p20-catalogue-thumb-spacer')){
+          const spacer=document.createElement('span');
+          spacer.className='p20-catalogue-thumb-spacer';
+          if(thumb)thumb.replaceWith(spacer);
+          else{
+            const index=main.querySelector('.product-index');
+            if(index?.nextSibling)main.insertBefore(spacer,index.nextSibling);
+            else main.appendChild(spacer);
+          }
+        }
       }
 
       row.dataset.p20ProductPage='1';
