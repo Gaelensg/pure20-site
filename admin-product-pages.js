@@ -22,7 +22,15 @@
 
   async function waitForBase(){
     for(let i=0;i<180;i++){
-      if(document.querySelector('.admin-tabs')&&$('#panel-products')&&client()) return true;
+      if(document.querySelector('.admin-tabs')&&$('#panel-products')) return true;
+      await new Promise(r=>setTimeout(r,50));
+    }
+    return false;
+  }
+
+  async function waitForClient(){
+    for(let i=0;i<180;i++){
+      if(client()) return true;
       await new Promise(r=>setTimeout(r,50));
     }
     return false;
@@ -82,7 +90,7 @@
     tab.type='button';
     tab.className='admin-tab';
     tab.dataset.tab='productpages';
-    tab.textContent='Product pages';
+    tab.textContent=localStorage.getItem('pure20_language')==='en'?'Product pages':'Productpagina’s';
     tabs.insertBefore(tab,tabs.children[1]||null);
 
     const panel=document.createElement('section');
@@ -177,11 +185,13 @@
             <label class="admin-field">Slug
               <input id="ppSlug" readonly />
             </label>
-            <label class="admin-field wide">Korte omschrijving NL
-              <textarea id="ppDescNl" rows="3"></textarea>
+            <label class="admin-field wide">Tekst onder productnaam NL
+              <textarea id="ppDescNl" rows="3" placeholder="Kies hieronder de gewenste sterkte. Prijs en beschikbaarheid worden live uit de PURE20-catalogus geladen."></textarea>
+              <small>Deze tekst verschijnt rechtstreeks onder de productnaam op de publieke productpagina.</small>
             </label>
-            <label class="admin-field wide">Short description EN
-              <textarea id="ppDescEn" rows="3"></textarea>
+            <label class="admin-field wide">Text below product name EN
+              <textarea id="ppDescEn" rows="3" placeholder="Choose the desired strength below. Price and availability are loaded live from the PURE20 catalogue."></textarea>
+              <small>This text appears directly below the product name on the public product page.</small>
             </label>
             <label class="admin-field wide">Research info NL
               <textarea id="ppResearchNl" rows="6"></textarea>
@@ -259,6 +269,11 @@
   async function loadAll(){
     const grid=$('productPageGrid');
     if(!grid)return;
+
+    if(!client() && !await waitForClient()){
+      grid.innerHTML='<div class="admin-empty">Databaseverbinding wordt nog geladen. Probeer opnieuw.</div>';
+      return;
+    }
 
     if(!await authorised()){
       grid.innerHTML='<div class="admin-empty">Log eerst in als PURE20 admin.</div>';
@@ -708,6 +723,11 @@
   async function boot(){
     if(!await waitForBase())return;
     inject();
+
+    window.addEventListener('pure20:languagechange',()=>{
+      const tab=document.querySelector('.admin-tab[data-tab="productpages"]');
+      if(tab)tab.textContent=localStorage.getItem('pure20_language')==='en'?'Product pages':'Productpagina’s';
+    });
   }
 
   if(document.readyState==='loading'){

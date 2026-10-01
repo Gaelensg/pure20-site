@@ -1,18 +1,23 @@
-PURE20 PRODUCT VARIANT SYNC V1
+PURE20 PRODUCTPAGINA'S V7
 
-Upload / vervang:
-- product.html
-- product-variant-sync.js
+Vervang in GitHub:
+- admin.html
+- admin-product-pages.js
 
-Wat gebeurt er:
-- klik je op een andere sterkte op de productpagina, dan wordt de juiste variant opnieuw gelezen;
-- de productfoto wisselt naar pure20_products.image_url van die exacte variant;
-- de prijs wisselt naar pure20_products.price_eur van die exacte variant;
-- code en detail-sterkte worden mee gesynchroniseerd;
-- als een variant geen eigen foto heeft, wordt de algemene compoundfoto gebruikt.
+Als admin-product-pages.css al bestaat, hoef je die NIET te vervangen.
+(Er zit voor de volledigheid eventueel een kopie in deze map.)
 
-BELANGRIJK:
-HGH 191AA heeft momenteel in Supabase voor 10iu, 12iu, 15iu, 24iu en 36iu
-allemaal price_eur = 0.00.
-De foto's zullen dus wel wisselen, maar de prijs zal bij HGH 'Prijs volgt' blijven
-tot de retailprijzen per variant zijn ingevuld.
+Na deploy:
+1. Open /admin
+2. Bovenaan staat nu: PRODUCTEN | PRODUCTPAGINA'S | KORTINGSCODES | ...
+3. Open PRODUCTPAGINA'S
+4. Tik HGH 191AA aan
+5. Wijzig "Tekst onder productnaam NL"
+6. Klik Opslaan
+
+Dit veld is exact de tekst onder de productnaam op /product.
+
+Technische wijziging:
+De tab wordt nu al geïnjecteerd zodra de admin-DOM bestaat.
+Hij wacht niet meer op de Supabase-client om überhaupt zichtbaar te worden.
+De database wordt pas afgewacht wanneer je de tab opent.
