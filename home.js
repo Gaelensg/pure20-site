@@ -8,6 +8,21 @@
     return localStorage.getItem(KEY)==='en'?'en':'nl';
   }
 
+  function getPath(obj,path){
+    return String(path||'').split('.').reduce((cur,key)=>cur&&cur[key],obj);
+  }
+
+  function applyHomeSettings(data){
+    if(!data||typeof data!=='object')return;
+
+    document.querySelectorAll('[data-home-key]').forEach(node=>{
+      const pair=getPath(data,node.dataset.homeKey);
+      if(!pair||typeof pair!=='object')return;
+      if(typeof pair.nl==='string')node.dataset.nl=pair.nl;
+      if(typeof pair.en==='string')node.dataset.en=pair.en;
+    });
+  }
+
   function apply(lang){
     lang=lang==='en'?'en':'nl';
     document.documentElement.lang=lang;
@@ -65,7 +80,9 @@
 
     if(!products.length){
       root.innerHTML=`<div class="featured-loading">${
-        currentLang==='en'?'Featured products are being prepared.':'Uitgelichte producten worden voorbereid.'
+        currentLang==='en'
+          ?'Featured products are being prepared.'
+          :'Uitgelichte producten worden voorbereid.'
       }</div>`;
       return;
     }
@@ -96,33 +113,42 @@
     }).join('');
   }
 
-  async function loadFeatured(){
-    const root=document.getElementById('featuredProducts');
+  async function apiGet(path){
     const cfg=window.PURE20_SUPABASE_CONFIG||{};
-    if(!cfg.url||!cfg.key||!root){
-      renderFeatured([]);
-      return;
-    }
+    if(!cfg.url||!cfg.key)throw new Error('Supabase config missing');
 
     const base=String(cfg.url).replace(/\/+$/,'');
-    const headers={apikey:cfg.key,Accept:'application/json'};
+    const response=await fetch(base+'/rest/v1/'+path,{
+      cache:'no-store',
+      headers:{apikey:cfg.key,Accept:'application/json'}
+    });
+    if(!response.ok)throw new Error(`REST ${response.status}`);
+    return response.json();
+  }
+
+  async function loadHomeSettings(){
+    try{
+      const rows=await apiGet('pure20_settings?select=data&id=eq.home');
+      const data=Array.isArray(rows)?rows[0]?.data:null;
+      if(data){
+        window.__PURE20_HOME_SETTINGS__=data;
+        applyHomeSettings(data);
+        apply(getLanguage());
+      }
+    }catch(err){
+      console.warn('PURE20 home settings:',err);
+    }
+  }
+
+  async function loadFeatured(){
+    const root=document.getElementById('featuredProducts');
+    if(!root)return;
 
     try{
-      const [compoundRes,productRes]=await Promise.all([
-        fetch(
-          base+'/rest/v1/pure20_compounds?select=slug,product_name,display_name_nl,display_name_en,category,image_url,active&active=eq.true',
-          {cache:'no-store',headers}
-        ),
-        fetch(
-          base+'/rest/v1/pure20_products?select=product_name,image_url,sort_order,active&active=eq.true&order=sort_order.asc',
-          {cache:'no-store',headers}
-        )
+      const [compounds,variants]=await Promise.all([
+        apiGet('pure20_compounds?select=slug,product_name,display_name_nl,display_name_en,category,image_url,active&active=eq.true'),
+        apiGet('pure20_products?select=product_name,image_url,sort_order,active&active=eq.true&order=sort_order.asc')
       ]);
-
-      if(!compoundRes.ok||!productRes.ok)throw new Error('catalogue');
-
-      const compounds=await compoundRes.json();
-      const variants=await productRes.json();
 
       const variantImages=new Map();
       for(const v of variants||[]){
@@ -144,7 +170,6 @@
         });
       }
 
-      // If one of the preferred products disappears, fill the grid from live catalogue entries.
       for(const c of compounds||[]){
         if(selected.length>=4)break;
         if(selected.some(x=>x.product_name===c.product_name))continue;
@@ -163,5 +188,5 @@
   }
 
   apply(getLanguage());
-  loadFeatured();
+  Promise.allSettled([loadHomeSettings(),loadFeatured()]);
 })();

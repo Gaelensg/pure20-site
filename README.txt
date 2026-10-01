@@ -1,30 +1,42 @@
-PURE20 HOMEPAGE V3
+PURE20 HOME + ADMIN V4
 
 Vervang in GitHub:
 - index.html
 - home.css
 - home.js
+- admin.html
 
-Wat is nieuw:
-- Sterkere homepage/landing page
-- Uitgelichte producten:
-  HGH 191AA
-  Retatrutide
-  BPC 157
-  GHK-CU
-- Elke kaart linkt rechtstreeks naar /product?slug=...
-- Foto's worden live uit Supabase gehaald.
-- Als een compound geen foto heeft, verschijnt een PURE20-placeholder.
-- Zodra later een foto wordt geüpload, verschijnt die automatisch op de homepage.
-- Grote Knowledge-sectie.
-- Duidelijke Calculator-kaart.
-- Wholesale-promoblok:
-  registreren -> goedkeuring -> private bulkprijzen.
-- Wholesale CTA gaat naar de bestaande /wholesale registratie/login flow.
-- NL/EN blijft ondersteund.
-- Mobiel responsive.
+Database is al voorbereid:
+- pure20_settings.home bestaat.
+- publieke homepage mag alleen de home-config lezen.
+- alleen een geauthenticeerde PURE20-admin kan home-instellingen wijzigen.
 
-Huidige database:
-Op dit moment heeft alleen HGH 191AA al een echte productfoto. Daarom zullen de
-andere drie uitgelichte producten eerst de nette PURE20-placeholder tonen totdat
-je hun eigen productfoto uploadt.
+NIEUW IN ADMIN
+Er staat een vaste tab HOMEpagina naast Productpagina's.
+Daar kun je per sectie NL en EN aanpassen:
+- Hero
+- Uitgelicht
+- Knowledge
+- Calculator
+- Shop-kaart
+- Wholesale
+- Onderste CTA
+- Footer
+
+Klik "Homepagina opslaan" en open daarna "Homepagina bekijken ↗".
+
+KLEUREN
+De homepage gebruikt nu één rustiger warm-stone palet:
+- basis: warm off-white
+- surfaces: één lichte cream
+- secondary surface: één stone-beige
+- bijna-zwart als donker anker
+- minder zuiver wit en minder concurrerende beigevarianten
+
+Productfoto's in Uitgelicht blijven automatisch live uit Supabase komen.
+
+EXTRA KLEURFIX
+De homepage laadt niet langer /supabase-config.js, omdat dat bestand ook de
+universele site-header + site-theme.css injecteert. Die laag botste met home.css.
+De publieke Supabase URL/publishable key staan daarom rechtstreeks in index.html.
+De bestaande site-gate blijft apart geladen.

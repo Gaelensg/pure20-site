@@ -484,6 +484,54 @@
     }
   </style>
 
+
+<style id="p20HomeAdminStyle">
+  #panel-homepage .home-editor-card{max-width:1040px}
+  #panel-homepage .home-editor-intro{
+    margin:0 0 18px;color:#6b6a66;font-size:12px;line-height:1.6
+  }
+  #panel-homepage .home-editor-actions{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center
+  }
+  #panel-homepage .home-editor-status{
+    min-height:20px;margin-top:12px;font-size:11px;color:#777
+  }
+  #panel-homepage .home-editor-group{
+    border:1px solid #d0cec8;background:#f8f7f3;margin-top:12px
+  }
+  #panel-homepage .home-editor-group summary{
+    list-style:none;cursor:pointer;padding:15px 16px;font-size:11px;
+    font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:space-between;gap:12px
+  }
+  #panel-homepage .home-editor-group summary::-webkit-details-marker{display:none}
+  #panel-homepage .home-editor-group summary::after{content:"+";font-size:18px;font-weight:400}
+  #panel-homepage .home-editor-group[open] summary::after{content:"−"}
+  #panel-homepage .home-editor-fields{
+    padding:0 16px 16px;border-top:1px solid #d0cec8
+  }
+  #panel-homepage .home-field-block{padding-top:16px}
+  #panel-homepage .home-field-title{
+    margin:0 0 8px;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#666
+  }
+  #panel-homepage .home-lang-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px
+  }
+  #panel-homepage .home-lang-grid label{
+    font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#777
+  }
+  #panel-homepage .home-lang-grid input,
+  #panel-homepage .home-lang-grid textarea{
+    display:block;width:100%;margin-top:6px;border:1px solid #bbb8b0;background:#fff;
+    padding:11px 12px;font:inherit;font-size:13px;line-height:1.45;resize:vertical
+  }
+  @media(max-width:680px){
+    #panel-homepage .home-lang-grid{grid-template-columns:1fr}
+    #panel-homepage .home-editor-actions{display:grid;grid-template-columns:1fr}
+    #panel-homepage .home-editor-actions .admin-btn{min-height:46px}
+  }
+</style>
+
 </head>
 
 <body class="admin-body">
@@ -556,6 +604,7 @@
     <nav class="admin-tabs">
       <button class="admin-tab active" data-tab="products">Products</button>
       <button class="admin-tab" data-tab="productpages">Productpagina’s</button>
+      <button class="admin-tab" data-tab="homepage">Homepagina</button>
       <button class="admin-tab" data-tab="coupons">Coupons</button>
       <button class="admin-tab" data-tab="settings">Settings</button>
       <button class="admin-tab" data-tab="backup">Backup & import</button>
@@ -652,6 +701,284 @@
         </div>
 
         <div id="ppSimpleStatus" class="p20-productpage-status" aria-live="polite"></div>
+      </div>
+    </section>
+
+
+    <section id="panel-homepage" class="admin-panel">
+      <div class="admin-card home-editor-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>Homepagina</h2>
+            <p class="admin-note">Pas hier de marketingteksten van de publieke homepagina aan. NL en EN worden apart opgeslagen.</p>
+          </div>
+        </div>
+
+        <p class="home-editor-intro">
+          De productnamen en productfoto’s in “Uitgelicht” blijven automatisch uit de catalogus komen. Hier beheer je alleen de begeleidende teksten.
+        </p>
+
+        <div class="home-editor-actions">
+          <button id="homeEditorSave" class="admin-btn primary" type="button">Homepagina opslaan</button>
+          <button id="homeEditorReload" class="admin-btn" type="button">Opnieuw laden</button>
+          <a class="admin-btn" href="/" target="_blank" rel="noopener noreferrer">Homepagina bekijken ↗</a>
+        </div>
+
+        <div id="homeEditorStatus" class="home-editor-status" aria-live="polite"></div>
+
+        
+      <details class="home-editor-group" open>
+        <summary>Hero</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel regel 1</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.title1.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.title1.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel regel 2</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.title2.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.title2.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Intro</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="hero.intro.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="hero.intro.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Primaire knop</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.primary.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.primary.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Secundaire knop</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.secondary.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.secondary.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst rechts</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="hero.sideText.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="hero.sideText.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Calculator-link rechts</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="hero.sideCta.nl"></label>
+          <label>EN<input type="text" data-home-edit="hero.sideCta.en"></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Uitgelicht</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="featured.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="featured.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="featured.title.nl"></label>
+          <label>EN<input type="text" data-home-edit="featured.title.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Link naar catalogus</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="featured.link.nl"></label>
+          <label>EN<input type="text" data-home-edit="featured.link.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst onder producten</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="featured.note.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="featured.note.en"></textarea></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Knowledge</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="knowledge.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="knowledge.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="knowledge.title.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="knowledge.title.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="knowledge.body.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="knowledge.body.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Knop</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="knowledge.cta.nl"></label>
+          <label>EN<input type="text" data-home-edit="knowledge.cta.en"></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Calculator</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="calculator.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="calculator.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="calculator.title.nl"></label>
+          <label>EN<input type="text" data-home-edit="calculator.title.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="calculator.body.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="calculator.body.en"></textarea></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Shop-kaart</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="shopCard.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="shopCard.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="shopCard.title.nl"></label>
+          <label>EN<input type="text" data-home-edit="shopCard.title.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="shopCard.body.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="shopCard.body.en"></textarea></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Wholesale</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">Kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="wholesale.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="wholesale.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Titel</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="wholesale.title.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="wholesale.title.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Tekst</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="wholesale.body.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="wholesale.body.en"></textarea></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Knop</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="wholesale.cta.nl"></label>
+          <label>EN<input type="text" data-home-edit="wholesale.cta.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Stap 1</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="wholesale.step1.nl"></label>
+          <label>EN<input type="text" data-home-edit="wholesale.step1.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Stap 2</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="wholesale.step2.nl"></label>
+          <label>EN<input type="text" data-home-edit="wholesale.step2.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Stap 3</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="wholesale.step3.nl"></label>
+          <label>EN<input type="text" data-home-edit="wholesale.step3.en"></label>
+        </div>
+      </div></div>
+      </details>
+      <details class="home-editor-group">
+        <summary>Onderste CTA & footer</summary>
+        <div class="home-editor-fields">
+      <div class="home-field-block">
+        <p class="home-field-title">CTA kicker</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="final.kicker.nl"></label>
+          <label>EN<input type="text" data-home-edit="final.kicker.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">CTA titel</p>
+        <div class="home-lang-grid">
+          <label>NL<input type="text" data-home-edit="final.title.nl"></label>
+          <label>EN<input type="text" data-home-edit="final.title.en"></label>
+        </div>
+      </div>
+      <div class="home-field-block">
+        <p class="home-field-title">Footer disclaimer</p>
+        <div class="home-lang-grid">
+          <label>NL<textarea rows="3" data-home-edit="footer.disclaimer.nl"></textarea></label>
+          <label>EN<textarea rows="3" data-home-edit="footer.disclaimer.en"></textarea></label>
+        </div>
+      </div></div>
+      </details>
       </div>
     </section>
 
@@ -1274,6 +1601,141 @@
 
 
   <script src="admin.js?v=20261001-list2"></script>
+
+  <script id="p20HomeAdminScript">
+  (() => {
+    'use strict';
+
+    const DEFAULT_HOME={"hero":{"kicker":{"nl":"PURE20 / RESEARCH PLATFORM","en":"PURE20 / RESEARCH PLATFORM"},"title1":{"nl":"Catalogus.","en":"Catalogue."},"title2":{"nl":"Context. Tools.","en":"Context. Tools."},"intro":{"nl":"Ontdek de actuele catalogus, verdiep je via Knowledge, gebruik de calculator of registreer voor private wholesale toegang.","en":"Explore the live catalogue, go deeper through Knowledge, use the calculator or register for private wholesale access."},"primary":{"nl":"Bekijk catalogus","en":"View catalogue"},"secondary":{"nl":"Open Knowledge","en":"Open Knowledge"},"sideText":{"nl":"Één platform voor research, productinformatie en praktische tools.","en":"One platform for research, product information and practical tools."},"sideCta":{"nl":"Calculator openen","en":"Open calculator"}},"featured":{"kicker":{"nl":"UITGELICHT IN DE CATALOGUS","en":"FEATURED IN THE CATALOGUE"},"title":{"nl":"Vier producten om te ontdekken.","en":"Four products to explore."},"link":{"nl":"Volledige catalogus","en":"Full catalogue"},"note":{"nl":"Productbeelden worden rechtstreeks uit de actuele PURE20-catalogus geladen.","en":"Product images are loaded directly from the live PURE20 catalogue."}},"knowledge":{"kicker":{"nl":"KNOWLEDGE","en":"KNOWLEDGE"},"title":{"nl":"Niet alleen zien wat er bestaat. Ook begrijpen wat je bekijkt.","en":"Not just seeing what exists. Understanding what you are looking at."},"body":{"nl":"Gebruik de Knowledge Library voor gestructureerde achtergrondinformatie, researchcontext, terminologie en kwaliteitsinformatie rond de verschillende compounds.","en":"Use the Knowledge Library for structured background information, research context, terminology and quality information around different compounds."},"cta":{"nl":"Naar Knowledge","en":"Go to Knowledge"}},"calculator":{"kicker":{"nl":"RESEARCH CALCULATOR","en":"RESEARCH CALCULATOR"},"title":{"nl":"Rekenen zonder giswerk.","en":"Calculate without guesswork."},"body":{"nl":"Zet concentratie, vloeistofvolume en U-100 markeringen transparant om met een visuele spuitweergave.","en":"Convert concentration, liquid volume and U-100 markings transparently with a visual syringe display."}},"shopCard":{"kicker":{"nl":"CATALOGUS","en":"CATALOGUE"},"title":{"nl":"Varianten, voorraad en prijzen.","en":"Variants, stock and pricing."},"body":{"nl":"Open de live catalogus en ga rechtstreeks vanuit een product naar de beschikbare sterktes en productpagina.","en":"Open the live catalogue and go directly from a product to its available strengths and product page."}},"wholesale":{"kicker":{"nl":"WHOLESALE / PRIVATE ACCESS","en":"WHOLESALE / PRIVATE ACCESS"},"title":{"nl":"Grotere aantallen. Private bulkprijzen.","en":"Larger quantities. Private bulk pricing."},"body":{"nl":"Registreer een wholesale-account en krijg na goedkeuring toegang tot de afgeschermde wholesaleomgeving met packprijzen voor grotere bestellingen.","en":"Register a wholesale account and, once approved, gain access to the private wholesale environment with pack pricing for larger orders."},"cta":{"nl":"Registreren voor wholesale","en":"Register for wholesale"},"step1":{"nl":"Account registreren","en":"Create account"},"step2":{"nl":"Goedkeuring","en":"Approval"},"step3":{"nl":"Private bulkprijzen","en":"Private bulk pricing"}},"final":{"kicker":{"nl":"PURE20","en":"PURE20"},"title":{"nl":"Waar wil je beginnen?","en":"Where do you want to start?"}},"footer":{"disclaimer":{"nl":"Research use only. Informatie op deze website is educatief en geen persoonlijk medisch of doseeradvies.","en":"Research use only. Information on this website is educational and is not personal medical or dosing advice."}}};
+    const $=id=>document.getElementById(id);
+    let loaded=false;
+
+    function client(){ return window.PURE20_API?.client; }
+
+    function clone(value){
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function getPath(obj,path){
+      return String(path||'').split('.').reduce((cur,key)=>cur&&cur[key],obj);
+    }
+
+    function setPath(obj,path,value){
+      const parts=String(path||'').split('.');
+      let cur=obj;
+      parts.forEach((key,index)=>{
+        if(index===parts.length-1)cur[key]=value;
+        else {
+          if(!cur[key]||typeof cur[key]!=='object')cur[key]={};
+          cur=cur[key];
+        }
+      });
+    }
+
+    function status(text,error=false){
+      const el=$('homeEditorStatus');
+      if(!el)return;
+      el.textContent=text||'';
+      el.style.color=error?'#a33':'#777';
+    }
+
+    async function waitForClient(){
+      for(let i=0;i<160;i++){
+        if(client())return true;
+        await new Promise(r=>setTimeout(r,50));
+      }
+      return false;
+    }
+
+    function fill(data){
+      document.querySelectorAll('[data-home-edit]').forEach(input=>{
+        const value=getPath(data,input.dataset.homeEdit);
+        input.value=typeof value==='string'?value:'';
+      });
+    }
+
+    function collect(){
+      const data=clone(DEFAULT_HOME);
+      document.querySelectorAll('[data-home-edit]').forEach(input=>{
+        setPath(data,input.dataset.homeEdit,String(input.value||'').trim());
+      });
+      return data;
+    }
+
+    async function load(force=false){
+      if(loaded&&!force)return;
+      status('Homepagina laden…');
+
+      if(!await waitForClient()){
+        fill(DEFAULT_HOME);
+        status('Databaseverbinding niet beschikbaar. Standaardteksten worden getoond.',true);
+        return;
+      }
+
+      try{
+        const {data,error}=await client()
+          .from('pure20_settings')
+          .select('data')
+          .eq('id','home')
+          .maybeSingle();
+
+        if(error)throw error;
+
+        fill(data?.data||DEFAULT_HOME);
+        loaded=true;
+        status('Homepagina geladen ✓');
+      }catch(err){
+        console.error(err);
+        fill(DEFAULT_HOME);
+        status(`Laden mislukt: ${err.message||err}`,true);
+      }
+    }
+
+    async function save(){
+      const button=$('homeEditorSave');
+      if(!button)return;
+
+      if(!await waitForClient()){
+        status('Databaseverbinding niet beschikbaar.',true);
+        return;
+      }
+
+      const payload=collect();
+      button.disabled=true;
+      button.textContent='Opslaan…';
+      status('Homepagina opslaan…');
+
+      try{
+        const {error}=await client()
+          .from('pure20_settings')
+          .upsert({id:'home',data:payload});
+
+        if(error)throw error;
+
+        loaded=true;
+        status('Homepagina opgeslagen ✓');
+        button.textContent='Opgeslagen ✓';
+        setTimeout(()=>{
+          button.textContent='Homepagina opslaan';
+          button.disabled=false;
+        },900);
+      }catch(err){
+        console.error(err);
+        status(`Opslaan mislukt: ${err.message||err}`,true);
+        button.textContent='Homepagina opslaan';
+        button.disabled=false;
+      }
+    }
+
+    const tab=document.querySelector('.admin-tab[data-tab="homepage"]');
+    tab?.addEventListener('click',()=>load(false));
+    $('homeEditorSave')?.addEventListener('click',save);
+    $('homeEditorReload')?.addEventListener('click',()=>load(true));
+
+    if(tab?.classList.contains('active'))load(false);
+  })();
+  </script>
+
 
   <script id="p20SimpleProductPagesScript">
   (() => {
