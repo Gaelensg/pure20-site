@@ -95,6 +95,18 @@ window.PURE20_SUPABASE_CONFIG = {
   }
 })();
 
+/* Exact image per strength / variant on the product page */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
+  if(p!=='/product'&&p!=='/product.html')return;
+  if(document.querySelector('script[data-pure20-variant-product-images]'))return;
+
+  const s=document.createElement('script');
+  s.src='/variant-product-images.js?v=20261001-1';
+  s.defer=true;
+  s.dataset.pure20VariantProductImages='1';
+  document.head.appendChild(s);
+})();
 
 /* Admin product-page manager */
 (() => {
@@ -115,6 +127,22 @@ window.PURE20_SUPABASE_CONFIG = {
     s.src='/admin-product-pages.js';
     s.defer=true;
     s.dataset.pure20AdminProductPages='1';
+    document.head.appendChild(s);
+  }
+
+  if(!document.querySelector('link[data-pure20-variant-images-admin]')){
+    const l=document.createElement('link');
+    l.rel='stylesheet';
+    l.href='/variant-images-admin.css?v=20261001-1';
+    l.dataset.pure20VariantImagesAdmin='1';
+    document.head.appendChild(l);
+  }
+
+  if(!document.querySelector('script[data-pure20-variant-images-admin]')){
+    const s=document.createElement('script');
+    s.src='/variant-images-admin.js?v=20261001-1';
+    s.defer=true;
+    s.dataset.pure20VariantImagesAdmin='1';
     document.head.appendChild(s);
   }
 })();

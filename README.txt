@@ -1,44 +1,63 @@
-PURE20 — productpagina route + thumbnail fix
+PURE20 — afbeeldingen per sterkte / variant
 
-DIT PAKKET LOST DE HUIDIGE 2 PROBLEMEN OP:
+DATABASE
+De live Supabase-database is AL aangepast.
+pure20_products heeft nu:
+- image_url
+- image_alt_nl
+- image_alt_en
 
-1. 404 BIJ PRODUCTPAGINA
-Links gebruiken voortaan:
-  /product?slug=retatrutide
-in plaats van:
-  /product/retatrutide
+De meegeleverde migration SQL is alleen ter referentie. Je hoeft die niet opnieuw uit te voeren.
 
-Daarmee wordt rechtstreeks product.html gebruikt via Vercel cleanUrls en
-zijn we niet meer afhankelijk van een dynamische rewrite.
+UPLOAD NAAR DE ROOT VAN Gaelensg/pure20-site
 
-2. VIERKANT MET '20.'
-De tijdelijke PURE20-placeholder is volledig verwijderd.
-Zolang een product GEEN echte afbeelding heeft, verschijnt er GEEN vierkant.
-Zodra je via Admin > Product pages een echte afbeelding uploadt:
-- verschijnt die automatisch als miniatuur in de shop
-- verschijnt dezelfde foto groot op de productpagina
-- andere sterktes van hetzelfde peptide krijgen geen tweede foto
+NIEUW
+- variant-images-admin.js
+- variant-images-admin.css
+- variant-product-images.js
 
-BELANGRIJK
-Op dit moment hebben de producten nog geen echte image_url in Supabase.
-Daarom zie je na deze fix eerst een cleane lijst zonder thumbnail.
-Upload daarna foto's via:
-  /admin > Product pages
-
-UPLOAD / VERVANG ALLE BESTANDEN UIT DEZE ZIP IN DE ROOT VAN GITHUB.
-
-Nieuw indien nog niet aanwezig:
-- admin-product-pages.js
-- admin-product-pages.css
-
-Vervangen:
+VERVANG
 - supabase-config.js
-- product.html
-- product.css
-- product.js
-- product-catalogue.js
-- product-catalogue.css
-- retail-cart-bridge.js
-- vercel.json
 
-Daarna Vercel laten deployen en Safari eventueel één keer hard refreshen.
+WAAR BEHEER JE FOTO'S?
+1. Open /admin
+2. Ga naar Product pages
+3. Open een peptide
+4. Onderaan verschijnt 'Foto's per sterkte'
+5. Daar zie je elke variant / sterkte apart
+6. Upload per sterkte zijn eigen vialfoto
+
+SHOPMINIATUUR
+De normale shop blijft bewust maar ÉÉN miniatuur per peptide tonen.
+Klik bij de gewenste sterkte op:
+  Als shopminiatuur
+
+Als er nog geen shopminiatuur bestaat, wordt de eerste geüploade variantfoto
+automatisch als shopminiatuur gebruikt.
+
+PRODUCTPAGINA
+Op /product?slug=... verandert de grote productfoto automatisch wanneer de klant
+een andere sterkte kiest.
+
+Voorbeeld:
+Retatrutide 10 mg -> retatrutide 10 mg foto
+Retatrutide 20 mg -> retatrutide 20 mg foto
+Retatrutide 30 mg -> retatrutide 30 mg foto
+
+Als een bepaalde sterkte nog geen eigen foto heeft, valt de productpagina terug
+op de gekozen shopminiatuur.
+
+OPSLAG
+Alle bestanden worden opgeslagen in de bestaande Supabase Storage bucket:
+pure20-products
+
+Structuur:
+variants/<product>/<variant-id>/<bestand>
+
+Toegestaan:
+- JPG
+- PNG
+- WEBP
+- maximaal 5 MB
+
+UPLOADS blijven door de bestaande Storage/RLS-regels beperkt tot PURE20-admins.
