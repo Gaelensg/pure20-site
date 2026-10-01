@@ -1,174 +1,250 @@
 (() => {
   'use strict';
+
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   if(PATH!=='/shop'&&PATH!=='/shop.html')return;
 
-  let compounds=new Map(),observer=null,decorating=false;
-  const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const lang=()=>window.PURE20_I18N?.language || (localStorage.getItem('pure20_language')==='en'?'en':'nl');
+  let rowsById=new Map();
+  let firstImageByProduct=new Map();
+  let observer=null;
+  let timer=null;
 
   function safeUrl(value){
-    const raw=String(value||'').trim();if(!raw)return'';
-    try{const u=new URL(raw,location.href);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(_){return''}
+    const raw=String(value||'').trim();
+    if(!raw)return'';
+    try{
+      const u=new URL(raw,location.href);
+      return ['http:','https:'].includes(u.protocol)?u.href:'';
+    }catch(_){
+      return'';
+    }
   }
 
-  function displayName(c){
-    const value=lang()==='en'?c.display_name_en:c.display_name_nl;
-    return String(value||'').trim()||c.product_name;
+  function ensureStyles(){
+    if(document.getElementById('p20StableThumbStyles'))return;
+
+    const style=document.createElement('style');
+    style.id='p20StableThumbStyles';
+    style.textContent=`
+      .p20-catalogue-thumb,
+      .p20-catalogue-thumb-spacer{
+        width:58px;
+        height:58px;
+        flex:0 0 58px;
+        display:block;
+      }
+
+      .p20-catalogue-thumb{
+        overflow:hidden;
+        border:1px solid var(--line,#d6d3cb);
+        background:transparent;
+      }
+
+      .p20-catalogue-thumb img{
+        width:100%;
+        height:100%;
+        display:block;
+        object-fit:cover;
+      }
+
+      .p20-catalogue-thumb-spacer{
+        visibility:hidden;
+        border:0;
+      }
+
+      html[data-p20-theme="dark"] .p20-catalogue-thumb{
+        border-color:#303632;
+      }
+
+      @media(max-width:850px){
+        .p20-catalogue-thumb,
+        .p20-catalogue-thumb-spacer{
+          width:50px;
+          height:50px;
+          flex-basis:50px;
+        }
+      }
+
+      @media(max-width:520px){
+        .p20-catalogue-thumb,
+        .p20-catalogue-thumb-spacer{
+          width:46px;
+          height:46px;
+          flex-basis:46px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
-  function imageAlt(c){
-    const value=lang()==='en'?c.image_alt_en:c.image_alt_nl;
-    return String(value||'').trim()||displayName(c);
+  function currentRows(){
+    return [...document.querySelectorAll('#catalogue .variant-row[data-id]')];
   }
 
-  function visual(c){
-    const img=safeUrl(c.image_url);
-    return img?`<img src="${safe(img)}" alt="${safe(imageAlt(c))}">`:'';
-  }
-
-  function sourceName(row){
-    if(row.dataset.p20SourceName)return row.dataset.p20SourceName;
-    const original=row.querySelector('.product-name')?.textContent?.trim()||'';
-    if(original)row.dataset.p20SourceName=original;
-    return original;
+  function insertAfterIndex(main,node){
+    const index=main.querySelector('.product-index');
+    if(index?.nextSibling){
+      main.insertBefore(node,index.nextSibling);
+    }else if(index){
+      main.appendChild(node);
+    }else{
+      main.prepend(node);
+    }
   }
 
   function decorate(){
-    if(decorating||!compounds.size)return;
-    decorating=true;
+    const domRows=currentRows();
+    if(!domRows.length||!rowsById.size)return;
+
     const seen=new Set();
 
-    document.querySelectorAll('#catalogue .variant-row').forEach(row=>{
-      const source=sourceName(row);
-      const c=compounds.get(source);
+    for(const row of domRows){
+      const id=String(row.dataset.id||'');
+      const db=rowsById.get(id);
+      if(!db)continue;
+
+      const product=String(db.product_name||'');
+      const imageUrl=safeUrl(firstImageByProduct.get(product));
+      if(!product||!imageUrl)continue;
+
       const main=row.querySelector('.product-main');
-      if(!c||!main)return;
+      if(!main)continue;
 
-      const variantId=row.dataset.id||'';
-      const href=`/product?slug=${encodeURIComponent(c.slug)}${variantId?`&variant=${encodeURIComponent(variantId)}`:''}`;
-      const shownName=displayName(c);
+      const shouldShow=!seen.has(product);
+      seen.add(product);
 
-      let link=row.querySelector('.p20-catalogue-product-link');
-      const original=row.querySelector('.product-name');
-      if(!link&&original){
-        link=document.createElement('a');
-        link.className='p20-catalogue-product-link';
-        original.replaceWith(link);
-      }
-      if(link){
-        link.href=href;
-        link.textContent=shownName;
-      }
+      let slot=main.querySelector(':scope > .p20-catalogue-thumb, :scope > .p20-catalogue-thumb-spacer');
 
-      const key=c.product_name;
-      const imageHtml=visual(c);
-      let thumb=row.querySelector('.p20-catalogue-thumb,.p20-catalogue-thumb-spacer');
-
-      if(!imageHtml){
-        if(thumb)thumb.remove();
-      }else if(!seen.has(key)){
-        if(!thumb||thumb.tagName!=='A'){
-          const fresh=document.createElement('a');
+      if(shouldShow){
+        if(!slot||!slot.classList.contains('p20-catalogue-thumb')){
+          const fresh=document.createElement('span');
           fresh.className='p20-catalogue-thumb';
-          if(thumb)thumb.replaceWith(fresh);
-          else{
-            const index=main.querySelector('.product-index');
-            if(index?.nextSibling)main.insertBefore(fresh,index.nextSibling);
-            else main.appendChild(fresh);
+
+          if(slot){
+            slot.replaceWith(fresh);
+          }else{
+            insertAfterIndex(main,fresh);
           }
-          thumb=fresh;
+          slot=fresh;
         }
-        thumb.className='p20-catalogue-thumb';
-        thumb.href=href;
-        thumb.setAttribute('aria-label',`${shownName} bekijken`);
-        thumb.innerHTML=imageHtml;
-        seen.add(key);
+
+        let img=slot.querySelector('img');
+        if(!img){
+          img=document.createElement('img');
+          img.loading='lazy';
+          img.decoding='async';
+          slot.appendChild(img);
+        }
+
+        const wanted=imageUrl;
+        if(img.getAttribute('src')!==wanted){
+          img.setAttribute('src',wanted);
+        }
+
+        const label=product + ' productfoto';
+        if(img.getAttribute('alt')!==label){
+          img.setAttribute('alt',label);
+        }
       }else{
-        if(!thumb||!thumb.classList.contains('p20-catalogue-thumb-spacer')){
+        if(!slot||!slot.classList.contains('p20-catalogue-thumb-spacer')){
           const spacer=document.createElement('span');
           spacer.className='p20-catalogue-thumb-spacer';
-          if(thumb)thumb.replaceWith(spacer);
-          else{
-            const index=main.querySelector('.product-index');
-            if(index?.nextSibling)main.insertBefore(spacer,index.nextSibling);
-            else main.appendChild(spacer);
+          spacer.setAttribute('aria-hidden','true');
+
+          if(slot){
+            slot.replaceWith(spacer);
+          }else{
+            insertAfterIndex(main,spacer);
           }
         }
       }
-
-      row.dataset.p20ProductPage='1';
-    });
-
-    decorating=false;
+    }
   }
 
-  async function load(){
-    for(let i=0;i<80;i++){
-      if(window.PURE20_API?.client)break;
+  function scheduleDecorate(){
+    clearTimeout(timer);
+    timer=setTimeout(decorate,60);
+  }
+
+  async function waitForSupabase(){
+    for(let i=0;i<160;i++){
+      if(window.supabase?.createClient&&window.PURE20_SUPABASE_CONFIG?.url&&document.getElementById('catalogue')){
+        return true;
+      }
       await new Promise(r=>setTimeout(r,50));
     }
+    return false;
+  }
 
-    const client=window.PURE20_API?.client;
-    if(!client)return;
+  function makePublicClient(){
+    const cfg=window.PURE20_SUPABASE_CONFIG||{};
+    return window.supabase.createClient(cfg.url,cfg.key,{
+      auth:{
+        persistSession:false,
+        autoRefreshToken:false,
+        detectSessionInUrl:false,
+        storageKey:'pure20-shop-thumbnails-anon'
+      }
+    });
+  }
 
-    const [compoundRes,productRes]=await Promise.all([
-      client.from('pure20_compounds')
-        .select('slug,product_name,display_name_nl,display_name_en,image_url,image_alt_nl,image_alt_en,sort_order')
-        .eq('active',true)
-        .order('sort_order',{ascending:true}),
+  async function loadImages(client){
+    const {data,error}=await client
+      .from('pure20_products')
+      .select('id,product_name,image_url,sort_order,active')
+      .eq('active',true)
+      .order('sort_order',{ascending:true});
 
-      client.from('pure20_products')
-        .select('product_name,image_url,image_alt_nl,image_alt_en,sort_order,active')
-        .eq('active',true)
-        .order('sort_order',{ascending:true})
-    ]);
-
-    if(compoundRes.error){
-      console.warn('PURE20 product metadata:',compoundRes.error.message);
-      return;
+    if(error){
+      console.warn('PURE20 thumbnails:',error.message);
+      return false;
     }
-    if(productRes.error){
-      console.warn('PURE20 product image fallback:',productRes.error.message);
-      return;
-    }
 
-    // First available variant image becomes the automatic thumbnail fallback.
-    const fallback=new Map();
-    for(const row of productRes.data||[]){
-      if(!safeUrl(row.image_url))continue;
-      if(!fallback.has(row.product_name)){
-        fallback.set(row.product_name,row);
+    rowsById=new Map();
+    firstImageByProduct=new Map();
+
+    for(const item of data||[]){
+      const id=String(item.id||'');
+      if(id)rowsById.set(id,item);
+
+      const product=String(item.product_name||'');
+      const url=safeUrl(item.image_url);
+      if(product&&url&&!firstImageByProduct.has(product)){
+        firstImageByProduct.set(product,url);
       }
     }
 
-    const rows=(compoundRes.data||[]).map(c=>{
-      if(safeUrl(c.image_url))return c;
-
-      const f=fallback.get(c.product_name);
-      if(!f)return c;
-
-      return {
-        ...c,
-        image_url:f.image_url,
-        image_alt_nl:f.image_alt_nl||c.image_alt_nl,
-        image_alt_en:f.image_alt_en||c.image_alt_en
-      };
-    });
-
-    compounds=new Map(rows.map(c=>[String(c.product_name),c]));
     decorate();
-
-    const cat=document.getElementById('catalogue');
-    if(cat){
-      observer=new MutationObserver(()=>requestAnimationFrame(decorate));
-      observer.observe(cat,{childList:true,subtree:true});
-    }
-
-    window.addEventListener('pure20:languagechange',()=>requestAnimationFrame(decorate));
-    window.addEventListener('pure20:i18nready',()=>requestAnimationFrame(decorate));
+    return true;
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});
-  else load();
+  async function boot(){
+    if(!await waitForSupabase())return;
+
+    ensureStyles();
+
+    const client=makePublicClient();
+    await loadImages(client);
+
+    const catalogue=document.getElementById('catalogue');
+    if(!catalogue)return;
+
+    observer=new MutationObserver(scheduleDecorate);
+    observer.observe(catalogue,{childList:true,subtree:true});
+
+    client
+      .channel('pure20-shop-thumbnail-refresh')
+      .on(
+        'postgres_changes',
+        {event:'*',schema:'public',table:'pure20_products'},
+        ()=>setTimeout(()=>loadImages(client),180)
+      )
+      .subscribe();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot,{once:true});
+  }else{
+    boot();
+  }
 })();

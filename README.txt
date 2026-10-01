@@ -1,30 +1,23 @@
-PURE20 LIST IMAGES — DIRECT LOAD v2
+PURE20 SHOP THUMBNAIL FIX V3
 
-Deze versie lost de loader/cache-problemen op.
+Upload / vervang ALLEEN deze 2 bestanden in de root van GitHub:
+1. product-catalogue.js
+2. supabase-config.js
 
-UPLOAD / VERVANG:
-- admin.html
+NIET vervangen:
 - shop.html
-- admin-product-thumbnails.js
-- product-catalogue.js
-- supabase-config.js
+- app.js
+- api.js
+- styles.css
 
-BELANGRIJK:
-admin.html laadt admin-product-thumbnails.js nu RECHTSTREEKS.
-shop.html laadt product-catalogue.js + product-catalogue.css nu RECHTSTREEKS.
-Alle URLs gebruiken de nieuwe unieke cacheversie:
-20261001-list2
+Wat deze versie anders doet:
+- leest de foto-URL rechtstreeks uit pure20_products via een aparte publieke Supabase-client;
+- hangt dus NIET meer af van api.js dat image_url momenteel weggooit;
+- koppelt elke rij via het exacte product-ID;
+- toont in de shop één thumbnail per peptide;
+- gebruikt de eerste beschikbare variantfoto als thumbnail;
+- gebruikt een veilige MutationObserver die zijn eigen wijzigingen niet eindeloos opnieuw rendert;
+- nieuwe cacheversie: 20261001-thumb3.
 
-Wat je na deploy moet zien:
-
-ADMIN > PRODUCTEN
-- HGH 191AA 10iu heeft een thumbnail
-- HGH 191AA 12iu heeft een thumbnail
-- HGH 191AA 15iu heeft een thumbnail
-
-SHOP
-- maar één thumbnail bij HGH 191AA
-- de andere sterktes krijgen alleen uitlijning/spacer
-- productpagina blijft per gekozen sterkte wisselen
-
-De foto's voor HGH 10iu, 12iu en 15iu staan al daadwerkelijk in Supabase.
+Voor HGH 191AA zijn 10iu, 12iu, 15iu, 24iu en 36iu momenteel voorzien van image_url.
+De eerste beschikbare HGH-foto wordt dus als shopthumbnail gebruikt.

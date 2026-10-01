@@ -100,12 +100,12 @@ window.PURE20_SUPABASE_CONFIG = {
   if(!document.querySelector('link[data-pure20-product-catalogue]')){
     const l=document.createElement('link');
     l.rel='stylesheet';
-    l.href='/product-catalogue.css?v=20261001-list2';
+    l.href='/product-catalogue.css?v=20261001-thumb3';
     l.dataset.pure20ProductCatalogue='1';
     document.head.appendChild(l);
   }
 
-  for(const src of ['/retail-cart-bridge.js','/product-catalogue.js?v=20261001-list2']){
+  for(const src of ['/retail-cart-bridge.js','/product-catalogue.js?v=20261001-thumb3']){
     const base=src.split('?')[0];
     if([...document.scripts].some(s=>s.src&&new URL(s.src,location.href).pathname===base))continue;
     const s=document.createElement('script');
