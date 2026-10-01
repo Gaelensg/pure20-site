@@ -1,23 +1,30 @@
-PURE20 BAC WATER V2
+PURE20 HOMEPAGE V3
 
-UPLOAD / VERVANG:
-- bac-water.js
-- product.html
-- shop.html
+Vervang in GitHub:
+- index.html
+- home.css
+- home.js
 
-Wat v2 anders doet:
-- BAC Water 3 ml / WAC3 is nu een ECHT product in het normale winkelmandje.
-- Databaseprijs van WAC3 is centraal ingesteld op €4,50.
-- Kiest iemand op de productpagina 'met bacteriostatisch water', dan wordt
-  automatisch 1 × WAC3 toegevoegd per gekozen peptide-vial.
-- Daardoor wordt BAC Water letterlijk als aparte winkelmandregel weergegeven.
-- Minder dan 5 peptide-vials: €4,50 per BAC Water.
-- Vanaf 5 peptide-vials: aanwezige BAC Water 3 ml wordt gratis weergegeven en
-  uit het subtotaal/totaal gehaald.
-- Bij te weinig BAC water verschijnt een reminder.
-- De reminder kan het winkelmandje aanvullen tot 1 × BAC Water per peptide-vial.
+Wat is nieuw:
+- Sterkere homepage/landing page
+- Uitgelichte producten:
+  HGH 191AA
+  Retatrutide
+  BPC 157
+  GHK-CU
+- Elke kaart linkt rechtstreeks naar /product?slug=...
+- Foto's worden live uit Supabase gehaald.
+- Als een compound geen foto heeft, verschijnt een PURE20-placeholder.
+- Zodra later een foto wordt geüpload, verschijnt die automatisch op de homepage.
+- Grote Knowledge-sectie.
+- Duidelijke Calculator-kaart.
+- Wholesale-promoblok:
+  registreren -> goedkeuring -> private bulkprijzen.
+- Wholesale CTA gaat naar de bestaande /wholesale registratie/login flow.
+- NL/EN blijft ondersteund.
+- Mobiel responsive.
 
-BELANGRIJK:
-De databasefout bij prijzen aanpassen is los hiervan al live opgelost:
-pure20_products.image_url, image_alt_nl en image_alt_en mogen nu NULL zijn.
-Je kunt dus opnieuw een productprijs opslaan zonder dat er een productfoto is.
+Huidige database:
+Op dit moment heeft alleen HGH 191AA al een echte productfoto. Daarom zullen de
+andere drie uitgelichte producten eerst de nette PURE20-placeholder tonen totdat
+je hun eigen productfoto uploadt.
