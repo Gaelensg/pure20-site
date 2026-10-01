@@ -86,12 +86,15 @@
     const productPanel=$('panel-products');
     if(!tabs||!productPanel)return;
 
-    const tab=document.createElement('button');
-    tab.type='button';
-    tab.className='admin-tab';
-    tab.dataset.tab='productpages';
+    let tab=tabs.querySelector('.admin-tab[data-tab="productpages"]');
+    if(!tab){
+      tab=document.createElement('button');
+      tab.type='button';
+      tab.className='admin-tab';
+      tab.dataset.tab='productpages';
+      tabs.insertBefore(tab,tabs.children[1]||null);
+    }
     tab.textContent=localStorage.getItem('pure20_language')==='en'?'Product pages':'Productpagina’s';
-    tabs.insertBefore(tab,tabs.children[1]||null);
 
     const panel=document.createElement('section');
     panel.id='panel-productpages';

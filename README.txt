@@ -1,23 +1,21 @@
-PURE20 PRODUCTPAGINA'S V7
+PURE20 PRODUCTPAGINA'S STATIC V8
 
-Vervang in GitHub:
+VERVANG ALLEEN:
 - admin.html
 - admin-product-pages.js
 
-Als admin-product-pages.css al bestaat, hoef je die NIET te vervangen.
-(Er zit voor de volledigheid eventueel een kopie in deze map.)
+NIET nodig:
+- admin-product-pages.css (ongewijzigd)
 
-Na deploy:
-1. Open /admin
-2. Bovenaan staat nu: PRODUCTEN | PRODUCTPAGINA'S | KORTINGSCODES | ...
-3. Open PRODUCTPAGINA'S
-4. Tik HGH 191AA aan
-5. Wijzig "Tekst onder productnaam NL"
-6. Klik Opslaan
+Wat is anders:
+- De tab PRODUCTPAGINA'S staat nu statisch in admin.html.
+- Hij hoeft dus niet meer eerst door JavaScript gemaakt te worden.
+- admin.js ziet hem meteen bij het laden.
+- admin-product-pages.js hergebruikt die bestaande tab en maakt alleen de inhoud.
+- Nieuwe cacheversie: 20261001-8.
 
-Dit veld is exact de tekst onder de productnaam op /product.
+Na deploy moet de bovenste tabbalk letterlijk beginnen met:
+PRODUCTEN | PRODUCTPAGINA'S | KORTINGSCODES | INSTELLINGEN | BACKUP
 
-Technische wijziging:
-De tab wordt nu al geïnjecteerd zodra de admin-DOM bestaat.
-Hij wacht niet meer op de Supabase-client om überhaupt zichtbaar te worden.
-De database wordt pas afgewacht wanneer je de tab opent.
+In Productpagina's:
+open HGH 191AA en wijzig 'Tekst onder productnaam NL'.
