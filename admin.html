@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PURE20. — Admin</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="/variant-photo-editor.css?v=20261001-8" />
   <link rel="stylesheet" href="/admin-product-pages.css?v=20261001-6" data-pure20-admin-product-pages />
 
   <style>
@@ -352,6 +351,94 @@
     }
   </style>
   <script src="/admin-product-pages.js?v=20261001-6" defer data-pure20-admin-product-pages></script>
+
+  <style id="pure20ProductPhotoV9">
+    .product-photo-v9{
+      border-top:1px solid #ddd;
+      padding-top:14px;
+    }
+    .product-photo-v9-preview{
+      width:180px;
+      aspect-ratio:1/1;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      margin:10px 0;
+      border:1px solid #c8c5bd;
+      background:#f3f2ee;
+    }
+    .product-photo-v9-preview img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+    }
+    .product-photo-v9-preview span{
+      color:#85827c;
+      font-size:8px;
+      letter-spacing:.12em;
+    }
+    .product-photo-v9 input[type="file"]{
+      width:100%;
+      min-height:48px;
+      border:1px solid #c8c5bd;
+      background:#fff;
+      padding:8px;
+      font:inherit;
+      font-size:13px;
+    }
+    .product-photo-v9-options{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+      margin-top:9px;
+    }
+    .product-photo-v9-cover{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-height:42px;
+      border:1px solid #c8c5bd;
+      padding:8px 10px;
+      font-size:9px;
+      letter-spacing:.06em;
+    }
+    .product-photo-v9-cover input{
+      width:18px;
+      height:18px;
+      margin:0;
+    }
+    #removeProdImageV9{
+      min-height:42px;
+    }
+    #prodImageStatusV9{
+      margin-top:9px;
+      color:#666;
+      font-size:10px;
+      line-height:1.45;
+      text-transform:none;
+      letter-spacing:0;
+    }
+    @media(max-width:680px){
+      .product-photo-v9-preview{
+        width:100%;
+        max-width:250px;
+      }
+      .product-photo-v9 input[type="file"]{
+        font-size:16px;
+      }
+      .product-photo-v9-options{
+        grid-template-columns:1fr;
+      }
+      .product-photo-v9-cover,
+      #removeProdImageV9{
+        width:100%;
+        min-height:48px;
+      }
+    }
+  </style>
+
 </head>
 
 <body class="admin-body">
@@ -619,6 +706,33 @@
         <small class="admin-note">PDF, JPG, PNG or WEBP · max. 10 MB. The public COA link is created automatically.</small>
       </div>
 
+      <div class="admin-field wide product-photo-v9">
+        <span>PRODUCTFOTO</span>
+
+        <div id="prodImagePreviewV9" class="product-photo-v9-preview">
+          <span>GEEN FOTO</span>
+        </div>
+
+        <input id="prodImageUrlV9" type="hidden" />
+        <input id="prodImageFileV9" type="file"
+          accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" />
+
+        <div class="product-photo-v9-options">
+          <label class="product-photo-v9-cover">
+            <input id="prodImageShopCoverV9" type="checkbox" />
+            <span>Gebruik deze variant als shopminiatuur</span>
+          </label>
+          <button id="removeProdImageV9" class="admin-btn danger" type="button" disabled>
+            Foto verwijderen
+          </button>
+        </div>
+
+        <div id="prodImageStatusV9">Geen productfoto gekoppeld.</div>
+        <small class="admin-note">
+          Kies één JPG, PNG of WEBP (max. 5 MB) en druk daarna onderaan op SAVE PRODUCT.
+        </small>
+      </div>
+
       <label class="admin-field">
         <span>Visible</span>
         <select id="prodActive">
@@ -685,11 +799,11 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js?v=20261001-6"></script>
+  <script src="supabase-config.js?v=20261001-9"></script>
   <script src="fallback-data.js"></script>
-  <script src="api.js?v=20261001-6"></script>
-  <script src="admin.js?v=20261001-6"></script>
-  <script src="/variant-photo-editor.js?v=20261001-8"></script>
+  <script src="api.js?v=20261001-9"></script>
+  <script src="admin.js?v=20261001-9"></script>
+  <script src="/product-photo-save-v9.js?v=20261001-9"></script>
 
   <script>
     // On mobile, tapping the product card triggers the existing Edit action.

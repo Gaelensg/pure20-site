@@ -1,21 +1,25 @@
-PURE20 variant photo editor v8
+PURE20 PRODUCT PHOTO SAVE v9
 
-FIXT:
-1. 'Foto uploaden' deed niets op iPhone/Safari.
-2. De module zei 'Open een bestaand product' terwijl een bestaande variant open stond.
+DIT VERVANGT ALLE VORIGE FOTO-UPLOADFLOWS IN EDIT PRODUCT.
 
-WAT IS VERANDERD
-- De file picker gebruikt nu een echte <label for="variantPhotoFile">.
-- De file input blijft technisch aanwezig (niet display:none), wat betrouwbaarder is op iOS.
-- De exacte variant wordt zelf in Supabase gezocht via:
-  product_name + variant + code
-  wanneer prodId niet beschikbaar is.
-- Na openen moet de status nu bijvoorbeeld worden:
-  Klaar voor upload: HGH 191AA · 10iu.
+ER IS NOG MAAR ÉÉN MANIER:
+1. Open Producten > exacte variant.
+2. Onder PRODUCTFOTO: kies één bestand.
+3. Je ziet meteen een preview.
+4. Optioneel: vink 'Gebruik deze variant als shopminiatuur' aan.
+5. Druk onderaan op de bestaande zwarte knop SAVE PRODUCT.
+6. De foto wordt dan naar Supabase geüpload en aan die exacte variant gekoppeld.
+
+GEEN TWEEDE FOTO-UPLOADKNOP MEER.
 
 UPLOAD / VERVANG:
 - admin.html
+- product-photo-save-v9.js
+
+De oude bestanden:
 - variant-photo-editor.js
 - variant-photo-editor.css
+mogen in GitHub blijven staan, maar admin.html laadt ze NIET meer.
 
-Daarna Vercel laten deployen en /admin volledig sluiten/heropenen.
+DATABASE/BUCKET:
+Geen wijzigingen nodig. pure20_products image_url + pure20-products Storage zijn al live.
