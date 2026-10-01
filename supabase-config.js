@@ -75,3 +75,22 @@ window.PURE20_SUPABASE_CONFIG = {
     const s=document.createElement('script');s.src='/order-ux.js';s.defer=true;s.dataset.pure20OrderUx='1';document.head.appendChild(s);
   }
 })();
+
+/* Retail product-page layer */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
+  const shop=p==='/shop'||p==='/shop.html';
+  if(!shop)return;
+
+  if(!document.querySelector('link[data-pure20-product-catalogue]')){
+    const l=document.createElement('link');
+    l.rel='stylesheet';l.href='/product-catalogue.css';l.dataset.pure20ProductCatalogue='1';
+    document.head.appendChild(l);
+  }
+
+  for(const src of ['/retail-cart-bridge.js','/product-catalogue.js']){
+    if(document.querySelector(`script[src="${src}"]`))continue;
+    const s=document.createElement('script');s.src=src;s.defer=true;
+    document.head.appendChild(s);
+  }
+})();

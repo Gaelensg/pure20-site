@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f2f1ec" />
+  <meta name="description" content="PURE20 productpagina" />
+  <title>PURE20. — Product</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/product.css" />
+</head>
+<body class="p20-product-page">
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="/" aria-label="PURE20 home">PURE20.</a>
+      <nav class="header-nav" aria-label="Page navigation">
+        <a href="/shop">Shop</a>
+        <button id="headerCart" class="header-cart" type="button">
+          Order <span id="headerCartCount">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="productMain" class="p20-product-main">
+    <div id="productLoading" class="shell p20-product-loading">
+      <span class="p20-product-loader"></span>
+      <span>Product laden…</span>
+    </div>
+
+    <section id="productContent" class="shell p20-product-layout" hidden>
+      <div class="p20-product-media">
+        <div id="productImageWrap" class="p20-product-image-wrap"></div>
+      </div>
+
+      <div class="p20-product-info">
+        <a id="backToShop" class="p20-product-back" href="/shop">← Terug naar shop</a>
+        <p id="productCategory" class="eyebrow"></p>
+        <h1 id="productName"></h1>
+        <p id="productDescription" class="p20-product-description"></p>
+
+        <div class="p20-product-divider"></div>
+
+        <section class="p20-product-purchase">
+          <div class="p20-product-section-head">
+            <span id="strengthLabel">KIES STERKTE</span>
+            <small id="variantCount"></small>
+          </div>
+          <div id="variantButtons" class="p20-variant-buttons" role="group" aria-label="Sterkte kiezen"></div>
+
+          <div class="p20-product-selected">
+            <div>
+              <span id="selectedCode" class="p20-product-code"></span>
+              <strong id="selectedPrice">€0.00</strong>
+            </div>
+            <div class="p20-product-stock">
+              <span id="stockDot" class="p20-stock-dot"></span>
+              <span id="stockText"></span>
+            </div>
+          </div>
+
+          <div id="coaWrap" class="p20-product-coa" hidden>
+            <a id="coaLink" href="#" target="_blank" rel="noopener noreferrer">COA bekijken ↗</a>
+          </div>
+
+          <div class="p20-product-add-row">
+            <div class="p20-product-qty" aria-label="Aantal">
+              <button id="qtyMinus" type="button" aria-label="Aantal verlagen">−</button>
+              <input id="qtyInput" type="number" min="1" max="99" value="1" inputmode="numeric" aria-label="Aantal" />
+              <button id="qtyPlus" type="button" aria-label="Aantal verhogen">+</button>
+            </div>
+            <button id="addToCart" class="p20-add-to-cart" type="button">
+              <span id="addToCartLabel">Toevoegen aan winkelmandje</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <div id="productFeedback" class="p20-product-feedback" aria-live="polite"></div>
+        </section>
+
+        <section class="p20-product-details">
+          <div class="p20-product-detail-row">
+            <span id="detailProductLabel">PRODUCT</span>
+            <strong id="detailProduct"></strong>
+          </div>
+          <div class="p20-product-detail-row">
+            <span id="detailVariantLabel">STERKTE</span>
+            <strong id="detailVariant"></strong>
+          </div>
+          <div class="p20-product-detail-row">
+            <span id="detailUnitLabel">EENHEID</span>
+            <strong id="detailUnit"></strong>
+          </div>
+          <div class="p20-product-detail-row">
+            <span id="detailAvailabilityLabel">BESCHIKBAARHEID</span>
+            <strong id="detailAvailability"></strong>
+          </div>
+        </section>
+
+        <p id="researchNotice" class="p20-product-notice">
+          Uitsluitend voor researchdoeleinden. Beschikbaarheid, verzending en betaling worden afzonderlijk bevestigd.
+        </p>
+      </div>
+    </section>
+
+    <section id="productNotFound" class="shell p20-product-not-found" hidden>
+      <p class="eyebrow">PURE20 / PRODUCT</p>
+      <h1>Product niet gevonden.</h1>
+      <p>Dit product bestaat niet meer of is momenteel niet actief.</p>
+      <a class="p20-product-primary-link" href="/shop">Terug naar de shop →</a>
+    </section>
+  </main>
+
+  <div id="productCartBar" class="p20-product-cart-bar" hidden>
+    <div class="shell p20-product-cart-inner">
+      <div>
+        <span><strong id="productCartCount">0</strong> <span id="productCartUnitLabel">vials</span></span>
+        <span class="p20-cart-slash">/</span>
+        <strong id="productCartTotal">€0.00</strong>
+      </div>
+      <button id="viewCart" type="button">Bekijk winkelmandje <span>→</span></button>
+    </div>
+  </div>
+
+  <div id="productToast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabase-config.js"></script>
+  <script src="/fallback-data.js"></script>
+  <script src="/api.js"></script>
+  <script src="/product.js"></script>
+</body>
+</html>
