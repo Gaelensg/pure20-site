@@ -1,56 +1,57 @@
-PURE20 — fix voor Product pages / foto's per sterkte
+PURE20 — Product pages integrated v4
 
-DATABASE
-De permission error is AL LIVE opgelost in Supabase.
+WAAROM DE VORIGE VERSIE NIET BETROUWBAAR WAS
+De sterktes zaten in een tweede JavaScript-module die achteraf probeerde aan te
+haken op de Product pages-editor. Op jouw live admin werd die koppeling niet
+betrouwbaar uitgevoerd.
 
-pure20_compounds:
-- anon: SELECT
-- authenticated: SELECT / INSERT / UPDATE / DELETE
-- RLS blijft actief
-- de bestaande admin-policy bepaalt nog steeds wie effectief mag schrijven
+Deze versie verwijdert die afhankelijkheid volledig.
 
-Je hoeft dus GEEN SQL uit te voeren.
-
-UPLOAD NAAR DE ROOT VAN GITHUB
-
-VERVANG:
-- variant-images-admin.js
-- variant-images-admin.css
+UPLOAD / VERVANG IN DE ROOT VAN GITHUB:
+- admin-product-pages.js
+- admin-product-pages.css
 - supabase-config.js
 
-Wat verandert er?
+Het oude bestand variant-images-admin.js mag in de repo blijven staan.
+Het wordt na deze update NIET meer geladen.
 
-1. STERKTES ZIJN ZICHTBAAR
-Open:
-Admin > Product pages > kies een peptide
+DATABASE
+De databasefix is al live uitgevoerd.
+Je hoeft geen SQL uit te voeren.
 
-Bovenaan de editor verschijnt nu bijvoorbeeld:
-5 STERKTES & FOTO'S
+WAT JE NU ZIET
+Admin > Product pages > open een peptide.
 
-Tik daarop en er schuift een aparte lade omhoog met alle sterktes.
+DIRECT BOVENAAN DE EDITOR staat:
+STERKTES & FOTO'S
 
-2. FOTO PER STERKTE
-Elke sterkte heeft:
+Daaronder staan ALLE varianten uit pure20_products voor dat peptide, bijvoorbeeld:
+HGH 191AA:
+- 6 IU
+- 10 IU
+- 12 IU
+- 15 IU
+- 24 IU
+- 36 IU
+(alleen wat werkelijk in jouw database staat wordt getoond)
+
+Retatrutide, BPC-157, Semaglutide enz. werken exact hetzelfde.
+
+PER VARIANT:
 - Foto uploaden
 - Foto vervangen
 - Foto verwijderen
 
-3. SHOPMINIATUUR BLIJFT APART
-De grote foto bovenaan de gewone Product page-editor heet nu:
-Shopminiatuur uploaden
+SHOPMINIATUUR
+Verder naar beneden staat apart:
+SHOPMINIATUUR / FALLBACK
 
-Dat is de ene afbeelding die je in de shoplijst wilt tonen.
+Dat is de ene afbeelding die in de shoplijst verschijnt.
+Als een specifieke sterkte geen eigen foto heeft, gebruikt de publieke
+productpagina deze shopminiatuur als fallback.
 
-De foto's in 'Sterktes & foto's' worden alleen gebruikt voor de exacte variant
-op de productpagina.
+CACHE
+supabase-config.js laadt de nieuwe adminbestanden met:
+?v=20261001-4
 
-4. PRODUCTPAGINA
-variant-product-images.js blijft automatisch de juiste foto kiezen wanneer een
-klant bijvoorbeeld van 10 mg naar 20 mg wisselt.
-
-Als een variant geen eigen foto heeft, gebruikt de productpagina de algemene
-shopminiatuur als fallback.
-
-Safari:
-Na Vercel deployment de adminpagina één keer volledig vernieuwen.
-De bestanden hebben ook een nieuwe ?v=20261001-2 cacheversie gekregen.
+Na Vercel deployment Safari één keer volledig vernieuwen.
