@@ -1,22 +1,27 @@
-PURE20 PHOTO V12
+PURE20 PHOTO V13
 
 Vervang ALLEEN admin.html.
 
-Dit is bewust anders dan de vorige fixes:
-- de file input heeft rechtstreeks een onchange-handler in de HTML;
-- preview gebruikt FileReader, niet URL.createObjectURL;
-- SAVE PRODUCT heeft rechtstreeks een onclick-handler;
-- die handler blokkeert de oude admin.js-saveflow zodat er maar één save gebeurt;
-- foto wordt geüpload naar pure20-products;
-- image_url wordt rechtstreeks op de exacte pure20_products variant opgeslagen.
+Fix:
+V12 controleerde de zichtbare productnaam vóór de bestaande variant uit Supabase
+werd opgehaald. Op mobiel kon dat veld leeg zijn, waardoor:
+'Product name is required.'
 
-CONTROLE:
-In Edit product moet bovenaan het fotoblok staan:
-PRODUCTFOTO V12
+V13:
+- haalt eerst de bestaande pure20_products rij op;
+- herstelt automatisch product_name, variant, code en categorie;
+- uploadt daarna de foto;
+- slaat image_url op bij exact die variant.
 
-Als je een foto kiest:
-1. de preview verschijnt DIRECT;
-2. status wordt 'Nieuwe foto geselecteerd ... Preview OK';
-3. knop wordt 'SAVE PRODUCT + FOTO'.
+Controle:
+In de editor moet staan: PRODUCTFOTO V13
 
-Als PRODUCTFOTO V12 niet zichtbaar is, draait de nieuwe admin.html niet.
+Flow:
+1. Kies foto
+2. Preview verschijnt
+3. Druk SAVE PRODUCT + FOTO
+4. Status doorloopt:
+   Variant controleren…
+   Foto uploaden naar Supabase…
+   Productgegevens opslaan…
+   Opgeslagen ✓

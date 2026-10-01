@@ -707,7 +707,7 @@
       </div>
 
       <div class="admin-field wide product-photo-v9">
-        <span>PRODUCTFOTO <b style="font-size:8px;letter-spacing:.08em;color:#777">V12</b></span>
+        <span>PRODUCTFOTO <b style="font-size:8px;letter-spacing:.08em;color:#777">V13</b></span>
 
         <div id="prodImagePreviewV9" class="product-photo-v9-preview">
           <span>GEEN FOTO</span>
@@ -803,7 +803,7 @@
   <script src="supabase-config.js?v=20261001-12"></script>
   <script src="fallback-data.js"></script>
   <script src="api.js?v=20261001-12"></script>
-  <script id="pure20PhotoV12">
+  <script id="pure20PhotoV13">
   window.PURE20_PHOTO_V12 = (() => {
     'use strict';
 
@@ -1016,21 +1016,9 @@
     }
 
     async function save(event){
-      // Inline onclick is intentionally used. It runs before the later admin.js
-      // addEventListener handler and blocks it, so only ONE save flow executes.
       event?.preventDefault();
       event?.stopPropagation();
       event?.stopImmediatePropagation();
-
-      const p=productFromForm();
-      if(!p.product){
-        alert('Product name is required.');
-        return false;
-      }
-      if(!client()){
-        alert('Supabase is nog niet beschikbaar.');
-        return false;
-      }
 
       const saveBtn=$('saveProduct');
       const imageFile=$('prodImageFileV9')?.files?.[0]||null;
@@ -1040,13 +1028,44 @@
         saveBtn.disabled=true;
         saveBtn.textContent=imageFile?'FOTO UPLOADEN…':'OPSLAAN…';
       }
-      setStatus(imageFile?'Foto uploaden naar Supabase…':'Product opslaan…');
+      setStatus(imageFile?'Variant controleren…':'Product controleren…');
 
       try{
+        let p=productFromForm();
+
+        // IMPORTANT: resolve the existing DB row BEFORE validating product name.
+        // On the mobile admin form the visible name input can be empty even though
+        // the hidden product id correctly points to the existing catalogue row.
         const existing=await currentDbRow(p);
+
         if(existing){
           p.id=existing.id;
-          if($('#prodId'))$('#prodId').value=p.id;
+          if($('#prodId'))$('#prodId').value=existing.id;
+
+          p.product=p.product || String(existing.product_name||'').trim();
+          p.variant=p.variant || String(existing.variant||'').trim();
+          p.code=p.code || String(existing.code||'').trim();
+
+          // Fetch category separately only when the visible category is empty.
+          if(!p.category || p.category==='Other'){
+            const {data:catRow,error:catError}=await client()
+              .from('pure20_products')
+              .select('category')
+              .eq('id',existing.id)
+              .maybeSingle();
+            if(catError)throw catError;
+            if(catRow?.category)p.category=catRow.category;
+          }
+
+          // Keep the form synced too, so the user can see the recovered identity.
+          if($('#prodName')&&!$('#prodName').value)$('#prodName').value=p.product;
+          if($('#prodVariant')&&!$('#prodVariant').value)$('#prodVariant').value=p.variant;
+          if($('#prodCode')&&!$('#prodCode').value)$('#prodCode').value=p.code;
+          if($('#prodCategory')&&!$('#prodCategory').value)$('#prodCategory').value=p.category;
+        }
+
+        if(!p.product){
+          throw new Error('De productnaam kon niet automatisch worden gekoppeld aan deze variant.');
         }
 
         const oldImage=String(existing?.image_url||'');
@@ -1054,6 +1073,7 @@
         let imageUrl=removeRequested?'':oldImage;
 
         if(imageFile){
+          setStatus('Foto uploaden naar Supabase…');
           imageUrl=await uploadImage(imageFile,p);
         }
 
@@ -1062,6 +1082,7 @@
           p.coaUrl=uploaded.publicUrl;
         }
 
+        setStatus('Productgegevens opslaan…');
         await api().adminUpsertProduct(p);
 
         const alt=`PURE20 ${p.product} ${p.variant}`.trim();
@@ -1082,18 +1103,17 @@
           try{await api().adminDeleteCoa(oldCoa)}catch(err){console.warn(err)}
         }
 
-        setStatus('Opgeslagen ✓');
+        setStatus(`Opgeslagen ✓ ${p.product} ${p.variant}`);
         if(saveBtn)saveBtn.textContent='OPGESLAGEN ✓';
 
-        // Hard reload ensures the admin list and public variant data are fresh.
-        setTimeout(()=>location.reload(),350);
+        setTimeout(()=>location.reload(),450);
       }catch(err){
-        console.error('PURE20 PHOTO V12:',err);
+        console.error('PURE20 PHOTO V13:',err);
         setStatus(`Opslaan mislukt: ${err.message||err}`);
         alert(`Opslaan mislukt: ${err.message||err}`);
         if(saveBtn){
           saveBtn.disabled=false;
-          saveBtn.textContent='SAVE PRODUCT';
+          saveBtn.textContent='SAVE PRODUCT + FOTO';
         }
       }
 
