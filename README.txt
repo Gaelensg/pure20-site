@@ -1,45 +1,75 @@
-PURE20 SUPPLIER COMPARE V1
+PURE20 SUPPLIER SMART ORDER V2
 
-UPLOAD / VERVANG IN GITHUB ROOT:
-- VERVANG: supplier-order.html
-- NIEUW: supplier-compare.js
+UPLOAD / VERVANG:
+- supplier-order.html
+- supplier-compare.js
+- supplier-auto-cart.js
 
-NIET VERVANGEN:
-- supplier-order.js
-- supplier-order.css
-- supabase-config.js
+supplier-compare.js is dezelfde vergelijkmodule uit V1.
+supplier-auto-cart.js is nieuw.
 
-WAT JE KRIJGT
-Bovenaan Supplier Hub:
-- BESTELLEN
-- PRIJZEN VERGELIJKEN
+MODI BOVENAAN
+1. BESTELLEN
+2. PRIJZEN VERGELIJKEN
+3. SLIM BESTELLEN
 
-Vergelijkmodule:
-- live HHPeptide Factory vs Emlin's
-- matching primair op categorie + exacte productcode
-- conservatieve fallback op productnaam + specificatie
-- HH retail én wholesale zichtbaar
-- toggle voor verschilberekening op HH retail of HH wholesale
-- Emlin's catalogusprijs
-- prijs per vial / unit
-- absoluut prijsverschil per unit
-- procentueel verschil
-- markering welke leverancier de lagere prijs heeft
-- waarschuwing wanneer packgroottes verschillen
-- zoeken
-- categorieën
-- alleen matched producten aan/uit
-- sorteren op product, grootste verschil, HH lager of Emlin's lager
+SLIM BESTELLEN
+Je kiest producten maar één keer op één gezamenlijke lijst.
 
-BELANGRIJK
-- Leveranciersprijzen staan NIET hardcoded in deze module.
-- Data wordt pas na ingelogde adminsessie uit pure20_suppliers en
-  pure20_supplier_catalogue geladen.
-- Bestaande supplier bestelmandjes / supplier-order.js zijn niet aangepast.
-- HH wholesale threshold wordt live uit pure20_suppliers gelezen.
-- Beide huidige leveranciers gebruiken USD, dus er is geen FX-conversie nodig.
+Voorbeeld:
+RT10 x 3
+CU50 x 2
+BC10 x 1
 
-Matching:
-De huidige catalogi gebruiken bij veel overlappende peptides dezelfde codes,
-zoals RT10, BC10, CU50, TSM10 enz. Daardoor is de vergelijking voor die regels
-exact en niet gebaseerd op een gok uit de productnaam.
+PURE20 verdeelt daarna automatisch de bestelling over:
+- HHPeptide Factory
+- Emlin's
+
+De twee winkelmandjes staan tegelijk naast elkaar.
+
+PRIJSOPTIMALISATIE
+De optimizer kijkt niet alleen naar de laagste prijs per regel.
+
+Hij berekent twee scenario's:
+A. HH retail tegenover Emlin's
+B. HH wholesale tegenover Emlin's
+
+Voor HH wholesale houdt hij rekening met de ingestelde $500 wholesale-drempel.
+
+Als HH wholesale nog niet actief is, kan de optimizer berekenen of het goedkoper
+is om één of meer geselecteerde regels bewust naar HH te verplaatsen zodat de
+wholesale-drempel wordt gehaald en de TOTALE bestelling goedkoper wordt.
+
+Dat gebeurt met een kleine optimalisatieberekening. Eén productregel wordt niet
+half over twee leveranciers verdeeld.
+
+MATCHING
+Primair:
+categorie + exacte productcode
+
+Huidige database:
+- 104 exacte HH ↔ Emlin productcode-matches
+- alle 104 hebben dezelfde packgrootte
+
+Voorbeelden:
+RT10
+BC10
+CU50
+TSM10
+
+Daarom zijn deze regels zeer geschikt voor automatisch verdelen.
+
+BESTAANDE MANDJES
+Slim bestellen synchroniseert automatisch naar:
+pure20_supplier_hub_draft_v3
+
+De klassieke leveranciermandjes blijven dus bestaan.
+Klik "Open leveranciermandjes →" om de gewone bestelmodus opnieuw te laden met
+de automatisch verdeelde regels.
+
+Handmatig bestaande regels die NIET door Slim bestellen worden beheerd blijven
+in het draft-mandje staan. Slim bestellen onthoudt welke regels het zelf beheert.
+
+PRIJZEN
+Alle supplierprijzen worden live uit Supabase geladen.
+Er staan geen leveranciersprijzen hardcoded in de JS.
