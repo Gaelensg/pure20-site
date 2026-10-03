@@ -1,42 +1,45 @@
-PURE20 HOME + ADMIN V4
+PURE20 SUPPLIER COMPARE V1
 
-Vervang in GitHub:
-- index.html
-- home.css
-- home.js
-- admin.html
+UPLOAD / VERVANG IN GITHUB ROOT:
+- VERVANG: supplier-order.html
+- NIEUW: supplier-compare.js
 
-Database is al voorbereid:
-- pure20_settings.home bestaat.
-- publieke homepage mag alleen de home-config lezen.
-- alleen een geauthenticeerde PURE20-admin kan home-instellingen wijzigen.
+NIET VERVANGEN:
+- supplier-order.js
+- supplier-order.css
+- supabase-config.js
 
-NIEUW IN ADMIN
-Er staat een vaste tab HOMEpagina naast Productpagina's.
-Daar kun je per sectie NL en EN aanpassen:
-- Hero
-- Uitgelicht
-- Knowledge
-- Calculator
-- Shop-kaart
-- Wholesale
-- Onderste CTA
-- Footer
+WAT JE KRIJGT
+Bovenaan Supplier Hub:
+- BESTELLEN
+- PRIJZEN VERGELIJKEN
 
-Klik "Homepagina opslaan" en open daarna "Homepagina bekijken ↗".
+Vergelijkmodule:
+- live HHPeptide Factory vs Emlin's
+- matching primair op categorie + exacte productcode
+- conservatieve fallback op productnaam + specificatie
+- HH retail én wholesale zichtbaar
+- toggle voor verschilberekening op HH retail of HH wholesale
+- Emlin's catalogusprijs
+- prijs per vial / unit
+- absoluut prijsverschil per unit
+- procentueel verschil
+- markering welke leverancier de lagere prijs heeft
+- waarschuwing wanneer packgroottes verschillen
+- zoeken
+- categorieën
+- alleen matched producten aan/uit
+- sorteren op product, grootste verschil, HH lager of Emlin's lager
 
-KLEUREN
-De homepage gebruikt nu één rustiger warm-stone palet:
-- basis: warm off-white
-- surfaces: één lichte cream
-- secondary surface: één stone-beige
-- bijna-zwart als donker anker
-- minder zuiver wit en minder concurrerende beigevarianten
+BELANGRIJK
+- Leveranciersprijzen staan NIET hardcoded in deze module.
+- Data wordt pas na ingelogde adminsessie uit pure20_suppliers en
+  pure20_supplier_catalogue geladen.
+- Bestaande supplier bestelmandjes / supplier-order.js zijn niet aangepast.
+- HH wholesale threshold wordt live uit pure20_suppliers gelezen.
+- Beide huidige leveranciers gebruiken USD, dus er is geen FX-conversie nodig.
 
-Productfoto's in Uitgelicht blijven automatisch live uit Supabase komen.
-
-EXTRA KLEURFIX
-De homepage laadt niet langer /supabase-config.js, omdat dat bestand ook de
-universele site-header + site-theme.css injecteert. Die laag botste met home.css.
-De publieke Supabase URL/publishable key staan daarom rechtstreeks in index.html.
-De bestaande site-gate blijft apart geladen.
+Matching:
+De huidige catalogi gebruiken bij veel overlappende peptides dezelfde codes,
+zoals RT10, BC10, CU50, TSM10 enz. Daardoor is de vergelijking voor die regels
+exact en niet gebaseerd op een gok uit de productnaam.
