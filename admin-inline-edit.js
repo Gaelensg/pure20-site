@@ -1,13 +1,13 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V1__)return;
-  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V1__=true;
+  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V2__)return;
+  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V2__=true;
 
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   if(PATH!=='/admin'&&PATH!=='/admin.html')return;
 
-  const DRAFT_KEY='pure20_admin_inline_price_stock_v1';
+  const DRAFT_KEY='pure20_admin_inline_price_stock_v2';
   const $=id=>document.getElementById(id);
 
   let observer=null;
@@ -213,37 +213,113 @@
       }
 
       @media(max-width:760px){
+        /* Keep the existing mobile product-card layout compact. */
+        #panel-products .admin-table td:nth-child(6),
+        #panel-products .admin-table td:nth-child(7){
+          width:132px;
+          justify-self:end;
+        }
+
+        #panel-products .admin-table td:nth-child(6){
+          text-align:right;
+        }
+
+        #panel-products .admin-table td:nth-child(7){
+          display:flex!important;
+          align-items:center;
+          justify-content:flex-end;
+          gap:7px;
+          text-align:right;
+        }
+
+        #panel-products .admin-table td:nth-child(7)::before{
+          content:"Stock";
+          flex:0 0 auto;
+          margin:0;
+          font-size:10px;
+          font-weight:500;
+          color:#777;
+        }
+
+        #productsBody .p20-inline-price-wrap{
+          display:flex;
+          justify-content:flex-end;
+          align-items:center;
+          gap:5px;
+          width:132px;
+        }
+
         #productsBody .p20-inline-input{
-          max-width:none;
-          width:100%;
-          min-width:0;
-          height:42px;
-          font-size:13px;
+          width:88px!important;
+          min-width:88px!important;
+          max-width:88px!important;
+          height:36px;
+          padding:0 8px;
+          font-size:12px;
         }
 
         #productsBody .p20-inline-stock{
-          max-width:none;
+          width:62px!important;
+          min-width:62px!important;
+          max-width:62px!important;
         }
 
-        .p20-inline-price-wrap{
-          justify-content:stretch;
+        #productsBody .p20-inline-currency{
+          font-size:10px;
         }
 
         .p20-inline-savebar{
-          bottom:8px;
-          margin-left:-2px;
-          margin-right:-2px;
+          bottom:6px;
+          margin:12px -4px 0;
         }
 
         .p20-inline-savebar-inner{
-          min-height:70px;
-          padding:10px;
+          min-height:54px;
+          padding:7px 8px 7px 12px;
+          gap:8px;
+        }
+
+        .p20-inline-savebar-copy span{
+          display:none;
+        }
+
+        .p20-inline-savebar-copy strong{
+          margin-top:0;
+          font-size:10px;
+          line-height:1.25;
+          max-width:180px;
         }
 
         .p20-inline-savebar button{
-          min-height:48px;
-          padding:0 13px;
-          font-size:9px;
+          min-height:40px;
+          padding:0 10px;
+          font-size:8px;
+          letter-spacing:.06em;
+          white-space:nowrap;
+        }
+      }
+
+      @media(max-width:390px){
+        #panel-products .admin-table td:nth-child(6),
+        #panel-products .admin-table td:nth-child(7),
+        #productsBody .p20-inline-price-wrap{
+          width:116px;
+        }
+
+        #productsBody .p20-inline-input{
+          width:74px!important;
+          min-width:74px!important;
+          max-width:74px!important;
+        }
+
+        #productsBody .p20-inline-stock{
+          width:54px!important;
+          min-width:54px!important;
+          max-width:54px!important;
+        }
+
+        .p20-inline-savebar-copy strong{
+          max-width:142px;
         }
       }
     `;
@@ -413,7 +489,46 @@
     updateStatusPreview(row);
   }
 
+  function productSortParts(row){
+    const name=String(row.querySelector('td:nth-child(2) strong')?.textContent||'').trim();
+    const variant=String(row.querySelector('td:nth-child(3)')?.textContent||'').trim();
+    const code=String(row.querySelector('td:nth-child(5)')?.textContent||'').trim();
+    return {name,variant,code};
+  }
+
+  function compareText(a,b){
+    return String(a||'').localeCompare(String(b||''),'nl',{
+      sensitivity:'base',
+      numeric:true,
+      ignorePunctuation:true
+    });
+  }
+
+  function sortRowsAlphabetically(){
+    const body=$('productsBody');
+    if(!body)return;
+
+    const rows=[...body.querySelectorAll(':scope > tr[data-id]')];
+    if(rows.length<2)return;
+
+    const sorted=[...rows].sort((a,b)=>{
+      const aa=productSortParts(a);
+      const bb=productSortParts(b);
+      return compareText(aa.name,bb.name)
+        ||compareText(aa.variant,bb.variant)
+        ||compareText(aa.code,bb.code);
+    });
+
+    const changed=rows.some((row,index)=>row!==sorted[index]);
+    if(!changed)return;
+
+    const fragment=document.createDocumentFragment();
+    sorted.forEach(row=>fragment.appendChild(row));
+    body.appendChild(fragment);
+  }
+
   function decorateRows(){
+    sortRowsAlphabetically();
     document.querySelectorAll('#productsBody tr[data-id]').forEach(decorateRow);
     updateSaveBar();
   }

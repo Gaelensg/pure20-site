@@ -1,30 +1,27 @@
-PURE20 ADMIN INLINE PRICE + STOCK V1
+PURE20 ADMIN INLINE PRICE + STOCK V2
 
 UPLOAD / VERVANG:
-- NIEUW: admin-inline-edit.js
-- VERVANG: supabase-config.js
+- admin-inline-edit.js
+- supabase-config.js
 
-admin.html en admin.js hoef je NIET te vervangen.
+WAT V2 FIXT
+1. Mobiele layout
+- Prijsveld is compact en blijft rechts in de productkaart.
+- Stockveld is compact met klein 'Stock'-label.
+- Geen enorme witte invoervakken meer.
+- Save-balk is lager en neemt minder schermhoogte in.
 
-WAT VERANDERT OP ADMIN > PRODUCTS
-- PRICE wordt rechtstreeks een bewerkbaar invoervak.
-- STOCK wordt rechtstreeks een bewerkbaar invoervak.
-- De gewone Edit-knop blijft bestaan voor:
-  variant, category, code, foto, visibility, enz.
-- Je kunt meerdere producten achter elkaar wijzigen.
-- Gewijzigde rijen krijgen een subtiele markering.
-- Zoeken/filteren mag tussendoor: niet-opgeslagen wijzigingen blijven in de sessie.
-- Onderaan de productenlijst staat een sticky Save-bar.
-- De Save-bar toont hoeveel producten gewijzigd zijn.
-- Eén klik op WIJZIGINGEN OPSLAAN schrijft alle aangepaste prijs/stock-regels naar Supabase.
-- Na succesvolle save herlaadt Admin één keer zodat ook de interne admin-store,
-  stats en Edit-modal de nieuwe waarden gebruiken.
-- Bij verlaten/herladen met niet-opgeslagen wijzigingen geeft de browser een waarschuwing.
+2. Alfabetische productlijst
+- Admin > Products wordt automatisch alfabetisch gesorteerd op productnaam.
+- Bij dezelfde productnaam wordt daarna op variant gesorteerd.
+- Daarna op code.
+- Dit verandert ALLEEN de weergave in Admin.
+- De database sort_order en de publieke shopvolgorde worden NIET gewijzigd.
 
-DATABASE
-De module update alleen:
-- pure20_products.price_eur
-- pure20_products.stock
-- pure20_products.updated_at
-
-Geen productfoto-, naam-, variant- of andere velden worden aangeraakt.
+3. Bestaande functies blijven
+- Inline prijs aanpassen
+- Inline stock aanpassen
+- Meerdere wijzigingen tegelijk
+- Sticky Save changes-knop
+- Edit blijft beschikbaar voor andere productgegevens
+- Niet-opgeslagen wijzigingen blijven tijdens zoeken/filteren bewaard
