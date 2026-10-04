@@ -176,3 +176,18 @@ window.PURE20_SUPABASE_CONFIG = {
   s.dataset.pure20AdminInlineEdit='1';
   document.head.appendChild(s);
 })();
+
+/* Shared shortcuts across all PURE20 admin pages */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase().replace(/\.html$/,'');
+  const adminPages=['/portal','/admin','/dashboard','/wholesale-admin','/supplier-order'];
+  if(!adminPages.includes(p))return;
+
+  if(document.querySelector('script[data-pure20-admin-quicknav]'))return;
+
+  const s=document.createElement('script');
+  s.src='/admin-quick-nav.js?v=20261004-1';
+  s.defer=true;
+  s.dataset.pure20AdminQuicknav='1';
+  document.head.appendChild(s);
+})();

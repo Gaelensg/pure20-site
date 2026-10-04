@@ -1,27 +1,21 @@
-PURE20 ADMIN SAVE FIX V6 / BUILD V20
+PURE20 ADMIN QUICK NAV V1
 
-UPLOAD / VERVANG:
-- admin.html
-- admin-inline-edit.js
-- supabase-config.js
+UPLOAD / VERVANG IN GITHUB ROOT:
+- NIEUW: admin-quick-nav.js
+- VERVANG: supabase-config.js
 
-BELANGRIJKSTE FIX
-- Prijsvelden zijn nu text + inputmode=decimal in plaats van HTML type=number.
-- Zowel 39,99 als 39.99 werkt.
-- Elke wijziging in het volledige Edit-scherm wordt tijdens het typen bewaard.
-- Save gebruikt die bewaarde tekst als bron.
-- Supabase wordt daarna teruggelezen en exact geverifieerd.
+Je hoeft geen HTML-pagina's apart te wijzigen.
 
-GEEN LOGIN-FLASH MEER
-- Automatische location.reload() na Edit Save is verwijderd.
-- Automatische location.reload() na inline prijs/stock Save is verwijderd.
-- De zichtbare rij wordt direct bijgewerkt.
-- Een tweede Edit van hetzelfde product gebruikt de zojuist opgeslagen cache.
+De navigatie verschijnt automatisch op:
+- Command Center      /portal
+- Retail Admin        /admin
+- Dashboard           /dashboard
+- Wholesale Admin     /wholesale-admin
+- Supplier Hub        /supplier-order
 
-BESTAAND BLIJFT
-- foto-upload
-- COA
-- shop-cover
-- alfabetische productlijst
-- compacte mobiele prijs/stockvelden
-- quick-save balk alleen zichtbaar bij wijzigingen
+De publieke Wholesale Shop staat bewust niet in de adminnav.
+
+Mobiel is de balk horizontaal swipebaar.
+De actieve beheerpagina wordt zwart gemarkeerd.
+
+Deze supabase-config.js behoudt de huidige admin-inline-edit v6.
