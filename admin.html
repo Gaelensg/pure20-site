@@ -1263,6 +1263,30 @@
         .replace(/^-+|-+$/g,'').slice(0,100)||'file';
     }
 
+    function p20NumberFromInput(input,fallback=0){
+      if(!input)return fallback;
+
+      if(typeof input.valueAsNumber==='number' && Number.isFinite(input.valueAsNumber)){
+        return input.valueAsNumber;
+      }
+
+      let raw=String(input.value??'').trim().replace(/[^\d,.\-]/g,'');
+      if(!raw)return fallback;
+
+      if(raw.includes(',')&&raw.includes('.')){
+        if(raw.lastIndexOf(',')>raw.lastIndexOf('.')){
+          raw=raw.replace(/\./g,'').replace(',','.');
+        }else{
+          raw=raw.replace(/,/g,'');
+        }
+      }else if(raw.includes(',')){
+        raw=raw.replace(',','.');
+      }
+
+      const value=Number(raw);
+      return Number.isFinite(value)?value:fallback;
+    }
+
     function productFromForm(){
       const id=String($('#prodId')?.value||'').trim();
       return {
@@ -1272,8 +1296,8 @@
         code:String($('#prodCode')?.value||'').trim(),
         category:String($('#prodCategory')?.value||'').trim()||'Other',
         unit:String($('#prodUnit')?.value||'').trim()||'vial',
-        price:Math.max(0,Number($('#prodPrice')?.value)||0),
-        stock:Math.max(0,Math.floor(Number($('#prodStock')?.value)||0)),
+        price:Math.max(0,p20NumberFromInput($('#prodPrice'),0)),
+        stock:Math.max(0,Math.floor(p20NumberFromInput($('#prodStock'),0))),
         order:Number($('#prodOrder')?.value)||1,
         badge:String($('#prodBadge')?.value||'').trim(),
         note:String($('#prodNote')?.value||'').trim(),
@@ -1502,9 +1526,9 @@
           p.code=String($('#prodCode')?.value??'').trim();
           p.category=String($('#prodCategory')?.value??'').trim()||'Other';
           p.unit=String($('#prodUnit')?.value??'').trim()||'vial';
-          p.price=Math.max(0,Number($('#prodPrice')?.value)||0);
-          p.stock=Math.max(0,Math.floor(Number($('#prodStock')?.value)||0));
-          p.order=Number($('#prodOrder')?.value)||Number(existing.sort_order||1);
+          p.price=Math.max(0,p20NumberFromInput($('#prodPrice'),0));
+          p.stock=Math.max(0,Math.floor(p20NumberFromInput($('#prodStock'),0)));
+          p.order=Math.floor(p20NumberFromInput($('#prodOrder'),Number(existing.sort_order||1)))||Number(existing.sort_order||1);
           p.badge=String($('#prodBadge')?.value??'').trim();
           p.note=String($('#prodNote')?.value??'').trim();
           p.coaUrl=String($('#prodCoaUrl')?.value??'').trim();
@@ -1606,7 +1630,7 @@
           try{await api().adminDeleteCoa(oldCoa)}catch(err){console.warn(err)}
         }
 
-        setStatus(`Opgeslagen ✓ ${p.product} ${p.variant}`);
+        setStatus(`Opgeslagen ✓ ${p.product} ${p.variant} · €${Number(savedRow.price_eur||0).toFixed(2)} · stock ${Number(savedRow.stock||0)}`);
         if(saveBtn)saveBtn.textContent='OPGESLAGEN ✓';
 
         setTimeout(()=>location.reload(),500);
@@ -1629,6 +1653,45 @@
 
 
   <script src="admin.js?v=20261001-list2"></script>
+  <script id="p20SingleProductSaveV16">
+  (() => {
+    'use strict';
+
+    function install(){
+      const current=document.getElementById('saveProduct');
+      if(!current || current.dataset.p20SingleSave==='1')return;
+
+      // Clone removes every listener previously attached by admin.js.
+      const clean=current.cloneNode(true);
+      clean.removeAttribute('onclick');
+      clean.dataset.p20SingleSave='1';
+      current.replaceWith(clean);
+
+      clean.addEventListener('click',async event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // Commit the currently focused mobile input before reading the form.
+        if(document.activeElement instanceof HTMLElement){
+          try{document.activeElement.blur()}catch(_){}
+        }
+        await new Promise(resolve=>setTimeout(resolve,0));
+
+        if(!window.PURE20_PHOTO_V14?.save){
+          alert('Product save-module kon niet worden geladen.');
+          return;
+        }
+
+        await window.PURE20_PHOTO_V14.save(event);
+      });
+    }
+
+    install();
+    setTimeout(install,0);
+  })();
+  </script>
+
 
   <script id="p20HomeAdminScript">
   (() => {

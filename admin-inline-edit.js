@@ -1,13 +1,13 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V3__)return;
-  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V3__=true;
+  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V4__)return;
+  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V4__=true;
 
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   if(PATH!=='/admin'&&PATH!=='/admin.html')return;
 
-  const DRAFT_KEY='pure20_admin_inline_price_stock_v3';
+  const DRAFT_KEY='pure20_admin_inline_price_stock_v4';
   const $=id=>document.getElementById(id);
 
   let observer=null;
@@ -589,12 +589,47 @@
     return null;
   }
 
+  function captureVisibleInputs(){
+    const draft=readDraft();
+
+    document.querySelectorAll('#productsBody tr[data-id]').forEach(row=>{
+      const id=String(row.dataset.id||'');
+      const priceInput=row.querySelector('[data-inline-field="price"]');
+      const stockInput=row.querySelector('[data-inline-field="stock"]');
+      if(!id||!priceInput||!stockInput)return;
+
+      const now={
+        price:priceNumber(priceInput.value),
+        stock:stockNumber(stockInput.value)
+      };
+      const original=originalValues(row);
+
+      if(!samePrice(now.price,original.price)||now.stock!==original.stock){
+        draft[id]=now;
+      }else{
+        delete draft[id];
+      }
+    });
+
+    writeDraft(draft);
+    return draft;
+  }
+
   async function saveAll(){
     if(saveBusy)return;
 
-    const draft=readDraft();
+    // Important on mobile: read the inputs again at the exact moment Save is tapped.
+    if(document.activeElement instanceof HTMLElement){
+      try{document.activeElement.blur()}catch(_){}
+    }
+    await new Promise(resolve=>setTimeout(resolve,0));
+
+    const draft=captureVisibleInputs();
     const entries=Object.entries(draft);
-    if(!entries.length)return;
+    if(!entries.length){
+      updateSaveBar();
+      return;
+    }
 
     const client=await waitForClient();
     if(!client){
@@ -610,21 +645,41 @@
     });
 
     try{
-      const results=await Promise.all(entries.map(async ([id,value])=>{
+      const results=[];
+
+      for(const [id,value] of entries){
+        const expectedPrice=priceNumber(value.price);
+        const expectedStock=stockNumber(value.stock);
         const payload={
-          price_eur:priceNumber(value.price),
-          stock:stockNumber(value.stock),
+          price_eur:expectedPrice,
+          stock:expectedStock,
           updated_at:new Date().toISOString()
         };
 
-        const {error}=await client
+        const {data,error}=await client
           .from('pure20_products')
           .update(payload)
-          .eq('id',id);
+          .eq('id',id)
+          .select('id,price_eur,stock,updated_at')
+          .maybeSingle();
 
         if(error)throw new Error(`${id}: ${error.message||error}`);
-        return id;
-      }));
+        if(!data){
+          throw new Error(`${id}: Supabase heeft 0 rijen aangepast. De wijziging is NIET opgeslagen.`);
+        }
+
+        const actualPrice=priceNumber(data.price_eur);
+        const actualStock=stockNumber(data.stock);
+
+        if(!samePrice(actualPrice,expectedPrice)||actualStock!==expectedStock){
+          throw new Error(
+            `${id}: databasecontrole mislukt. Verwacht €${expectedPrice.toFixed(2)} / stock ${expectedStock}, `+
+            `maar Supabase gaf €${actualPrice.toFixed(2)} / stock ${actualStock}.`
+          );
+        }
+
+        results.push(id);
+      }
 
       clearDraft();
 

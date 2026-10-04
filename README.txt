@@ -1,47 +1,44 @@
-PURE20 ADMIN SAVE FIX V3
+PURE20 ADMIN SAVE FIX V4
 
-UPLOAD / VERVANG IN GITHUB:
+UPLOAD / VERVANG:
 - admin.html
 - admin-inline-edit.js
 - supabase-config.js
 
-1. SNEL BEWERKEN
-- De zwarte Save-balk is voortaan volledig verborgen zolang er niets gewijzigd is.
-- Pas je prijs of stock aan, dan verschijnt de balk.
-- Na succesvol opslaan verdwijnt hij automatisch.
-- Alfabetische Admin-sortering uit V2 blijft actief.
-- Compacte mobiele prijs/stockvelden uit V2 blijven actief.
+WAAROM V4
+Supabase toont dat 5-Amino-1MQ 1mg exact om 11:54 werd geüpdatet,
+maar price_eur en stock werden opnieuw als 0 / 0 geschreven.
 
-2. VOLLEDIG EDIT PRODUCT-SCHERM
-De bestaande V14 saveflow had een belangrijk probleem:
-lege formulierwaarden konden worden vervangen door de OUDE databasewaarde.
+Dat bewijst:
+- verbinding werkt
+- adminrechten werken
+- update bereikt Supabase
+- probleem zat in de waarden die de browser naar Supabase stuurde
 
-Daardoor kon bijvoorbeeld het leegmaken/wijzigen van:
-- variant
-- code
-- badge
-- note
-- COA URL
-weer terugvallen naar de oude inhoud.
+INLINE PRIJS/STOCK
+- Bij Save wordt het actieve invoerveld eerst geblurd/gecommit.
+- Daarna worden alle zichtbare prijs/stock-inputs OPNIEUW rechtstreeks uit de DOM gelezen.
+- Er wordt niet meer blind vertrouwd op een eerder sessionStorage-draft.
+- Elke update gebruikt UPDATE ... SELECT.
+- Supabase MOET de aangepaste rij teruggeven.
+- Daarna worden prijs en stock exact gecontroleerd.
+- 0 bijgewerkte rijen = harde fout, nooit meer vals 'opgeslagen'.
+- Pas na succesvolle verificatie wordt het draft gewist.
 
-V3/V15 behandelt het formulier als de bron van waarheid:
-- exacte product-ID wordt gebruikt
-- productnaam
-- variant
-- code
-- categorie
-- unit
-- prijs
-- stock
-- sort order
-- badge
-- note
-- visibility/active
-- COA URL
-worden rechtstreeks op die bestaande Supabase-rij opgeslagen.
+VOLLEDIG EDIT PRODUCT
+- admin.js had nog een tweede Save-listener op dezelfde knop.
+- V4 vervangt de Save-knop na admin.js door een schone clone.
+- Daardoor blijven er fysiek geen oude click-listeners over.
+- Er is nog maar 1 savepad: PURE20_PHOTO_V14/V15.
+- Actieve mobiele input wordt vóór Save gecommit.
+- Prijs/order/stock worden locale-safe uitgelezen met valueAsNumber + komma/punt fallback.
+- Na database-update wordt de rij teruggelezen en vergeleken.
+- De status toont na succes ook de werkelijk opgeslagen prijs en stock.
 
-Daarna wordt dezelfde rij meteen opnieuw vanuit Supabase teruggelezen.
-"OPGESLAGEN ✓" wordt alleen getoond als de teruggelezen waarden daadwerkelijk
-overeenkomen met wat in het formulier stond.
-
-Foto-upload / productfoto en shop-cover logica blijven in admin.html behouden.
+BESTAAND
+- foto-upload blijft
+- COA blijft
+- productpagina-cover blijft
+- alfabetische Admin-sortering blijft
+- compacte mobiele prijs/stockvelden blijven
+- Save-balk blijft verborgen zolang niets gewijzigd is

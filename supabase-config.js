@@ -171,7 +171,7 @@ window.PURE20_SUPABASE_CONFIG = {
   if(document.querySelector('script[data-pure20-admin-inline-edit]'))return;
 
   const s=document.createElement('script');
-  s.src='/admin-inline-edit.js?v=20261004-3';
+  s.src='/admin-inline-edit.js?v=20261004-4';
   s.defer=true;
   s.dataset.pure20AdminInlineEdit='1';
   document.head.appendChild(s);
