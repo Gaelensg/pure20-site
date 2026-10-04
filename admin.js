@@ -47,6 +47,13 @@
   function renderAll(){renderStats();renderCategories();renderProducts();renderCoupons();renderSettings();setModeUI();}
 
   async function reloadStore(){const r=await window.PURE20_API.adminLoadAll();store=r.store;source=r.source;renderAll();}
+  // Merge confirmed inserts only; existing in-memory products and save handlers are untouched.
+  document.addEventListener('pure20:supplier-sync-added', event => {
+    const known = new Set(store.products.map(product => product.id));
+    const added = window.PURE20_API.normalizeStore({ products: event.detail, coupons: [], settings: {} }).products;
+    store.products.push(...added.filter(product => !known.has(product.id)));
+    renderStats(); renderCategories(); renderProducts();
+  });
   async function mutate(label,fn){setSync('pending',label);document.body.classList.add('saving');try{await fn();await reloadStore();setSync('',source==='cloud'?'Saved to cloud':'Saved in demo mode');}catch(err){console.error(err);setSync('error',err.message||'Save failed');alert(`Could not save: ${err.message||err}`);}finally{document.body.classList.remove('saving');}}
 
   document.querySelectorAll('.admin-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.admin-tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.admin-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${b.dataset.tab}`));}));

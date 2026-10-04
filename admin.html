@@ -533,6 +533,7 @@
   }
 </style>
 
+  <link rel="stylesheet" href="admin-supplier-sync.css?v=20261005-1" />
 </head>
 
 <body class="admin-body">
@@ -608,8 +609,33 @@
       <button class="admin-tab" data-tab="homepage">Homepagina</button>
       <button class="admin-tab" data-tab="coupons">Coupons</button>
       <button class="admin-tab" data-tab="settings">Settings</button>
+      <button class="admin-tab" data-tab="supplier-sync" type="button">SUPPLIER SYNC</button>
       <button class="admin-tab" data-tab="backup">Backup & import</button>
     </nav>
+
+    <section id="panel-supplier-sync" class="admin-panel" lang="nl">
+      <div class="admin-card">
+        <h2>Supplier Sync</h2>
+        <p class="ss-intro">Vul de retailcatalogus aan met ontbrekende varianten uit actieve supplierlijsten. Alleen <strong>peptides</strong>; orals en oils worden uitgesloten. Bestaande retailproducten blijven exact behouden.</p>
+        <p class="ss-intro">Nieuwe regels beginnen verborgen, met prijs €0, voorraad 0 en unit vial. Regels met status <strong>Controleren</strong> zijn geblokkeerd: corrigeer eerst de bron en vernieuw de preview. Er wordt nooit een sterkte uit een productcode geraden.</p>
+        <button id="ss-refresh" class="admin-btn" type="button">Preview vernieuwen</button>
+        <div id="ss-counts" aria-label="Samenvatting"></div>
+        <p id="ss-summary"></p>
+        <div id="ss-message" role="status" aria-live="polite"></div>
+        <div class="ss-toolbar">
+          <input id="ss-search" type="search" aria-label="Zoek product, code of leverancier" placeholder="Zoek product, code of leverancier…" />
+          <select id="ss-filter" aria-label="Filter op status">
+            <option value="">Alle statussen</option><option>Bestaat</option><option>Nieuwe variant</option><option>Nieuw product</option><option>Controleren</option>
+          </select>
+        </div>
+        <div class="ss-actions">
+          <button id="ss-select" class="admin-btn" type="button">Selecteer toevoegbare zichtbare regels</button>
+          <button id="ss-clear" class="admin-btn" type="button">Selectie wissen</button>
+          <button id="ss-add" class="admin-btn primary" type="button" disabled>Geselecteerde regels toevoegen (0)</button>
+        </div>
+        <div id="ss-rows"></div>
+      </div>
+    </section>
 
     <section id="panel-products" class="admin-panel active">
       <div class="admin-card">
@@ -1748,7 +1774,7 @@
   </script>
 
 
-  <script src="admin.js?v=20261001-list2"></script>
+  <script src="admin.js?v=20261005-sync1"></script>
   <script id="p20SingleProductSaveV16">
   (() => {
     'use strict';
@@ -2171,5 +2197,7 @@
       if(editButton) editButton.click();
     });
   </script>
+  <script src="supplier-sync-core.js?v=20261005-1"></script>
+  <script src="admin-supplier-sync.js?v=20261005-1"></script>
 </body>
 </html>
