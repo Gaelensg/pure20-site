@@ -1,13 +1,13 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V2__)return;
-  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V2__=true;
+  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V3__)return;
+  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V3__=true;
 
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   if(PATH!=='/admin'&&PATH!=='/admin.html')return;
 
-  const DRAFT_KEY='pure20_admin_inline_price_stock_v2';
+  const DRAFT_KEY='pure20_admin_inline_price_stock_v3';
   const $=id=>document.getElementById(id);
 
   let observer=null;
@@ -114,6 +114,10 @@
       @keyframes p20InlineSaved{
         0%{background:#e9f4eb}
         100%{background:inherit}
+      }
+
+      .p20-inline-savebar[hidden]{
+        display:none!important;
       }
 
       .p20-inline-savebar{
@@ -336,6 +340,7 @@
     const bar=document.createElement('div');
     bar.id='p20InlineSaveBar';
     bar.className='p20-inline-savebar';
+    bar.hidden=true;
     bar.innerHTML=`
       <div class="p20-inline-savebar-inner">
         <div class="p20-inline-savebar-copy">
@@ -552,10 +557,19 @@
     bar.classList.remove('error','success');
     if(mode)bar.classList.add(mode);
 
+    // No edits = no bar. It only appears when there is something actionable.
+    if(count===0 && !message && !saveBusy){
+      bar.hidden=true;
+      text.textContent='';
+      button.disabled=true;
+      button.textContent='Wijzigingen opslaan';
+      return;
+    }
+
+    bar.hidden=false;
+
     if(message){
       text.textContent=message;
-    }else if(count===0){
-      text.textContent='Geen niet-opgeslagen wijzigingen.';
     }else if(count===1){
       text.textContent='1 product aangepast. Nog niet opgeslagen.';
     }else{
@@ -623,6 +637,11 @@
         `${results.length} product${results.length===1?'':'en'} opgeslagen ✓`,
         'success'
       );
+
+      setTimeout(()=>{
+        const bar=$('p20InlineSaveBar');
+        if(bar)bar.hidden=true;
+      },420);
 
       // admin.js keeps its own store in a closure.
       // One controlled reload guarantees Edit/modal, filters and stats all use the new values.

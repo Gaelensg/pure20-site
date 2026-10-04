@@ -1491,46 +1491,26 @@
         if(existing){
           p.id=existing.id;
 
-          // Text identity always falls back to the actual DB row.
-          p.product=String(p.product||existing.product_name||'').trim();
-          p.variant=String(p.variant||existing.variant||'').trim();
-          p.code=String(p.code||existing.code||'').trim();
-          p.category=String(
-            ($('#prodCategory')?.value||'').trim() ||
-            existing.category ||
-            'Other'
-          ).trim();
-          p.unit=String(
-            ($('#prodUnit')?.value||'').trim() ||
-            existing.unit ||
-            'vial'
-          ).trim();
+          /*
+           * V15: the form is authoritative.
+           * V14 restored empty fields from the old database row, which meant
+           * clearing Variant / Code / Badge / Note / COA could appear to save
+           * and then jump back to the previous value.
+           */
+          p.product=String($('#prodName')?.value??'').trim();
+          p.variant=String($('#prodVariant')?.value??'').trim();
+          p.code=String($('#prodCode')?.value??'').trim();
+          p.category=String($('#prodCategory')?.value??'').trim()||'Other';
+          p.unit=String($('#prodUnit')?.value??'').trim()||'vial';
+          p.price=Math.max(0,Number($('#prodPrice')?.value)||0);
+          p.stock=Math.max(0,Math.floor(Number($('#prodStock')?.value)||0));
+          p.order=Number($('#prodOrder')?.value)||Number(existing.sort_order||1);
+          p.badge=String($('#prodBadge')?.value??'').trim();
+          p.note=String($('#prodNote')?.value??'').trim();
+          p.coaUrl=String($('#prodCoaUrl')?.value??'').trim();
+          p.active=String($('#prodActive')?.value||'true')==='true';
 
-          // Preserve existing numbers only when the corresponding form is blank.
-          if(String($('#prodPrice')?.value??'').trim()===''){
-            p.price=Number(existing.price_eur||0);
-          }
-          if(String($('#prodStock')?.value??'').trim()===''){
-            p.stock=Math.max(0,Number(existing.stock||0));
-          }
-          if(String($('#prodOrder')?.value??'').trim()===''){
-            p.order=Number(existing.sort_order||1);
-          }
-
-          if(!p.badge)p.badge=String(existing.badge||'');
-          if(!p.note)p.note=String(existing.note||'');
-          if(!p.coaUrl)p.coaUrl=String(existing.coa_url||'');
-          p.active=String($('#prodActive')?.value||'')!==''
-            ? $('#prodActive').value==='true'
-            : existing.active!==false;
-
-          // Keep visible form synchronized with what was recovered.
           if($('#prodId'))$('#prodId').value=p.id;
-          if($('#prodName'))$('#prodName').value=p.product;
-          if($('#prodVariant'))$('#prodVariant').value=p.variant;
-          if($('#prodCode'))$('#prodCode').value=p.code;
-          if($('#prodCategory'))$('#prodCategory').value=p.category;
-          if($('#prodUnit'))$('#prodUnit').value=p.unit;
         }
 
         if(!existing){
@@ -1558,7 +1538,55 @@
         }
 
         setStatus('Productgegevens opslaan…');
-        await api().adminUpsertProduct(p);
+
+        /*
+         * V15: update the exact existing row instead of a generic upsert,
+         * then read the saved row back from Supabase before reporting success.
+         */
+        const productPayload={
+          sort_order:Number(p.order||1),
+          category:p.category||'Other',
+          product_name:p.product,
+          variant:p.variant||'',
+          code:p.code||'',
+          unit:p.unit||'vial',
+          price_eur:Number(p.price||0),
+          stock:Math.max(0,Math.floor(Number(p.stock||0))),
+          active:p.active!==false,
+          badge:p.badge||'',
+          note:p.note||'',
+          coa_url:p.coaUrl||'',
+          updated_at:new Date().toISOString()
+        };
+
+        const {data:savedRow,error:saveError}=await client()
+          .from('pure20_products')
+          .update(productPayload)
+          .eq('id',existing.id)
+          .select('id,product_name,variant,code,category,unit,price_eur,stock,sort_order,badge,note,active,coa_url')
+          .single();
+
+        if(saveError)throw saveError;
+        if(!savedRow)throw new Error('Supabase gaf geen opgeslagen productrij terug.');
+
+        const mismatch=
+          String(savedRow.id)!==String(existing.id) ||
+          String(savedRow.product_name||'')!==String(p.product||'') ||
+          String(savedRow.variant||'')!==String(p.variant||'') ||
+          String(savedRow.code||'')!==String(p.code||'') ||
+          String(savedRow.category||'')!==String(p.category||'') ||
+          String(savedRow.unit||'')!==String(p.unit||'') ||
+          Math.abs(Number(savedRow.price_eur||0)-Number(p.price||0))>0.0001 ||
+          Number(savedRow.stock||0)!==Number(p.stock||0) ||
+          Number(savedRow.sort_order||0)!==Number(p.order||0) ||
+          String(savedRow.badge||'')!==String(p.badge||'') ||
+          String(savedRow.note||'')!==String(p.note||'') ||
+          Boolean(savedRow.active)!==Boolean(p.active) ||
+          String(savedRow.coa_url||'')!==String(p.coaUrl||'');
+
+        if(mismatch){
+          throw new Error('Databasecontrole mislukt: de opgeslagen waarden komen niet overeen met het formulier.');
+        }
 
         const alt=`PURE20 ${p.product} ${p.variant}`.trim();
         const {error:imageDbError}=await client().from('pure20_products').update({
@@ -1583,7 +1611,7 @@
 
         setTimeout(()=>location.reload(),500);
       }catch(err){
-        console.error('PURE20 PHOTO V14:',err);
+        console.error('PURE20 PRODUCT SAVE V15:',err);
         setStatus(`Opslaan mislukt: ${err.message||err}`);
         alert(`Opslaan mislukt: ${err.message||err}`);
         if(saveBtn){
