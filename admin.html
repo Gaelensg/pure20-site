@@ -1,4 +1,4 @@
-<!-- PURE20 ADMIN BUILD V18 - MOBILE SAVE FIX -->
+<!-- PURE20 ADMIN BUILD V20 - VERIFIED MOBILE EDIT SAVE -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -1093,12 +1093,12 @@
 
       <label class="admin-field">
         Price (€)
-        <input id="prodPrice" type="number" min="0" step="0.01" required />
+        <input id="prodPrice" type="text" inputmode="decimal" autocomplete="off" required />
       </label>
 
       <label class="admin-field">
         Stock
-        <input id="prodStock" type="number" min="0" step="1" required />
+        <input id="prodStock" type="text" inputmode="numeric" autocomplete="off" required />
       </label>
 
       <label class="admin-field">
@@ -1286,6 +1286,30 @@
 
       const value=Number(raw);
       return Number.isFinite(value)?value:fallback;
+    }
+
+    function p20NumberFromRaw(raw,fallback=0){
+      let value=String(raw??'').trim().replace(/[^\d,.\-]/g,'');
+      if(!value)return fallback;
+      if(value.includes(',')&&value.includes('.')){
+        if(value.lastIndexOf(',')>value.lastIndexOf('.')){
+          value=value.replace(/\./g,'').replace(',','.');
+        }else{
+          value=value.replace(/,/g,'');
+        }
+      }else if(value.includes(',')){
+        value=value.replace(',','.');
+      }
+      const parsed=Number(value);
+      return Number.isFinite(parsed)?parsed:fallback;
+    }
+
+    function p20RawField(id){
+      const draft=window.PURE20_PRODUCT_EDIT_DRAFT||{};
+      if(Object.prototype.hasOwnProperty.call(draft,id)){
+        return String(draft[id]??'');
+      }
+      return String($(id)?.value??'');
     }
 
     function productFromForm(){
@@ -1523,16 +1547,14 @@
            * and then jump back to the previous value.
            */
           /*
-           * V17 mobile-safe merge:
-           * required identity fields may occasionally arrive empty from the
-           * mobile modal even though the database row is valid. Never replace
-           * a valid database identity with an accidental empty string.
+           * V20 verified mobile merge:
+           * values changed by the admin are captured while typing.
            */
-          const formName=String($('#prodName')?.value??'').trim();
-          const formVariant=String($('#prodVariant')?.value??'').trim();
-          const formCode=String($('#prodCode')?.value??'').trim();
-          const formCategory=String($('#prodCategory')?.value??'').trim();
-          const formUnit=String($('#prodUnit')?.value??'').trim();
+          const formName=p20RawField('prodName').trim();
+          const formVariant=p20RawField('prodVariant').trim();
+          const formCode=p20RawField('prodCode').trim();
+          const formCategory=p20RawField('prodCategory').trim();
+          const formUnit=p20RawField('prodUnit').trim();
 
           p.product=formName || String(existing.product_name||'').trim();
           p.variant=formVariant || String(existing.variant||'').trim();
@@ -1540,29 +1562,29 @@
           p.category=formCategory || String(existing.category||'Other').trim() || 'Other';
           p.unit=formUnit || String(existing.unit||'vial').trim() || 'vial';
 
-          const priceInput=$('#prodPrice');
-          const stockInput=$('#prodStock');
-          const orderInput=$('#prodOrder');
+          const priceRaw=p20RawField('prodPrice');
+          const stockRaw=p20RawField('prodStock');
+          const orderRaw=p20RawField('prodOrder');
 
-          p.price=String(priceInput?.value??'').trim()===''
+          p.price=priceRaw.trim()===''
             ? Number(existing.price_eur||0)
-            : Math.max(0,p20NumberFromInput(priceInput,Number(existing.price_eur||0)));
+            : Math.max(0,p20NumberFromRaw(priceRaw,Number(existing.price_eur||0)));
 
-          p.stock=String(stockInput?.value??'').trim()===''
+          p.stock=stockRaw.trim()===''
             ? Math.max(0,Math.floor(Number(existing.stock||0)))
-            : Math.max(0,Math.floor(p20NumberFromInput(stockInput,Number(existing.stock||0))));
+            : Math.max(0,Math.floor(p20NumberFromRaw(stockRaw,Number(existing.stock||0))));
 
-          p.order=String(orderInput?.value??'').trim()===''
+          p.order=orderRaw.trim()===''
             ? Number(existing.sort_order||1)
-            : Math.max(1,Math.floor(p20NumberFromInput(orderInput,Number(existing.sort_order||1))));
+            : Math.max(1,Math.floor(p20NumberFromRaw(orderRaw,Number(existing.sort_order||1))));
 
-          // These fields are intentionally allowed to be cleared by the admin.
-          p.badge=String($('#prodBadge')?.value??'').trim();
-          p.note=String($('#prodNote')?.value??'').trim();
-          p.coaUrl=String($('#prodCoaUrl')?.value??'').trim();
-          p.active=String($('#prodActive')?.value||String(existing.active!==false))==='true';
+          p.badge=p20RawField('prodBadge').trim();
+          p.note=p20RawField('prodNote').trim();
+          p.coaUrl=p20RawField('prodCoaUrl').trim();
 
-          // Keep required identity visible/synchronised on mobile.
+          const activeRaw=p20RawField('prodActive');
+          p.active=(activeRaw==='' ? existing.active!==false : activeRaw==='true');
+
           if($('#prodId'))$('#prodId').value=p.id;
           if($('#prodName') && !formName)$('#prodName').value=p.product;
           if($('#prodVariant') && !formVariant)$('#prodVariant').value=p.variant;
@@ -1664,12 +1686,52 @@
           try{await api().adminDeleteCoa(oldCoa)}catch(err){console.warn(err)}
         }
 
-        setStatus(`DATABASE OK ✓ ${savedRow.product_name} ${savedRow.variant} · €${Number(savedRow.price_eur||0).toFixed(2)} · stock ${Number(savedRow.stock||0)}`);
-        if(saveBtn)saveBtn.textContent='OPGESLAGEN ✓';
+        window.PURE20_ADMIN_SAVED_CACHE=window.PURE20_ADMIN_SAVED_CACHE||{};
+        window.PURE20_ADMIN_SAVED_CACHE[String(savedRow.id)]={
+          ...savedRow,
+          image_url:imageUrl||null
+        };
+        window.PURE20_PRODUCT_EDIT_DRAFT={};
 
-        setTimeout(()=>location.reload(),500);
+        const row=document.querySelector(`#productsBody tr[data-id="${CSS.escape(String(savedRow.id))}"]`);
+        if(row){
+          const cells=row.querySelectorAll(':scope > td');
+          const name=cells[1]?.querySelector('strong');
+          if(name)name.textContent=savedRow.product_name||'';
+          if(cells[2])cells[2].textContent=savedRow.variant||'';
+
+          const priceInput=cells[5]?.querySelector('[data-inline-field="price"]');
+          const stockInput=cells[6]?.querySelector('[data-inline-field="stock"]');
+          if(priceInput)priceInput.value=Number(savedRow.price_eur||0).toFixed(2);
+          if(stockInput)stockInput.value=String(Number(savedRow.stock||0));
+
+          row.dataset.inlineOriginalPrice=String(Number(savedRow.price_eur||0));
+          row.dataset.inlineOriginalStock=String(Number(savedRow.stock||0));
+          row.classList.remove('p20-inline-dirty','p20-inline-saving');
+
+          const chip=row.querySelector('.status-chip');
+          if(chip){
+            chip.textContent=savedRow.active
+              ? (Number(savedRow.stock||0)>0?'Active':'Out of stock')
+              : 'Hidden';
+            chip.classList.toggle('chip-on',Boolean(savedRow.active));
+            chip.classList.toggle('chip-off',!savedRow.active);
+          }
+        }
+
+        setStatus(`DATABASE OK ✓ ${savedRow.product_name} ${savedRow.variant} · €${Number(savedRow.price_eur||0).toFixed(2)} · stock ${Number(savedRow.stock||0)}`);
+        if(saveBtn){
+          saveBtn.disabled=false;
+          saveBtn.textContent='OPGESLAGEN ✓';
+        }
+
+        setTimeout(()=>{
+          const close=$('productModal')?.querySelector('[data-close-modal]');
+          close?.click();
+          if(saveBtn)saveBtn.textContent='SAVE PRODUCT';
+        },650);
       }catch(err){
-        console.error('PURE20 PRODUCT SAVE V17:',err);
+        console.error('PURE20 PRODUCT SAVE V20:',err);
         setStatus(`Opslaan mislukt: ${err.message||err}`);
         alert(`Opslaan mislukt: ${err.message||err}`);
         if(saveBtn){
@@ -1726,6 +1788,74 @@
   })();
   </script>
 
+
+  <script id="p20VerifiedEditDraftV20">
+  (() => {
+    'use strict';
+
+    window.PURE20_PRODUCT_EDIT_DRAFT=window.PURE20_PRODUCT_EDIT_DRAFT||{};
+    window.PURE20_ADMIN_SAVED_CACHE=window.PURE20_ADMIN_SAVED_CACHE||{};
+
+    const modal=document.getElementById('productModal');
+    const body=document.getElementById('productsBody');
+
+    const capture=event=>{
+      const el=event.target;
+      if(!el?.id || !el.id.startsWith('prod'))return;
+      if(el.type==='file')return;
+      window.PURE20_PRODUCT_EDIT_DRAFT[el.id]=el.value;
+    };
+
+    modal?.addEventListener('input',capture,true);
+    modal?.addEventListener('change',capture,true);
+
+    let wasOpen=modal?.classList.contains('open')||false;
+    if(modal){
+      new MutationObserver(()=>{
+        const open=modal.classList.contains('open');
+        if(open&&!wasOpen){
+          window.PURE20_PRODUCT_EDIT_DRAFT={};
+        }
+        wasOpen=open;
+      }).observe(modal,{attributes:true,attributeFilter:['class']});
+    }
+
+    function refillFromCache(id){
+      const row=window.PURE20_ADMIN_SAVED_CACHE?.[String(id)];
+      if(!row)return;
+      const set=(field,value)=>{
+        const el=document.getElementById(field);
+        if(el)el.value=value??'';
+      };
+      set('prodId',row.id);
+      set('prodName',row.product_name);
+      set('prodVariant',row.variant);
+      set('prodCode',row.code);
+      set('prodCategory',row.category);
+      set('prodUnit',row.unit);
+      set('prodPrice',Number(row.price_eur||0).toFixed(2));
+      set('prodStock',Number(row.stock||0));
+      set('prodOrder',Number(row.sort_order||1));
+      set('prodBadge',row.badge||'');
+      set('prodNote',row.note||'');
+      set('prodCoaUrl',row.coa_url||'');
+      set('prodActive',String(row.active!==false));
+    }
+
+    body?.addEventListener('click',event=>{
+      const row=event.target.closest('tr[data-id]');
+      if(!row)return;
+      const id=String(row.dataset.id||'');
+      setTimeout(()=>{
+        if(modal?.classList.contains('open'))refillFromCache(id);
+      },0);
+    });
+
+    document.getElementById('addProduct')?.addEventListener('click',()=>{
+      window.PURE20_PRODUCT_EDIT_DRAFT={};
+    },true);
+  })();
+  </script>
 
   <script id="p20HomeAdminScript">
   (() => {

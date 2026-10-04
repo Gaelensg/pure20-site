@@ -1,13 +1,13 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V4__)return;
-  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V4__=true;
+  if(window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V6__)return;
+  window.__PURE20_ADMIN_INLINE_PRICE_STOCK_V6__=true;
 
   const PATH=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
   if(PATH!=='/admin'&&PATH!=='/admin.html')return;
 
-  const DRAFT_KEY='pure20_admin_inline_price_stock_v4';
+  const DRAFT_KEY='pure20_admin_inline_price_stock_v6';
   const $=id=>document.getElementById(id);
 
   let observer=null;
@@ -440,8 +440,20 @@
     const priceCell=cells[5];
     const stockCell=cells[6];
 
-    const originalPrice=priceNumber(priceCell.textContent);
-    const originalStock=stockNumber(stockCell.textContent);
+    const cached=window.PURE20_ADMIN_SAVED_CACHE?.[String(row.dataset.id)]||null;
+
+    if(cached){
+      const name=cells[1]?.querySelector('strong');
+      if(name&&cached.product_name!=null)name.textContent=String(cached.product_name);
+      if(cells[2]&&cached.variant!=null)cells[2].textContent=String(cached.variant);
+    }
+
+    const originalPrice=cached?.price_eur!=null
+      ? priceNumber(cached.price_eur)
+      : priceNumber(priceCell.textContent);
+    const originalStock=cached?.stock!=null
+      ? stockNumber(cached.stock)
+      : stockNumber(stockCell.textContent);
 
     row.dataset.inlineOriginalPrice=String(originalPrice);
     row.dataset.inlineOriginalStock=String(originalStock);
@@ -678,15 +690,33 @@
           );
         }
 
-        results.push(id);
+        window.PURE20_ADMIN_SAVED_CACHE=window.PURE20_ADMIN_SAVED_CACHE||{};
+        window.PURE20_ADMIN_SAVED_CACHE[String(id)]={
+          ...(window.PURE20_ADMIN_SAVED_CACHE[String(id)]||{}),
+          id:String(id),
+          price_eur:actualPrice,
+          stock:actualStock
+        };
+        results.push({id:String(id),price:actualPrice,stock:actualStock});
       }
 
       clearDraft();
 
-      document.querySelectorAll('#productsBody tr.p20-inline-dirty').forEach(row=>{
+      for(const saved of results){
+        const row=document.querySelector(`#productsBody tr[data-id="${CSS.escape(saved.id)}"]`);
+        if(!row)continue;
+
+        const priceInput=row.querySelector('[data-inline-field="price"]');
+        const stockInput=row.querySelector('[data-inline-field="stock"]');
+        if(priceInput)priceInput.value=Number(saved.price).toFixed(2);
+        if(stockInput)stockInput.value=String(saved.stock);
+
+        row.dataset.inlineOriginalPrice=String(saved.price);
+        row.dataset.inlineOriginalStock=String(saved.stock);
         row.classList.remove('p20-inline-dirty','p20-inline-saving');
         row.classList.add('p20-inline-saved');
-      });
+        updateStatusPreview(row);
+      }
 
       updateSaveBar(
         `${results.length} product${results.length===1?'':'en'} opgeslagen ✓`,
@@ -696,11 +726,7 @@
       setTimeout(()=>{
         const bar=$('p20InlineSaveBar');
         if(bar)bar.hidden=true;
-      },420);
-
-      // admin.js keeps its own store in a closure.
-      // One controlled reload guarantees Edit/modal, filters and stats all use the new values.
-      setTimeout(()=>location.reload(),700);
+      },650);
     }catch(err){
       console.error('PURE20 inline save:',err);
 
