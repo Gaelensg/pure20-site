@@ -1,75 +1,30 @@
-PURE20 SUPPLIER SMART ORDER V2
+PURE20 ADMIN INLINE PRICE + STOCK V1
 
 UPLOAD / VERVANG:
-- supplier-order.html
-- supplier-compare.js
-- supplier-auto-cart.js
+- NIEUW: admin-inline-edit.js
+- VERVANG: supabase-config.js
 
-supplier-compare.js is dezelfde vergelijkmodule uit V1.
-supplier-auto-cart.js is nieuw.
+admin.html en admin.js hoef je NIET te vervangen.
 
-MODI BOVENAAN
-1. BESTELLEN
-2. PRIJZEN VERGELIJKEN
-3. SLIM BESTELLEN
+WAT VERANDERT OP ADMIN > PRODUCTS
+- PRICE wordt rechtstreeks een bewerkbaar invoervak.
+- STOCK wordt rechtstreeks een bewerkbaar invoervak.
+- De gewone Edit-knop blijft bestaan voor:
+  variant, category, code, foto, visibility, enz.
+- Je kunt meerdere producten achter elkaar wijzigen.
+- Gewijzigde rijen krijgen een subtiele markering.
+- Zoeken/filteren mag tussendoor: niet-opgeslagen wijzigingen blijven in de sessie.
+- Onderaan de productenlijst staat een sticky Save-bar.
+- De Save-bar toont hoeveel producten gewijzigd zijn.
+- Eén klik op WIJZIGINGEN OPSLAAN schrijft alle aangepaste prijs/stock-regels naar Supabase.
+- Na succesvolle save herlaadt Admin één keer zodat ook de interne admin-store,
+  stats en Edit-modal de nieuwe waarden gebruiken.
+- Bij verlaten/herladen met niet-opgeslagen wijzigingen geeft de browser een waarschuwing.
 
-SLIM BESTELLEN
-Je kiest producten maar één keer op één gezamenlijke lijst.
+DATABASE
+De module update alleen:
+- pure20_products.price_eur
+- pure20_products.stock
+- pure20_products.updated_at
 
-Voorbeeld:
-RT10 x 3
-CU50 x 2
-BC10 x 1
-
-PURE20 verdeelt daarna automatisch de bestelling over:
-- HHPeptide Factory
-- Emlin's
-
-De twee winkelmandjes staan tegelijk naast elkaar.
-
-PRIJSOPTIMALISATIE
-De optimizer kijkt niet alleen naar de laagste prijs per regel.
-
-Hij berekent twee scenario's:
-A. HH retail tegenover Emlin's
-B. HH wholesale tegenover Emlin's
-
-Voor HH wholesale houdt hij rekening met de ingestelde $500 wholesale-drempel.
-
-Als HH wholesale nog niet actief is, kan de optimizer berekenen of het goedkoper
-is om één of meer geselecteerde regels bewust naar HH te verplaatsen zodat de
-wholesale-drempel wordt gehaald en de TOTALE bestelling goedkoper wordt.
-
-Dat gebeurt met een kleine optimalisatieberekening. Eén productregel wordt niet
-half over twee leveranciers verdeeld.
-
-MATCHING
-Primair:
-categorie + exacte productcode
-
-Huidige database:
-- 104 exacte HH ↔ Emlin productcode-matches
-- alle 104 hebben dezelfde packgrootte
-
-Voorbeelden:
-RT10
-BC10
-CU50
-TSM10
-
-Daarom zijn deze regels zeer geschikt voor automatisch verdelen.
-
-BESTAANDE MANDJES
-Slim bestellen synchroniseert automatisch naar:
-pure20_supplier_hub_draft_v3
-
-De klassieke leveranciermandjes blijven dus bestaan.
-Klik "Open leveranciermandjes →" om de gewone bestelmodus opnieuw te laden met
-de automatisch verdeelde regels.
-
-Handmatig bestaande regels die NIET door Slim bestellen worden beheerd blijven
-in het draft-mandje staan. Slim bestellen onthoudt welke regels het zelf beheert.
-
-PRIJZEN
-Alle supplierprijzen worden live uit Supabase geladen.
-Er staan geen leveranciersprijzen hardcoded in de JS.
+Geen productfoto-, naam-, variant- of andere velden worden aangeraakt.

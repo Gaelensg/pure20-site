@@ -162,3 +162,17 @@ window.PURE20_SUPABASE_CONFIG = {
     document.head.appendChild(s);
   }
 })();
+
+/* Fast inline retail price + stock editor in Admin */
+(() => {
+  const p=(location.pathname.replace(/\/+$/,'')||'/').toLowerCase();
+  if(p!=='/admin'&&p!=='/admin.html')return;
+
+  if(document.querySelector('script[data-pure20-admin-inline-edit]'))return;
+
+  const s=document.createElement('script');
+  s.src='/admin-inline-edit.js?v=20261004-1';
+  s.defer=true;
+  s.dataset.pure20AdminInlineEdit='1';
+  document.head.appendChild(s);
+})();
