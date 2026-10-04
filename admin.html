@@ -1,3 +1,4 @@
+<!-- PURE20 ADMIN BUILD V18 - MOBILE SAVE FIX -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -1521,20 +1522,53 @@
            * clearing Variant / Code / Badge / Note / COA could appear to save
            * and then jump back to the previous value.
            */
-          p.product=String($('#prodName')?.value??'').trim();
-          p.variant=String($('#prodVariant')?.value??'').trim();
-          p.code=String($('#prodCode')?.value??'').trim();
-          p.category=String($('#prodCategory')?.value??'').trim()||'Other';
-          p.unit=String($('#prodUnit')?.value??'').trim()||'vial';
-          p.price=Math.max(0,p20NumberFromInput($('#prodPrice'),0));
-          p.stock=Math.max(0,Math.floor(p20NumberFromInput($('#prodStock'),0)));
-          p.order=Math.floor(p20NumberFromInput($('#prodOrder'),Number(existing.sort_order||1)))||Number(existing.sort_order||1);
+          /*
+           * V17 mobile-safe merge:
+           * required identity fields may occasionally arrive empty from the
+           * mobile modal even though the database row is valid. Never replace
+           * a valid database identity with an accidental empty string.
+           */
+          const formName=String($('#prodName')?.value??'').trim();
+          const formVariant=String($('#prodVariant')?.value??'').trim();
+          const formCode=String($('#prodCode')?.value??'').trim();
+          const formCategory=String($('#prodCategory')?.value??'').trim();
+          const formUnit=String($('#prodUnit')?.value??'').trim();
+
+          p.product=formName || String(existing.product_name||'').trim();
+          p.variant=formVariant || String(existing.variant||'').trim();
+          p.code=formCode || String(existing.code||'').trim();
+          p.category=formCategory || String(existing.category||'Other').trim() || 'Other';
+          p.unit=formUnit || String(existing.unit||'vial').trim() || 'vial';
+
+          const priceInput=$('#prodPrice');
+          const stockInput=$('#prodStock');
+          const orderInput=$('#prodOrder');
+
+          p.price=String(priceInput?.value??'').trim()===''
+            ? Number(existing.price_eur||0)
+            : Math.max(0,p20NumberFromInput(priceInput,Number(existing.price_eur||0)));
+
+          p.stock=String(stockInput?.value??'').trim()===''
+            ? Math.max(0,Math.floor(Number(existing.stock||0)))
+            : Math.max(0,Math.floor(p20NumberFromInput(stockInput,Number(existing.stock||0))));
+
+          p.order=String(orderInput?.value??'').trim()===''
+            ? Number(existing.sort_order||1)
+            : Math.max(1,Math.floor(p20NumberFromInput(orderInput,Number(existing.sort_order||1))));
+
+          // These fields are intentionally allowed to be cleared by the admin.
           p.badge=String($('#prodBadge')?.value??'').trim();
           p.note=String($('#prodNote')?.value??'').trim();
           p.coaUrl=String($('#prodCoaUrl')?.value??'').trim();
-          p.active=String($('#prodActive')?.value||'true')==='true';
+          p.active=String($('#prodActive')?.value||String(existing.active!==false))==='true';
 
+          // Keep required identity visible/synchronised on mobile.
           if($('#prodId'))$('#prodId').value=p.id;
+          if($('#prodName') && !formName)$('#prodName').value=p.product;
+          if($('#prodVariant') && !formVariant)$('#prodVariant').value=p.variant;
+          if($('#prodCode') && !formCode)$('#prodCode').value=p.code;
+          if($('#prodCategory') && !formCategory)$('#prodCategory').value=p.category;
+          if($('#prodUnit') && !formUnit)$('#prodUnit').value=p.unit;
         }
 
         if(!existing){
@@ -1544,7 +1578,7 @@
         }
 
         if(!p.product){
-          throw new Error('De database-rij heeft geen productnaam.');
+          throw new Error('Productnaam ontbreekt zowel in het formulier als in de database.');
         }
 
         const oldImage=String(existing.image_url||'');
@@ -1630,12 +1664,12 @@
           try{await api().adminDeleteCoa(oldCoa)}catch(err){console.warn(err)}
         }
 
-        setStatus(`Opgeslagen ✓ ${p.product} ${p.variant} · €${Number(savedRow.price_eur||0).toFixed(2)} · stock ${Number(savedRow.stock||0)}`);
+        setStatus(`DATABASE OK ✓ ${savedRow.product_name} ${savedRow.variant} · €${Number(savedRow.price_eur||0).toFixed(2)} · stock ${Number(savedRow.stock||0)}`);
         if(saveBtn)saveBtn.textContent='OPGESLAGEN ✓';
 
         setTimeout(()=>location.reload(),500);
       }catch(err){
-        console.error('PURE20 PRODUCT SAVE V15:',err);
+        console.error('PURE20 PRODUCT SAVE V17:',err);
         setStatus(`Opslaan mislukt: ${err.message||err}`);
         alert(`Opslaan mislukt: ${err.message||err}`);
         if(saveBtn){
