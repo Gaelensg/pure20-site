@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  if(window.__PURE20_SUPPLIER_AUTO_CART_V1__)return;
-  window.__PURE20_SUPPLIER_AUTO_CART_V1__=true;
+  if(window.__PURE20_SUPPLIER_AUTO_CART_V2__)return;
+  window.__PURE20_SUPPLIER_AUTO_CART_V2__=true;
 
   const DRAFT_KEY='pure20_supplier_hub_draft_v3';
   const SMART_KEY='pure20_supplier_smart_qty_v1';
@@ -715,6 +715,62 @@
     document.head.appendChild(style);
   }
 
+  function smartKeyFromDraftKey(key){
+    const parts=String(key||'').split('::');
+    if(parts.length<3)return '';
+    return `${parts[1]}::${parts.slice(2).join('::')}`;
+  }
+
+  function installSupplierClearSync(){
+    const button=$('supplierClearOrder');
+    if(!button || button.dataset.smartSyncInstalled==='1')return;
+
+    button.dataset.smartSyncInstalled='1';
+
+    /*
+     * supplier-order.js owns the normal cart and runs its own clear handler.
+     * We run after it, inspect which smart-managed draft keys were actually
+     * removed, and clear only those corresponding Smart Order quantities.
+     * If the user cancels the normal confirmation, nothing is removed here.
+     */
+    button.addEventListener('click',()=>{
+      const activeSupplier=localStorage.getItem(SUPPLIER_KEY)||'hhpeptide';
+      const managedBefore=readJson(MANAGED_KEY,[]);
+      const relevant=(Array.isArray(managedBefore)?managedBefore:[])
+        .filter(key=>String(key).startsWith(`${activeSupplier}::`));
+
+      if(!relevant.length)return;
+
+      setTimeout(()=>{
+        const draftNow=readJson(DRAFT_KEY,{});
+        const removed=relevant.filter(key=>Number(draftNow[key]||0)<=0);
+        if(!removed.length)return;
+
+        const smart=readJson(SMART_KEY,{});
+
+        for(const draftKey of removed){
+          const key=smartKeyFromDraftKey(draftKey);
+          if(key)delete smart[key];
+        }
+
+        const remainingManaged=(Array.isArray(managedBefore)?managedBefore:[])
+          .filter(key=>!removed.includes(key));
+
+        writeJson(SMART_KEY,smart);
+        writeJson(MANAGED_KEY,remainingManaged);
+
+        // Keep the in-memory Smart Order state in sync too.
+        state.qty=smart;
+
+        if(state.loaded){
+          state.plan=optimize();
+          syncSupplierDraft(state.plan);
+          renderAll();
+        }
+      },0);
+    });
+  }
+
   function injectUi(){
     const switcher=document.querySelector('.supplier-view-switch');
     if(!switcher||$('supplierSmartPanel'))return false;
@@ -831,7 +887,17 @@
       const wasSmart=document.body.classList.contains('p20-smart-mode');
 
       document.body.classList.toggle('p20-smart-mode',view==='smart');
-      if(view==='smart')loadData();
+
+      if(view==='smart'){
+        // Always re-read persisted quantities. The normal supplier cart may
+        // have been cleared while Smart Order was hidden.
+        state.qty=readJson(SMART_KEY,{});
+        if(state.loaded){
+          state.plan=optimize();
+          renderAll();
+        }
+        loadData();
+      }
 
       if(view==='order'&&wasSmart&&state.dirtyOrderView){
         location.reload();
@@ -880,6 +946,12 @@
       state.plan=optimize();
       state.dirtyOrderView=true;
       renderAll();
+
+      document.querySelectorAll('#smartCatalogue .smart-row').forEach(row=>{
+        row.classList.remove('selected');
+        const input=row.querySelector('.smart-qty input');
+        if(input)input.value='0';
+      });
     });
 
     $('smartOpenCarts').addEventListener('click',()=>{
@@ -888,6 +960,8 @@
       localStorage.setItem(SUPPLIER_KEY,hhHas?'hhpeptide':'emlins');
       location.reload();
     });
+
+    installSupplierClearSync();
 
     return true;
   }
