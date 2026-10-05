@@ -1,31 +1,17 @@
-PURE20 SUPPLIER SMART ORDER SYNC V3
+PURE20 HOME REFINED V2 - FLAT GITHUB VERSION
 
-UPLOAD / VERVANG:
-- supplier-auto-cart.js
-- supplier-order.html
+ALLE bestanden mogen rechtstreeks in de root van je GitHub repo.
+Er is GEEN assets-map nodig.
 
-FIX:
-Wanneer je in de gewone leverancierweergave op WISSEN drukt, werden alleen de
-supplier-cart regels verwijderd. De gekoppelde Smart Order aantallen bleven in:
-pure20_supplier_smart_qty_v1
+Upload/vervang:
+- index.html
+- faq.html
+- home-refined.css
+- home-refined.js
+- hero-vial.png
+- placeholder-ghkcu.png
+- placeholder-bpc157.png
+- placeholder-tesamorelin.png
+- placeholder-retatrutide.png
 
-Daardoor bleven producten in SLIM BESTELLEN:
-- een aantal tonen
-- geselecteerd gemarkeerd
-- potentieel opnieuw in een suppliermandje verschijnen
-
-V3 synchroniseert dit nu twee kanten op.
-
-GEDRAG:
-- Wis HH-mandje -> alleen de Smart Order regels die aan HH waren toegewezen
-  worden ook op 0 gezet.
-- Wis Emlin's-mandje -> alleen de aan Emlin's toegewezen Smart Order regels
-  worden op 0 gezet.
-- Het andere leveranciermandje blijft intact.
-- Annuleer je de bevestiging bij Wissen, dan verandert Smart Order niets.
-- Wanneer je terug naar SLIM BESTELLEN gaat, leest de module de actuele
-  opgeslagen aantallen opnieuw in.
-- 'Slimme lijst wissen' zet daarnaast alle zichtbare aantallen direct op 0
-  en verwijdert de selected-markering.
-
-De prijsoptimizer en supplierverdeling zijn verder niet gewijzigd.
+De afbeeldingspaden in index.html verwijzen nu rechtstreeks naar /bestandsnaam.png.
