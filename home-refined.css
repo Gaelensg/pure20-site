@@ -149,3 +149,168 @@ button{font:inherit}
   .hero-metrics,.steps,.catalog-grid{grid-template-columns:1fr}
   .section-head{align-items:flex-start;flex-direction:column}
 }
+
+/* PURE20 GRAPHITE THEME OVERRIDE */
+:root {
+  --bg: #17191b;
+  --bg-soft: #202326;
+  --paper: #202326;
+  --card: #24282c;
+  --ink: #f2f2f4;
+  --muted: #a0a5ad;
+  --line: #383e44;
+  --accent: #c5cee0;
+  --accent-2: #aebbd2;
+  --success: #26382f;
+  --shadow: 0 12px 35px rgba(0,0,0,.18);
+}
+
+body {
+  background: #17191b !important;
+  color: #f2f2f4 !important;
+}
+
+.site-header {
+  background: rgba(23,25,27,.96) !important;
+  border-color: #383e44 !important;
+}
+
+.brand,
+.nav a,
+.visual-link,
+.footer-col a,
+.footer-col span {
+  color: #f2f2f4 !important;
+}
+
+.header-cta,
+.btn-dark {
+  background: #c5cee0 !important;
+  color: #17191b !important;
+  border-color: #c5cee0 !important;
+}
+
+.lang-switch,
+.hero-copy,
+.hero-visual,
+.card,
+.protocol-main,
+.protocol-steps,
+.cta-panel,
+.faq-preview,
+.faq-list,
+.info-block {
+  background: #202326 !important;
+  color: #f2f2f4 !important;
+  border-color: #383e44 !important;
+  box-shadow: none !important;
+}
+
+.hero-visual {
+  background: #24282c !important;
+}
+
+.hero h1,
+.section-head h2,
+.protocol-main h2,
+.cta-panel h2,
+.faq-preview h2,
+.newsletter h2,
+.faq-hero h1,
+.visual-title,
+.product-body h3,
+.step h3 {
+  color: #f2f2f4 !important;
+}
+
+.hero h1 .soft {
+  color: #aebbd2 !important;
+}
+
+.hero-intro,
+.protocol-main p,
+.cta-panel p,
+.faq-preview p,
+.product-copy,
+.step p,
+.visual-proof,
+.footer-brand p,
+.faq-item .answer {
+  color: #b5bac2 !important;
+}
+
+.eyebrow,
+.mini-eyebrow,
+.product-meta,
+.metric strong,
+.step-num,
+.footer-col h4 {
+  color: #c5cee0 !important;
+}
+
+.metric,
+.step,
+.faq-item,
+.faq-list .faq-item {
+  background: #191c1f !important;
+  color: #f2f2f4 !important;
+  border-color: #383e44 !important;
+}
+
+.metric span,
+.faq-item summary {
+  color: #f2f2f4 !important;
+}
+
+.product-media,
+.visual-frame {
+  background: #191c1f !important;
+  border-color: #383e44 !important;
+}
+
+.btn-light {
+  background: transparent !important;
+  color: #c5cee0 !important;
+  border-color: #c5cee0 !important;
+}
+
+.newsletter {
+  background: #111315 !important;
+  color: #f2f2f4 !important;
+  border-color: #383e44 !important;
+}
+
+.newsletter p {
+  color: #b5bac2 !important;
+}
+
+.newsletter-form input {
+  background: #202326 !important;
+  color: #f2f2f4 !important;
+  border-color: #555d66 !important;
+}
+
+.site-footer {
+  background: #111315 !important;
+  border-color: #383e44 !important;
+}
+
+.footer-col a,
+.footer-col span {
+  color: #c5cee0 !important;
+}
+
+.topbar {
+  background: #0d0f10 !important;
+  color: #c5cee0 !important;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    background: #17191b !important;
+  }
+
+  .nav a {
+    color: #c5cee0 !important;
+  }
+}
