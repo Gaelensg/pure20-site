@@ -1,15 +1,12 @@
-PURE20 WINKELMANDJE MOBILE FIX
+PURE20: mobiele header activeren
 
-Vervang alleen:
-- styles.css
+Upload dit bestand naar de ROOT van je GitHub-repository:
+home-refined.js
 
-Opgelost:
-- winkelmandje ligt nu boven de vaste websiteheader
-- volledige hoogte gebruikt 100dvh op iPhone
-- middenstuk van het winkelmandje is opnieuw verticaal scrollbaar
-- header van winkelmandje blijft bovenaan
-- WhatsApp / bestelling kopiëren blijft onderaan bereikbaar
-- iOS momentum scrolling is ingeschakeld
-- rekening gehouden met de iPhone safe area onderaan
+Open in GitHub het bestaande bestand home-refined.js.
+Kies Edit, vervang de volledige inhoud door de inhoud van dit bestand en commit changes.
 
-Geen andere bestanden aanpassen.
+Je hoeft index.html, site-header.js of CSS niet te wijzigen.
+De bestaande site-header.js wordt nu automatisch geladen door home-refined.js op de homepage.
+
+Na de commit zal Vercel automatisch opnieuw deployen.
