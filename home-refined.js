@@ -19,11 +19,14 @@
   langButtons.forEach(btn => btn.addEventListener('click', () => apply(btn.dataset.lang)));
   apply(localStorage.getItem(key) || 'nl');
 
-  // Load the existing universal header and mobile navigation on the homepage.
-  if (!document.querySelector('script[data-pure20-universal-header]')) {
+  function loadScript(src, marker) {
+    if (document.querySelector('script[' + marker + ']')) return;
     const script = document.createElement('script');
-    script.src = '/site-header.js?v=20261101-2';
-    script.dataset.pure20UniversalHeader = '1';
+    script.src = src;
+    script.setAttribute(marker, '1');
     document.body.appendChild(script);
   }
+
+  loadScript('/site-header.js?v=20261101-3', 'data-pure20-universal-header');
+  loadScript('/mobile-bottom-nav.js?v=20261101-1', 'data-pure20-bottom-navigation');
 })();

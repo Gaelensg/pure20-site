@@ -1,12 +1,11 @@
-PURE20: mobiele header activeren
+PURE20 mobiele onderbalk
 
-Upload dit bestand naar de ROOT van je GitHub-repository:
-home-refined.js
+Upload beide JavaScript-bestanden naar de ROOT van de GitHub-repository:
+- home-refined.js (vervang het bestaande bestand)
+- mobile-bottom-nav.js (nieuw bestand toevoegen)
 
-Open in GitHub het bestaande bestand home-refined.js.
-Kies Edit, vervang de volledige inhoud door de inhoud van dit bestand en commit changes.
+De bestaande homepage-loader laadt daarna automatisch de bestaande site-header en de nieuwe onderbalk.
+De onderbalk verschijnt op mobiele schermen en bevat Shop, Box, Kennis, Rekenen en Meer.
+Via Meer opent het bestaande uitschuifmenu met ook Stack Builder en Wholesale.
 
-Je hoeft index.html, site-header.js of CSS niet te wijzigen.
-De bestaande site-header.js wordt nu automatisch geladen door home-refined.js op de homepage.
-
-Na de commit zal Vercel automatisch opnieuw deployen.
+Na het committen zal Vercel automatisch opnieuw deployen.
