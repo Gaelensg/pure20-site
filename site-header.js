@@ -109,6 +109,14 @@
 
   if (!isPrivate) applyTheme(currentTheme());
 
+  // Load mobile navigation on every public page using the shared header.
+  if (!isPrivate && !document.querySelector('script[data-p20-bottom-nav]')) {
+    const bottomNav = document.createElement('script');
+    bottomNav.src = '/mobile-bottom-nav.js?v=20261102-1';
+    bottomNav.dataset.p20BottomNav = '1';
+    document.head.appendChild(bottomNav);
+  }
+
   function activeSection() {
     if (path === '/shop' || path === '/shop.html') return 'shop';
     if (path === '/build-a-box' || path === '/build-a-box.html') return 'box';
