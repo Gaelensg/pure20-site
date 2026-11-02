@@ -314,3 +314,73 @@ body {
     color: #c5cee0 !important;
   }
 }
+
+
+/* MOBILE LAYOUT POLISH — shared bottom navigation remains the primary mobile nav */
+@media (max-width: 720px) {
+  html, body { max-width:100%; overflow-x:clip; }
+  .shell { width:min(100% - 28px, 560px); }
+  .topbar { padding:9px 14px; font-size:9px; line-height:1.45; letter-spacing:.09em; }
+  .site-header { position:relative; }
+  .header-row {
+    min-height:64px;
+    padding:12px 0;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:10px;
+    justify-items:stretch;
+  }
+  .brand { justify-self:start; font-size:27px; }
+  .nav { display:none; }
+  .header-side { width:auto; justify-content:flex-end; gap:7px; }
+  .header-cta { padding:9px 11px; font-size:9px; }
+  .lang-switch { padding:3px; }
+  .lang-switch button { padding:6px 8px; font-size:9px; }
+  .hero { padding:18px 0 12px; }
+  .hero-grid { gap:12px; }
+  .hero-copy,.hero-visual { border-radius:22px; }
+  .hero-copy { padding:22px 19px; }
+  .eyebrow,.mini-eyebrow { font-size:9px; letter-spacing:.11em; }
+  .hero h1 { font-size:clamp(39px,11vw,58px); line-height:.98; margin-bottom:15px; }
+  .hero-intro { font-size:14px; line-height:1.65; margin-bottom:19px; }
+  .hero-actions { display:grid; grid-template-columns:1fr; gap:9px; margin-bottom:18px; }
+  .hero-actions .btn { width:100%; min-height:48px; padding:12px 14px; font-size:12px; }
+  .hero-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:18px; }
+  .metric { padding:12px 10px; border-radius:14px; }
+  .metric strong { font-size:9px; margin-bottom:6px; }
+  .metric span { font-size:12px; line-height:1.35; }
+  .hero-visual { padding:18px; gap:12px; }
+  .visual-tag { font-size:9px; }
+  .visual-title { font-size:21px; }
+  .visual-frame { min-height:230px; max-height:300px; padding:12px; border-radius:18px; }
+  .visual-frame img { max-height:260px; }
+  .visual-bottom { align-items:flex-start; }
+  .visual-proof { font-size:11px; line-height:1.5; margin:0; }
+  .visual-link { font-size:10px; white-space:nowrap; }
+  .section { padding:22px 0; }
+  .section-head { gap:10px; margin-bottom:16px; }
+  .section-head h2 { font-size:clamp(26px,8vw,38px); line-height:1.05; }
+  .inline-link { font-size:10px; }
+  .catalog-grid { gap:12px; }
+  .product-media { min-height:190px; padding:14px; }
+  .product-media img { max-height:165px; }
+  .product-body { padding:14px; gap:9px; }
+  .product-body h3 { font-size:17px; }
+  .product-meta { font-size:9px; }
+  .product-copy { font-size:12px; line-height:1.55; }
+  .protocol-main,.protocol-steps,.cta-panel,.faq-preview,.newsletter { padding:20px; }
+  .steps { gap:9px; }
+  .step { padding:14px; }
+  .step p { font-size:12px; line-height:1.55; }
+  .site-footer { padding:26px 0 120px; }
+  .footer-grid { gap:18px; }
+}
+@media (max-width: 380px) {
+  .shell { width:calc(100% - 22px); }
+  .hero-copy { padding:19px 16px; }
+  .hero h1 { font-size:38px; }
+  .hero-metrics { gap:6px; }
+  .metric { padding:10px 8px; }
+  .metric span { font-size:11px; }
+  .header-cta { padding:8px 9px; }
+  .lang-switch button { padding:5px 6px; }
+}
