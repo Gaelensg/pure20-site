@@ -31,8 +31,8 @@
     return '';
   };
   const copy = {
-    nl:{more:'Meer',menu:'Navigatie',stack:'Stack Builder',wholesale:'Groothandel',account:'Mijn account',faq:'Veelgestelde vragen',close:'Sluiten'},
-    en:{more:'More',menu:'Navigation',stack:'Stack Builder',wholesale:'Wholesale',account:'My account',faq:'FAQ',close:'Close'}
+    nl:{more:'Meer',menu:'Navigatie',stack:'Stack Builder',wholesale:'Groothandel',account:'Mijn account',faq:'Veelgestelde vragen',knowledge:'Kennisbank',close:'Sluiten'},
+    en:{more:'More',menu:'Navigation',stack:'Stack Builder',wholesale:'Wholesale',account:'My account',faq:'FAQ',knowledge:'Knowledge',close:'Close'}
   };
   const t = key => copy[lang()][key] || key;
 
@@ -68,7 +68,7 @@
     menu.className='p20-mobile-menu';
     menu.setAttribute('aria-hidden','true');
     menu.innerHTML='<div class="p20-mobile-menu-head"><span>PURE20 / '+t('menu')+'</span><button type="button">'+t('close')+'</button></div>'+
-      '<a href="/stack-builder">'+t('stack')+'</a><a href="/wholesale">'+t('wholesale')+'</a><a href="/account">'+t('account')+'</a><a href="/faq">'+t('faq')+'</a>';
+      '<a href="/stack-builder">'+t('stack')+'</a><a href="/knowledge">'+t('knowledge')+'</a><a href="/wholesale">'+t('wholesale')+'</a><a href="/account">'+t('account')+'</a><a href="/faq">'+t('faq')+'</a>';
     const toggle=()=>{const open=!menu.classList.contains('open');menu.classList.toggle('open',open);backdrop.classList.toggle('open',open);menu.setAttribute('aria-hidden',String(!open));nav.querySelector('.p20-bottom-more').setAttribute('aria-expanded',String(open));};
     nav.querySelector('.p20-bottom-more').addEventListener('click',toggle);
     backdrop.addEventListener('click',toggle);
