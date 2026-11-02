@@ -11,7 +11,7 @@
   --p20-line: #383e44;
   --p20-accent: #c5cee0;
   --p20-font: "JetBrains Mono", monospace;
-  --p20-heading: "DM Serif Display", Georgia, serif;
+  --p20-heading: "JetBrains Mono", monospace;
 }
 
 * {
@@ -35,7 +35,7 @@ button, input, select, textarea, a, label {
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--p20-heading) !important;
+  font-family: var(--p20-font) !important;
   font-weight: 400 !important;
   letter-spacing: -.025em;
   color: var(--p20-ink);
@@ -91,7 +91,7 @@ img, video, iframe {
 
 .p20-global-header .p20-brand {
   color: var(--p20-ink) !important;
-  font-family: Arial, sans-serif !important;
+  font-family: var(--p20-font) !important;
   font-size: 29px !important;
   font-weight: 900 !important;
   letter-spacing: -2px !important;
@@ -525,4 +525,31 @@ html[data-p20-theme="light"] .p20-menu-utility {
     padding: 0 !important;
     justify-content: center !important;
   }
+}
+
+
+/* GLOBAL TYPOGRAPHY + ACCESSIBLE THEME TOKENS */
+:root { --p20-font: "JetBrains Mono", monospace; --p20-heading: "JetBrains Mono", monospace; }
+html, body, button, input, select, textarea, a, label, h1, h2, h3, h4,
+p, span, small, strong, summary, li, th, td {
+  font-family: "JetBrains Mono", monospace !important;
+}
+html[data-p20-theme="light"] {
+  --p20-bg: #f5f6f8; --p20-paper: #ffffff; --p20-card: #ffffff;
+  --p20-ink: #20242b; --p20-muted: #596273; --p20-line: #d8dde5;
+  --p20-accent: #35445c; color-scheme: light;
+}
+html[data-p20-theme="light"] body { background: var(--p20-bg) !important; color: var(--p20-ink) !important; }
+html[data-p20-theme="light"] :is(section, article, .card, .panel, .faq-item, .product-card, .cta-panel, .protocol, .newsletter) {
+  color: var(--p20-ink); border-color: var(--p20-line);
+}
+html[data-p20-theme="light"] :is(.p20-menu-panel, .p20-menu-utility, .p20-bottom-nav) {
+  background: #ffffff !important; color: #20242b !important;
+}
+html[data-p20-theme="light"] .p20-bottom-nav a { color: #596273 !important; }
+html[data-p20-theme="light"] .p20-bottom-nav a[aria-current="page"] {
+  color: #20242b !important; background: #e8ecf2 !important;
+}
+html[data-p20-theme="light"] :is(.home-footer, .cta-zone, .cart-bar, .site-footer) {
+  background: #e9edf2 !important; color: #20242b !important;
 }
