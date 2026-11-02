@@ -51,7 +51,7 @@
     .p20-mobile-menu-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font:600 10px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:#aeb6c4}
     .p20-mobile-menu a{display:flex;align-items:center;min-height:48px;padding:0 4px;border-top:1px solid #383e44;color:#f2f2f4;text-decoration:none;font:500 12px "JetBrains Mono",monospace}
     .p20-mobile-menu button{border:0;background:transparent;color:#f2f2f4;font:500 10px "JetBrains Mono",monospace}
-    @media(min-width:769px){.p20-bottom-nav,.p20-mobile-menu,.p20-mobile-menu-backdrop{display:none!important}body.p20-has-bottom-nav{padding-bottom:initial!important}}
+    @media(min-width:769px) and (pointer:fine){.p20-bottom-nav,.p20-mobile-menu,.p20-mobile-menu-backdrop{display:none!important}body.p20-has-bottom-nav{padding-bottom:initial!important}}
   `;
   document.head.appendChild(style);
 
