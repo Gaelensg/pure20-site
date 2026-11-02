@@ -6,7 +6,6 @@
   const routes = [
     { key:'shop', href:'/shop', nl:'Shop', en:'Shop', icon:'<path d="M3 9.5h18l-1.5 11h-15L3 9.5Z"/><path d="M7 9.5 9 3h6l2 6.5M9 13v4M15 13v4"/>' },
     { key:'box', href:'/build-a-box', nl:'Box', en:'Build', icon:'<path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z"/><path d="m4.5 7.8 7.5 4.4 7.5-4.4M12 12.2V21M8 5.2l8 4.5"/>' },
-    { key:'knowledge', href:'/knowledge', nl:'Kennis', en:'Learn', icon:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z"/><path d="M4 5.5V21M8 7h8M8 11h8"/>' },
     { key:'calculator', href:'/calculator', nl:'Rekenen', en:'Calc', icon:'<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 18.5h2M14 18.5h2"/>' }
   ];
 
@@ -16,7 +15,6 @@
   function activeKey() {
     if (path === '/shop' || path === '/shop.html') return 'shop';
     if (path.startsWith('/build-a-box')) return 'box';
-    if (path.startsWith('/knowledge')) return 'knowledge';
     if (path.startsWith('/calculator')) return 'calculator';
     return '';
   }
@@ -36,7 +34,7 @@
       bottom: calc(9px + env(safe-area-inset-bottom, 0px)) !important;
       z-index: 105 !important;
       display: grid !important;
-      grid-template-columns: repeat(5, minmax(0,1fr)) !important;
+      grid-template-columns: repeat(4, minmax(0,1fr)) !important;
       align-items: stretch !important;
       min-height: 66px !important;
       padding: 7px 5px !important;
