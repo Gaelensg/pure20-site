@@ -26,7 +26,6 @@
   const ROUTES = [
     {key:'shop', href:'/shop'},
     {key:'box', href:'/build-a-box'},
-    {key:'knowledge', href:'/knowledge'},
     {key:'calculator', href:'/calculator'},
     {key:'stack', href:'/stack-builder'},
     {key:'wholesale', href:'/wholesale'}
@@ -39,11 +38,9 @@
       nav:'Navigatie',
       shop:'Shop',
       box:'Stel je box samen',
-      knowledge:'Kennisbank',
       calculator:'Calculator',
       stack:'Stack Builder',
       wholesale:'Groothandel',
-      search:'Zoeken in kennisbank',
       account:'Mijn account',
       themeLight:'Lichte modus',
       themeDark:'Donkere modus'
@@ -54,11 +51,9 @@
       nav:'Navigation',
       shop:'Shop',
       box:'Build a Box',
-      knowledge:'Knowledge',
       calculator:'Calculator',
       stack:'Stack Builder',
       wholesale:'Wholesale',
-      search:'Search knowledge',
       account:'My account',
       themeLight:'Light mode',
       themeDark:'Dark mode'
@@ -114,21 +109,12 @@
 
   if (!isPrivate) applyTheme(currentTheme());
 
-  function isKnowledgePage() {
-    if (path === '/knowledge' || path === '/knowledge.html') return true;
-    const known = ['/', '/shop', '/shop.html', '/build-a-box', '/build-a-box.html', '/calculator', '/calculator.html', '/stack-builder', '/stack-builder.html', '/wholesale', '/wholesale.html', '/account', '/account.html'];
-    if (known.includes(path)) return false;
-    if (path.endsWith('.html')) return true;
-    return false;
-  }
-
   function activeSection() {
     if (path === '/shop' || path === '/shop.html') return 'shop';
     if (path === '/build-a-box' || path === '/build-a-box.html') return 'box';
     if (path === '/calculator' || path === '/calculator.html') return 'calculator';
     if (path === '/stack-builder' || path === '/stack-builder.html') return 'stack';
     if (path === '/wholesale' || path === '/wholesale.html') return 'wholesale';
-    if (isKnowledgePage()) return 'knowledge';
     return '';
   }
 
@@ -140,19 +126,6 @@
     a.title = title;
     a.innerHTML = icon(type);
     return a;
-  }
-
-  function focusKnowledgeSearch() {
-    closeMenu();
-    const search = document.getElementById('peptide-search');
-    if (search) {
-      const tools = search.closest('.tools');
-      if (tools) tools.hidden = false;
-      search.scrollIntoView({behavior:'smooth',block:'center'});
-      setTimeout(()=>search.focus(),250);
-      return;
-    }
-    location.href = '/knowledge?focus=search';
   }
 
   let menuPanel = null;
@@ -231,7 +204,6 @@
       </div>
       <nav class="p20-menu-nav" aria-label="${t('nav')}">${links}</nav>
       <div class="p20-menu-utilities">
-        <button class="p20-menu-utility" type="button" data-menu-search>${icon('search')}<span>${t('search')}</span></button>
         <a class="p20-menu-utility" href="/account" data-menu-account>${icon('account')}<span>${t('account')}</span></a>
       </div>
       <div class="p20-menu-footer">
@@ -241,7 +213,6 @@
 
     document.body.append(menuBackdrop,menuPanel);
     menuPanel.querySelector('.p20-menu-close').addEventListener('click',closeMenu);
-    menuPanel.querySelector('[data-menu-search]').addEventListener('click',focusKnowledgeSearch);
     menuPanel.querySelectorAll('.p20-menu-link,.p20-menu-utility[href]').forEach(a=>a.addEventListener('click',closeMenu));
     languageHost=menuPanel.querySelector('[data-menu-language]');
   }
@@ -373,9 +344,6 @@
       moveLanguageControl();
     });
 
-    if (new URLSearchParams(location.search).get('focus') === 'search') {
-      setTimeout(focusKnowledgeSearch,350);
-    }
   }
 
   if (document.readyState === 'loading') {
