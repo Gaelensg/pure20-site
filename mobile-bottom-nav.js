@@ -1,8 +1,8 @@
 (() => {
   if (window.__PURE20_BOTTOM_NAV__) return;
   window.__PURE20_BOTTOM_NAV__ = true;
-
-  const path = location.pathname.replace(/\\/+$/, '') || '/';
+  const path = location.pathname.replace(/\/+$/, '') || '/';
+  const privatePath = /^\/(admin|wholesale-admin|dashboard|portal|supplier-order)(\/|$)/i.test(path);
   const privatePath = /^\\/(admin|wholesale-admin|dashboard|portal|supplier-order)(\\/|$)/i.test(path);
   if (privatePath) return;
 
